@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#004556"><meta name="description" content="Trackrex workforce operations console"><title>Trackrex — Operations Console</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="app.css"></head>
+<body>
+  <aside class="sidebar" aria-label="Main navigation">
+    <a class="app-brand" href="index.html"><span class="logo">T</span><b>Trackrex</b><small>Dispatch Console</small></a>
+    <div class="node"><span>▦</span><b>HQ Regional Node</b><small>v4.8</small></div>
+    <nav id="side-nav">
+      <p>Operations & Field</p>
+      <button data-view="map" class="active"><span>⌖</span>Live Map</button>
+      <button data-view="attendance"><span>▣</span>Monthly Register</button>
+      <button data-view="tasks"><span>⌘</span>Tasks & Field Visits</button>
+      <p>Productivity & Time</p>
+      <button data-view="insights"><span>▤</span>Desktop Insights</button>
+      <p>Finance & HR</p>
+      <button data-view="expenses"><span>▧</span>Expenses</button>
+      <button data-view="leave"><span>◷</span>Leave & Policies</button>
+      <p>System</p>
+      <button data-view="tenants"><span>▦</span>Tenant Directory</button>
+      <button data-view="admin"><span>☷</span>Admin Settings</button>
+    </nav>
+    <div class="engine"><div><b>Dispatch mesh</b><span><i></i> Online</span></div><small>99.98% gateway uptime</small></div>
+  </aside>
+  <header class="topbar">
+    <button class="mobile-menu" aria-label="Open navigation">☰</button>
+    <div class="mobile-brand"><span class="logo">T</span><b>Trackrex</b></div>
+    <label class="search"><span>⌕</span><input id="global-search" placeholder="Search employees, tasks, CRM…"><kbd>Ctrl K</kbd></label>
+    <div class="punch"><i></i><span>Live punch</span><time id="clock">04:18:22</time><button id="punch-button">Punch out</button></div>
+    <div class="mode"><button class="active">Manager</button><button>Employee</button></div>
+    <button class="notice" aria-label="Notifications">♧<i></i></button><button class="profile"><span>EV</span><b>Elena Vance<small>Operations Admin</small></b></button>
+  </header>
+  <main class="workspace" id="workspace" aria-live="polite"></main>
+  <nav class="bottom-nav" aria-label="Mobile navigation"><button data-view="map" class="active"><span>⌖</span>Map</button><button data-view="attendance"><span>▣</span>Time</button><button data-view="tasks"><span>⌘</span>Tasks</button><button data-view="insights"><span>▤</span>Insights</button><button data-view="admin"><span>☷</span>Admin</button></nav>
+  <div class="toast" id="toast" role="status"></div>
+  <dialog id="action-dialog"><form method="dialog"><button class="close" value="cancel" aria-label="Close">×</button><div id="dialog-content"></div></form></dialog>
+  <script src="app.js"></script>
+</body></html>
