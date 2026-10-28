@@ -14,69 +14,13 @@ const fromPrice = s => Math.min(...s.tiers.map(t => t.price));
 
 function art(p, cls = '') {
   const h = p.hue;
-  const id = 'p-' + p.id;
-  let scene = '';
-  if (p.kind === 'Art print') {
-    scene = `
-      <rect x="14" y="10" width="172" height="120" rx="8" fill="#1e1832" stroke="#4a3e72" stroke-width="2"/>
-      <rect x="24" y="18" width="152" height="104" rx="4" fill="#fafafa"/>
-      <rect x="32" y="24" width="136" height="92" rx="3" fill="url(#g${id})"/>
-      <circle cx="${60 + (h % 50)}" cy="${45 + (h % 30)}" r="${16 + (h % 10)}" fill="#fff" fill-opacity="0.8"/>
-      <circle cx="${130 - (h % 40)}" cy="${65 + (h % 20)}" r="${24 + (h % 12)}" fill="hsl(${(h + 120) % 360} 90% 70% / 0.5)"/>
-      <path d="M32 96 Q 70 ${65 + (h % 25)} 100 85 T 168 82 V116 H32 Z" fill="hsl(${(h + 40) % 360} 70% 25% / 0.7)"/>
-      <path d="M32 104 Q 90 85 130 98 T 168 95 V116 H32 Z" fill="hsl(${h} 60% 15% / 0.85)"/>
-      <line x1="85" y1="10" x2="100" y2="2" stroke="#9ca3af" stroke-width="1.5"/>
-      <line x1="115" y1="10" x2="100" y2="2" stroke="#9ca3af" stroke-width="1.5"/>
-    `;
-  } else if (p.kind === 'Template') {
-    scene = `
-      <rect width="200" height="140" fill="url(#g${id})"/>
-      <rect x="20" y="20" width="70" height="95" rx="8" fill="#ffffff" fill-opacity="0.95"/>
-      <circle cx="35" cy="35" r="7" fill="hsl(${h} 80% 50%)"/>
-      <rect x="46" y="32" width="36" height="5" rx="2.5" fill="#374151"/>
-      <rect x="26" y="48" width="58" height="42" rx="4" fill="hsl(${h} 75% 65% / 0.3)"/>
-      <circle cx="55" cy="69" r="12" fill="hsl(${h} 80% 55%)"/>
-      <rect x="105" y="14" width="75" height="112" rx="14" fill="#0f172a" stroke="#334155" stroke-width="2"/>
-      <rect x="110" y="22" width="65" height="96" rx="8" fill="#1e293b"/>
-      <rect x="115" y="28" width="55" height="24" rx="4" fill="hsl(${(h + 50) % 360} 80% 60%)"/>
-      <rect x="115" y="58" width="55" height="18" rx="4" fill="#334155"/>
-      <rect x="115" y="82" width="25" height="18" rx="4" fill="#334155"/>
-      <rect x="145" y="82" width="25" height="18" rx="4" fill="#334155"/>
-      <circle cx="142" cy="18" r="2" fill="#64748b"/>
-    `;
-  } else {
-    scene = `
-      <rect width="200" height="140" fill="url(#g${id})"/>
-      <rect x="35" y="16" width="130" height="108" rx="8" fill="#ffffff" stroke="#e5e7eb" stroke-width="1.5"/>
-      <rect x="35" y="16" width="12" height="108" rx="4" fill="#000000" fill-opacity="0.12"/>
-      <rect x="56" y="30" width="85" height="10" rx="5" fill="hsl(${h} 80% 45%)"/>
-      <rect x="56" y="46" width="60" height="6" rx="3" fill="#6b7280"/>
-      <circle cx="62" cy="66" r="5" fill="#10b981"/>
-      <path d="M60 66 L62 68 L65 64" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-      <rect x="72" y="63" width="75" height="6" rx="3" fill="#374151"/>
-      <circle cx="62" cy="80" r="5" fill="#10b981"/>
-      <path d="M60 80 L62 82 L65 78" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-      <rect x="72" y="77" width="65" height="6" rx="3" fill="#374151"/>
-      <circle cx="62" cy="94" r="5" fill="#10b981"/>
-      <path d="M60 94 L62 96 L65 92" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-      <rect x="72" y="91" width="80" height="6" rx="3" fill="#374151"/>
-      <path d="M142 16 L142 42 L148 37 L154 42 L154 16 Z" fill="hsl(${h} 85% 55%)"/>
-    `;
-  }
-
+  const altText = `${p.name} - ${p.kind} digital template and download by Vintorex Digital Solutions Coimbatore`;
   return `<div class="art ${cls}" style="--h:${h}">
-    <svg viewBox="0 0 200 140" role="img" aria-label="${esc(p.name)}" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <linearGradient id="g${id}" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="hsl(${h} 80% 62%)"/>
-          <stop offset="100%" stop-color="hsl(${(h + 55) % 360} 70% 32%)"/>
-        </linearGradient>
-      </defs>
-      ${scene}
-    </svg>
+    <img class="product-img" src="/images/shop/${p.id}.svg" alt="${esc(altText)}" width="600" height="420" loading="lazy" decoding="async">
     <span class="art-kind-tag">${esc(p.kind)}</span>
   </div>`;
 }
+
 
 
 function marketBar(s, price) {
@@ -163,7 +107,11 @@ export function home() {
   const c = D.catalog();
   const featured = ['web-design', 'ecommerce', 'seo', 'social-media', 'advertising', 'branding'].map(D.service).filter(Boolean);
   return {
-    title: 'Digital marketing & web development in Coimbatore',
+    title: 'Digital Marketing & Web Development in Coimbatore',
+    description: 'Websites, online stores, SEO, social media, ads, branding and AI automation in Coimbatore with 100% published prices set below typical agency rates.',
+    keywords: 'digital marketing company coimbatore, web development coimbatore, seo services coimbatore, ecommerce website development coimbatore, google ads management coimbatore, social media marketing coimbatore, ai automation coimbatore, local seo coimbatore, vintorex digital solutions',
+    image: 'https://vintorex.com/images/og-cover.svg',
+    imageAlt: 'Vintorex Digital Solutions Coimbatore - Web Development, SEO, Ads and AI Automation Services',
     html: `
     <section class="hero">
       <div class="shell hero-grid">
@@ -295,20 +243,14 @@ export function home() {
             <span class="audit-pill">Free Audit</span>
           </div>
           <div class="audit-preview-body">
-            <div class="audit-ring">
-              <svg viewBox="0 0 100 100" aria-hidden="true">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#eef0f4" stroke-width="8"/>
-                <circle cx="50" cy="50" r="40" fill="none" stroke="var(--green)" stroke-width="8" stroke-dasharray="251" stroke-dashoffset="25" stroke-linecap="round"/>
-                <text x="50" y="47" text-anchor="middle" font-size="20" font-weight="800" fill="var(--ink)">98</text>
-                <text x="50" y="62" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--green)">OPTIMIZED</text>
-              </svg>
-            </div>
-            <div class="audit-checklist">
-              <div><small>Core Web Vitals</small><b>0.8s LCP</b><span class="good">Passed</span></div>
-              <div><small>SEO Visibility</small><b>Top 3 Rank</b><span class="good">High Intent</span></div>
-              <div><small>Mobile Usability</small><b>100 / 100</b><span class="good">Responsive</span></div>
-              <div><small>Security & Trust</small><b>SSL + GST</b><span class="good">Verified</span></div>
-            </div>
+            <img class="audit-scorecard-img" src="/images/audit-scorecard.svg" alt="Free 15-point website and SEO audit health report sample with 98 out of 100 performance score" width="600" height="400" loading="lazy" decoding="async">
+            <ol class="audit-flow" aria-label="How the free audit works">
+              <li><span class="af-n">1</span><div><b>Share your details</b><small>Website, business and goals</small></div></li>
+              <li><span class="af-n">2</span><div><b>Speed & Web Vitals</b><small>Mobile and desktop scan</small></div></li>
+              <li><span class="af-n">3</span><div><b>Local SEO check</b><small>Google Business Profile and Maps</small></div></li>
+              <li><span class="af-n">4</span><div><b>Competitor & ads review</b><small>Keyword gaps, social and paid quick wins</small></div></li>
+              <li><span class="af-n">5</span><div><b>Your report</b><small>Health score and fixed-price action plan</small></div></li>
+            </ol>
           </div>
         </div>
       </div>
@@ -364,8 +306,15 @@ function bindCycle(root) {
 export function services(params, query) {
   const cat = query.get('cat') || 'all';
   const list = D.catalog().services.filter(s => cat === 'all' || s.cat === cat);
+  const catObj = CATEGORIES.find(c => c.id === cat);
+  const title = catObj ? `${catObj.name} Services | Vintorex Coimbatore` : 'All 21 Digital Services & Packages | Vintorex Coimbatore';
+  const description = catObj ? `${catObj.name}: ${catObj.blurb}. Fixed packages with published prices set below typical metro agency rates.` : 'Explore 21 fixed digital marketing, web design, SEO, ads, branding and AI automation services with transparent prices.';
   return {
-    title: 'Services',
+    title,
+    description,
+    keywords: 'digital marketing services coimbatore, web design packages, seo monthly packages, social media management pricing, google ads management, ai chatbot services, cloud hosting, brand identity design, vintorex services',
+    image: 'https://vintorex.com/images/og-cover.svg',
+    imageAlt: 'Vintorex Digital Solutions 21 Digital Services Catalog',
     html: `<section class="shell section">
       <div class="page-head"><h1>Our services</h1><p class="lead">Every service has fixed packages, published prices and a market comparison so you know exactly what you pay for.</p></div>
       <nav class="chips" aria-label="Service categories">
@@ -422,8 +371,13 @@ export function serviceDetail({ id }) {
   const popular = s.tiers.findIndex(t => t.popular);
   const sections = [['packages', 'Packages'], ['included', 'What’s included'], ['split', 'Price split'], ['addons', 'Add-ons'], ['compare', 'Competitor analysis'], ['guides', 'Guides'], ['process', 'Process']];
   const [pos, tone] = position(s);
+  const catName = CATEGORIES.find(c => c.id === s.cat)?.name || s.cat;
   return {
     title: s.name,
+    description: s.summary || s.overview,
+    keywords: `${s.name}, ${catName}, digital marketing, ${s.tiers.map(t => t.name).join(', ')}, Vintorex Coimbatore`,
+    image: `https://vintorex.com/images/services/${s.id}.svg`,
+    imageAlt: `${s.name} - Professional ${catName} service deliverables, process, and packages by Vintorex Digital Solutions Coimbatore`,
     html: `<section class="shell section">
       <a href="#/services" class="link back">← All services</a>
       <div class="detail-head">
@@ -526,6 +480,10 @@ export function compare() {
   const named = [...new Set(c.services.flatMap(s => s.competitors.filter(x => !/market|listings/i.test(x.kind)).map(x => x.name)))];
   return {
     title: 'Competitor analysis',
+    description: `We benchmarked Vintorex pricing against ${named.length} competitors across Coimbatore agencies, national agencies and DIY platforms. 100% transparent rate cards with milestone billing.`,
+    keywords: 'digital marketing competitor analysis, coimbatore agency rates comparison, web design pricing benchmark, seo packages price comparison, transparent agency pricing',
+    image: 'https://vintorex.com/images/hero-dashboard.svg',
+    imageAlt: 'Vintorex Digital vs Competitor Pricing Analysis and Benchmarks',
     html: `<section class="shell section">
       <div class="page-head"><h1>How our prices compare</h1>
         <p class="lead">We checked published prices from ${named.length} named competitors — Coimbatore agencies, national agencies and DIY platforms — plus market-range guides for every service. Each row links to the full breakdown.</p>
@@ -586,6 +544,10 @@ export function pricing() {
   const c = D.catalog();
   return {
     title: 'Pricing',
+    description: 'Simple, transparent pricing for all digital services, monthly growth memberships, and project add-ons with milestone payment options.',
+    keywords: 'digital marketing pricing coimbatore, web development cost, marketing retainer plans, agency membership, transparent pricing india',
+    image: 'https://vintorex.com/images/hero-dashboard.svg',
+    imageAlt: 'Vintorex Digital Transparent Pricing Plans and Service Rates',
     html: `<section class="shell section">
       <div class="page-head center"><h1>Simple, transparent pricing</h1><p class="lead">Pick a membership for ongoing growth, or buy any service on its own. Members get up to 15% off every one-time project.</p>
         <div class="toggle" role="group" aria-label="Billing cycle"><button data-cycle="month" class="on">Monthly</button><button data-cycle="year">Annual <span class="badge green">2 months free</span></button></div>
@@ -630,6 +592,10 @@ export function shop() {
   const c = D.catalog();
   return {
     title: 'Shop',
+    description: 'Digital downloads, templates, SEO spreadsheets, client agreements, and quick add-on services with instant delivery from Vintorex Digital.',
+    keywords: 'digital marketing templates, agency contract templates, seo audit spreadsheet, marketing kits download, digital products india, vintorex shop',
+    image: 'https://vintorex.com/images/shop/seo-checklist.svg',
+    imageAlt: 'Vintorex Digital Shop - Templates, Guides, and Digital Products',
     html: `<section class="shell section">
       <div class="page-head"><h1>Shop</h1><p class="lead">Digital downloads, templates and quick add-on services — instant checkout.</p></div>
       <h2 class="h3">Digital downloads</h2>
@@ -803,6 +769,10 @@ export function contact() {
   ];
   return {
     title: 'Contact',
+    description: 'Get in touch with Vintorex Digital in Coimbatore. Call, WhatsApp, email, or visit our office for a free digital audit and custom project quote.',
+    keywords: 'contact vintorex, digital marketing office coimbatore, web design enquiry, coimbatore agency phone number, hire digital agency',
+    image: 'https://vintorex.com/images/about-studio.svg',
+    imageAlt: 'Contact Vintorex Digital Solutions in Coimbatore',
     html: `<section class="contact-hero"><div class="shell section">
       <p class="eyebrow"><span></span>Contact Vintorex Digital</p>
       <h1>Let’s start a conversation.</h1>
@@ -845,6 +815,10 @@ export function contact() {
 export function about() {
   return {
     title: 'About Vintorex Digital',
+    description: 'Learn about Vintorex Digital Solutions in Coimbatore, founded by Ranjith Kumar to deliver transparent, data-driven web development, SEO, ads and AI automation.',
+    keywords: 'about vintorex digital solutions, ranjith kumar coimbatore, digital marketing team coimbatore, data driven marketing agency tamil nadu, web developers cheran ma nagar coimbatore',
+    image: 'https://vintorex.com/images/about-studio.svg',
+    imageAlt: 'Vintorex Digital Solutions creative studio and team in Coimbatore',
     html: `
     <section class="shell section about-hero">
       <div class="about-hero-grid">
@@ -860,62 +834,7 @@ export function about() {
           </div>
         </div>
         <div class="about-studio-art card">
-          <svg viewBox="0 0 460 300" role="img" aria-label="Vintorex Digital creative studio in Coimbatore" preserveAspectRatio="xMidYMid slice">
-            <defs>
-              <linearGradient id="ab-bg" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#24194e"/>
-                <stop offset="100%" stop-color="#0e0a22"/>
-              </linearGradient>
-            </defs>
-            <rect width="460" height="300" fill="url(#ab-bg)"/>
-            <circle cx="380" cy="60" r="120" fill="#6d4dff" fill-opacity="0.15"/>
-            <circle cx="80" cy="240" r="100" fill="#ff6b3d" fill-opacity="0.12"/>
-            
-            <!-- Desk Scene -->
-            <rect x="50" y="230" width="360" height="12" rx="6" fill="#2d2558"/>
-            <rect x="80" y="242" width="16" height="58" rx="4" fill="#1c163b"/>
-            <rect x="364" y="242" width="16" height="58" rx="4" fill="#1c163b"/>
-            
-            <!-- Main Display -->
-            <rect x="110" y="70" width="240" height="136" rx="12" fill="#120e29" stroke="#3d336e" stroke-width="2"/>
-            <rect x="216" y="206" width="28" height="24" fill="#2a2254"/>
-            <rect x="194" y="228" width="72" height="6" rx="3" fill="#3d336e"/>
-            
-            <!-- Code on Left Screen -->
-            <rect x="122" y="82" width="100" height="112" rx="6" fill="#1a143b"/>
-            <rect x="132" y="94" width="60" height="7" rx="3.5" fill="#4b2bd6"/>
-            <rect x="132" y="108" width="76" height="5" rx="2.5" fill="#10b981"/>
-            <rect x="132" y="120" width="54" height="5" rx="2.5" fill="#f59e0b"/>
-            <rect x="132" y="132" width="70" height="5" rx="2.5" fill="#a78bfa"/>
-            <rect x="132" y="144" width="45" height="5" rx="2.5" fill="#38bdf8"/>
-            <rect x="132" y="156" width="65" height="5" rx="2.5" fill="#ec4899"/>
-            
-            <!-- Analytics Chart on Right Screen -->
-            <rect x="232" y="82" width="106" height="112" rx="6" fill="#1e1742"/>
-            <text x="242" y="100" font-size="9" font-weight="bold" fill="#ffffff" font-family="sans-serif">ROI +280%</text>
-            <path d="M242 165 L260 145 L278 152 L298 120 L322 110" fill="none" stroke="#ff6b3d" stroke-width="2.5" stroke-linecap="round"/>
-            <rect x="242" y="174" width="12" height="12" rx="2" fill="#4b2bd6"/>
-            <rect x="260" y="170" width="12" height="16" rx="2" fill="#6d4dff"/>
-            <rect x="278" y="162" width="12" height="24" rx="2" fill="#a78bfa"/>
-            <rect x="298" y="150" width="12" height="36" rx="2" fill="#ff6b3d"/>
-            <rect x="318" y="140" width="12" height="46" rx="2" fill="#10b981"/>
-            
-            <!-- Laptop on Left -->
-            <rect x="66" y="160" width="76" height="52" rx="6" fill="#1b153d" stroke="#3d336e" stroke-width="1.5"/>
-            <rect x="72" y="166" width="64" height="40" rx="3" fill="#241b52"/>
-            <path d="M54 212 L154 212 L146 218 L62 218 Z" fill="#3d336e"/>
-            
-            <!-- Coffee Mug on Right -->
-            <rect x="368" y="208" width="18" height="22" rx="4" fill="#fbbf24"/>
-            <path d="M386 213 C391 213 391 223 386 223" fill="none" stroke="#fbbf24" stroke-width="2"/>
-            
-            <!-- Floating Badge: Cheran Ma Nagar HQ -->
-            <g transform="translate(130, 246)">
-              <rect width="200" height="34" rx="17" fill="#0c0919" stroke="#4b2bd6" stroke-width="1.5"/>
-              <circle cx="18" cy="17" r="8" fill="#4b2bd6"/>
-              <text x="34" y="21" font-size="9.5" font-weight="bold" fill="#ffffff" font-family="sans-serif">Coimbatore Studio &amp; Labs</text>
-            </g>
-          </svg>
+          <img class="about-studio-img" src="/images/about-studio.svg" alt="Vintorex Digital Solutions creative studio and technology workstation in Cheran Ma Nagar, Coimbatore" width="920" height="600" loading="lazy" decoding="async">
         </div>
       </div>
     </section>
@@ -980,7 +899,9 @@ export function about() {
     <section class="shell section">
       <div class="sec-head"><h2>Leadership</h2></div>
       <div class="card leader-spotlight">
-        <div class="leader-avatar">RK</div>
+        <div class="leader-avatar">
+          <img class="leader-portrait-img" src="/images/ranjith-kumar.svg" alt="Ranjith Kumar, Proprietor and Lead Digital Marketing Architect at Vintorex Digital Solutions Coimbatore" width="130" height="130" loading="lazy" decoding="async">
+        </div>
         <div class="leader-info">
           <h3>Ranjith Kumar</h3>
           <p class="leader-role">Proprietor &amp; Lead Digital Marketing Architect</p>
@@ -1006,6 +927,10 @@ export function about() {
 export function terms() {
   return {
     title: 'Policies',
+    description: 'Read Vintorex Digital Solutions service policies, project refund terms, digital download delivery, and privacy commitments.',
+    keywords: 'vintorex terms, refund policy, privacy policy, client agreement, agency terms of service',
+    image: 'https://vintorex.com/images/og-cover.svg',
+    imageAlt: 'Vintorex Digital Solutions Policies and Client Agreement',
     html: `<section class="shell section narrow prose">
       <h1>Terms, refunds & privacy</h1>
       <h3>Services</h3><p>Project scope is defined by the package purchased. Additional work is quoted separately. Monthly retainers renew automatically until cancelled from your dashboard.</p>
