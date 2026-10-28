@@ -1,6 +1,6 @@
 // Browser-side data store. Everything lives in localStorage so the app runs on
 // static hosting; swap these functions for API calls when a backend is added.
-import { SERVICES, PLANS, ADDONS, PRODUCTS, COUPONS, BUSINESS, ANNUAL_MONTHS_PAID } from './data.js';
+import { SERVICES, PLANS, ADDONS, PRODUCTS, COUPONS, BUSINESS, ANNUAL_MONTHS_PAID, MILESTONES, MILESTONE_MIN, CATALOG_VERSION } from './data.js';
 
 const KEY = 'vx_db_v1';
 const SESSION = 'vx_session';
@@ -24,9 +24,15 @@ export function db() {
 export function save() { safe(() => localStorage.setItem(KEY, JSON.stringify(state))); }
 
 export async function init() {
-  if (db()) return;
-  state = await seed();
-  save();
+  if (!db()) { state = await seed(); save(); return; }
+  if (state.catalogVersion !== CATALOG_VERSION) { refreshCatalog(state); save(); }
+}
+// Replace services, add-ons and plans with the shipped catalog; downloads,
+// coupons and all customer data are kept.
+function refreshCatalog(s) {
+  const clone = x => JSON.parse(JSON.stringify(x));
+  Object.assign(s.catalog, { services: clone(SERVICES), addons: clone(ADDONS), plans: clone(PLANS) });
+  s.catalogVersion = CATALOG_VERSION;
 }
 export async function resetDemo() { state = await seed(); save(); setCart([]); }
 
@@ -36,6 +42,33 @@ export const service = id => catalog().services.find(s => s.id === id);
 export const plan = id => catalog().plans.find(p => p.id === id);
 export const addon = id => catalog().addons.find(a => a.id === id);
 export const product = id => catalog().products.find(p => p.id === id);
+export const addonsFor = serviceId => catalog().addons.filter(a => !a.for?.length || a.for.includes(serviceId));
+
+// Combined list price of everything a membership bundles.
+export function planValue(p) {
+  const tiers = (p.includes || []).map(i => { const [sid, t] = i.split(':'); return service(sid)?.tiers.find(x => x.name === t)?.price || 0; });
+  const extras = (p.extras || []).map(a => addon(a)?.price || 0);
+  return [...tiers, ...extras].reduce((s, v) => s + v, 0);
+}
+
+// Cost split of a tier in rupees; the last component absorbs rounding.
+export function splitFor(s, tierIndex) {
+  const price = s.tiers[tierIndex].price;
+  const rows = s.split.map(r => ({ label: r[0], pct: r[tierIndex + 1] })).filter(r => r.pct > 0);
+  let left = price;
+  rows.forEach((r, i) => { r.amount = i === rows.length - 1 ? left : Math.round(price * r.pct / 100); left -= r.amount; });
+  return rows;
+}
+
+// Milestone amounts for a gross (GST-inclusive) project value.
+export function milestoneSchedule(gross, upfront = 0) {
+  let left = gross;
+  return MILESTONES.map(([label, pct], i) => {
+    const amount = i === MILESTONES.length - 1 ? left : Math.round(gross * pct / 100);
+    left -= amount;
+    return { label, pct, amount: amount + (i === 0 ? upfront : 0) };
+  });
+}
 
 // ---------- auth ----------
 export const currentUser = () => {
@@ -122,19 +155,32 @@ export function quote(items, user, couponCode) {
   const taxable = subtotal - memberOff - couponOff;
   const gstPct = db().settings.gst;
   const gst = Math.round(taxable * gstPct / 100);
-  return { lines, subtotal, memberPct, memberOff, coupon, couponOff, taxable, gstPct, gst, total: taxable + gst };
+  const total = taxable + gst;
+  // One-time service packages can be paid in milestones; everything else is paid upfront.
+  const projSub = lines.filter(l => l.type === 'package' && l.info.billing === 'once').reduce((s, l) => s + l.total, 0);
+  let milestones = null;
+  if (projSub >= MILESTONE_MIN) {
+    const projNet = projSub - memberOff - (couponOff ? Math.round(couponOff * (projSub - memberOff) / (subtotal - memberOff)) : 0);
+    const projGross = Math.round(projNet * (1 + gstPct / 100));
+    milestones = milestoneSchedule(projGross, total - projGross);
+  }
+  return { lines, subtotal, memberPct, memberOff, coupon, couponOff, taxable, gstPct, gst, total, milestones };
 }
 
 // ---------- orders & subscriptions ----------
 const nextInvoice = () => { const d = db(); d.counters.invoice += 1; return `VX-${new Date().getFullYear()}-${String(d.counters.invoice).padStart(4, '0')}`; };
 
-export function placeOrder(user, items, couponCode, method) {
+export function placeOrder(user, items, couponCode, method, payPlan = 'full') {
   const d = db();
   const q = quote(items, user, couponCode);
   if (!q.lines.length) throw new Error('Your cart is empty.');
+  const now = new Date().toISOString();
+  const payments = payPlan === 'milestone' && q.milestones
+    ? q.milestones.map((m, i) => ({ label: m.label, amount: m.amount, paid: i === 0, paidAt: i === 0 ? now : null, method: i === 0 ? method : null }))
+    : [{ label: 'Full payment', amount: q.total, paid: true, paidAt: now, method }];
   const order = {
-    id: uid('o_'), invoice: nextInvoice(), customerId: user.id, createdAt: new Date().toISOString(),
-    status: 'Pending', paid: true, method,
+    id: uid('o_'), invoice: nextInvoice(), customerId: user.id, createdAt: now,
+    status: 'Pending', paid: payments.every(p => p.paid), method, payments,
     items: q.lines.map(l => ({ type: l.type, ref: l.ref, tier: l.tier, cycle: l.cycle, qty: l.qty, title: l.info.title, unit: l.info.unit, billing: l.info.billing, total: l.total, progress: l.type === 'product' ? 100 : 0 })),
     subtotal: q.subtotal, discount: q.memberOff + q.couponOff, coupon: q.coupon?.code || null, gst: q.gst, total: q.total,
   };
@@ -160,7 +206,23 @@ export function placeOrder(user, items, couponCode, method) {
   return order;
 }
 
-export const activeMembership = customerId => db().subscriptions.find(s => s.customerId === customerId && s.plan && ['Active', 'Paused'].includes(s.status));
+// Orders placed before milestone payments existed were paid in full.
+export const orderPayments = o => o.payments || [{ label: 'Full payment', amount: o.total, paid: o.paid !== false, paidAt: o.createdAt, method: o.method }];
+export const orderPaid = o => orderPayments(o).filter(p => p.paid).reduce((s, p) => s + p.amount, 0);
+export const orderBalance = o => o.total - orderPaid(o);
+
+export function payNext(order, method, by) {
+  const next = orderPayments(order).find(p => !p.paid);
+  if (!next) return null;
+  if (!order.payments) order.payments = orderPayments(order);
+  Object.assign(next, { paid: true, paidAt: new Date().toISOString(), method });
+  order.paid = order.payments.every(p => p.paid);
+  logActivity(`${order.invoice}: ${next.label} of ${inr(next.amount)} ${by ? 'recorded by ' + by : 'paid'}`);
+  save();
+  return next;
+}
+
+export const activeMembership =customerId => db().subscriptions.find(s => s.customerId === customerId && s.plan && ['Active', 'Paused'].includes(s.status));
 
 export function subscriptionMonthly(s) {
   if (s.plan) {
@@ -236,6 +298,9 @@ async function seed() {
     mkOrder(6, 'u_demo', 145, [{ type: 'plan', ref: 'premium', cycle: 'month', title: 'Premium Growth plan (monthly)', unit: 19999, billing: 'month' }, { type: 'package', ref: 'web-design', tier: 'Growth', title: 'Website Design & Development — Growth', unit: 27999, billing: 'once' }], 'Delivered'),
     mkOrder(5, 'u_demo', 40, [{ type: 'product', ref: 'seo-checklist', title: 'Local SEO Checklist 2026', unit: 199, billing: 'once' }], 'Delivered'),
   ];
+  // Divya's website is being paid in milestones: advance paid, two instalments due.
+  orders[0].payments = milestoneSchedule(orders[0].total).map((m, i) => ({ label: m.label, amount: m.amount, paid: i === 0, paidAt: i === 0 ? orders[0].createdAt : null, method: i === 0 ? 'UPI' : null }));
+  orders[0].paid = false;
   const sub = (id, cust, extra, days) => ({ id, customerId: cust, cycle: 'month', status: 'Active', startedAt: daysAgo(days), renewsAt: addMonths(daysAgo(days % 30), 1), addons: [], ...extra });
   const subscriptions = [
     sub('s_1', 'u_demo', { plan: 'premium', addons: ['gbp'], orderId: 'o_seed6' }, 145),
@@ -279,7 +344,7 @@ async function seed() {
   ];
 
   return {
-    version: 1,
+    version: 1, catalogVersion: CATALOG_VERSION,
     settings: { gst: BUSINESS.gst, businessName: BUSINESS.name, email: BUSINESS.email, phone: BUSINESS.phone, gstin: '33XXXXX0000X1Z5', address: BUSINESS.address },
     counters: { invoice: 12, ticket: 1003 },
     catalog: { services: clone(SERVICES), plans: clone(PLANS), addons: clone(ADDONS), products: clone(PRODUCTS), coupons: clone(COUPONS).map(c => ({ ...c, active: true })) },

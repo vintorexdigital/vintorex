@@ -1,6 +1,7 @@
 // Customer dashboard: plan, add-ons, orders, downloads, invoices, support, profile.
 import * as D from './db.js';
 import { esc, icon, toast, field, per, date, dateTime, ago, badge, empty, modal, confirmBox, $, $$ } from './ui.js';
+import { paymentSchedule } from './public.js';
 
 const inr = D.inr;
 export const NAV = [
@@ -32,7 +33,8 @@ function overview(user) {
   const active = orders.filter(o => !['Delivered', 'Cancelled'].includes(o.status));
   const subs = mine('subscriptions', user).filter(s => s.status === 'Active');
   const monthly = subs.reduce((s, x) => s + D.subscriptionMonthly(x), 0);
-  const spent = orders.reduce((s, o) => s + o.total, 0);
+  const spent = orders.reduce((s, o) => s + D.orderPaid(o), 0);
+  const due = orders.reduce((s, o) => s + D.orderBalance(o), 0);
   const tickets = mine('tickets', user).filter(t => t.status !== 'Closed');
   return {
     title: 'Dashboard',
@@ -43,7 +45,7 @@ function overview(user) {
       <div class="kpi"><small>Current plan</small><b>${esc(p?.name || 'Basic')}</b><span>${membership ? 'Renews ' + date(membership.renewsAt) : '<a href="#/pricing">Upgrade for discounts</a>'}</span></div>
       <div class="kpi"><small>Active projects</small><b>${active.length}</b><span>${orders.length} orders total</span></div>
       <div class="kpi"><small>Monthly services</small><b>${inr(monthly)}</b><span>${subs.length} active subscriptions</span></div>
-      <div class="kpi"><small>Total invested</small><b>${inr(spent)}</b><span>incl. GST</span></div>
+      <div class="kpi"><small>Total paid</small><b>${inr(spent)}</b><span>${due ? `<a href="#/account/orders">${inr(due)} milestone balance due</a>` : 'incl. GST · nothing due'}</span></div>
     </div>
     <div class="dash-grid">
       <section class="card">
@@ -151,10 +153,28 @@ function orders(user) {
     ${list.length ? list.map(o => `<section class="card order">
       <div class="card-head"><div><h3>${esc(o.invoice)}</h3><small class="muted">${date(o.createdAt)} · ${esc(o.method)}</small></div><div class="row gap">${badge(o.status)}<b>${inr(o.total)}</b></div></div>
       ${o.items.map(i => i.type === 'product' || i.billing !== 'once' ? `<div class="list-row"><span>${esc(i.title)}</span><small class="muted">${i.type === 'product' ? 'Ready to download' : 'Recurring — see My plan'}</small></div>` : progressRow(o, i)).join('')}
-      <div class="row gap"><a class="btn sm ghost" href="#/invoice/${o.id}">${icon('receipt')} Invoice</a><button class="btn sm ghost" data-help="${o.id}">${icon('help')} Get help</button></div>
+      ${D.orderPayments(o).length > 1 ? `<h4 class="pay-head">Payment schedule <small class="muted">${inr(D.orderPaid(o))} of ${inr(o.total)} paid</small></h4>${paymentSchedule(o)}` : ''}
+      <div class="row gap wrap">${D.orderBalance(o) ? `<button class="btn sm primary" data-paynext="${o.id}">Pay next instalment · ${inr(D.orderPayments(o).find(p => !p.paid).amount)}</button>` : ''}<a class="btn sm ghost" href="#/invoice/${o.id}">${icon('receipt')} Invoice</a><button class="btn sm ghost" data-help="${o.id}">${icon('help')} Get help</button></div>
     </section>`).join('') : empty('You have no orders yet.', '<a class="btn primary" href="#/services">Browse services</a>')}`,
-    bind: root => $$('[data-help]', root).forEach(b => b.addEventListener('click', () => newTicket(user, b.dataset.help))),
+    bind: root => {
+      $$('[data-help]', root).forEach(b => b.addEventListener('click', () => newTicket(user, b.dataset.help)));
+      bindPayNext(root);
+    },
   };
+}
+
+function bindPayNext(root) {
+  $$('[data-paynext]', root).forEach(b => b.addEventListener('click', async () => {
+    const o = D.db().orders.find(o => o.id === b.dataset.paynext);
+    const next = D.orderPayments(o).find(p => !p.paid);
+    const f = await modal({ title: `Pay ${next.label.toLowerCase()}`, submit: `Pay ${inr(next.amount)}`, body: `
+      <p>${esc(o.invoice)} · ${inr(next.amount)} of ${inr(D.orderBalance(o))} balance.</p>
+      ${field('Payment method', 'method', { options: ['UPI', 'Card', 'Net banking', 'Bank transfer'] })}
+      <p class="hint">${icon('shield')} Demo mode: payment is simulated.</p>` });
+    if (!f) return;
+    D.payNext(o, f.get('method'));
+    toast(`Paid ${inr(next.amount)} — thank you!`); rerender();
+  }));
 }
 
 function downloads(user) {
@@ -178,9 +198,11 @@ function invoices(user) {
   return {
     title: 'Invoices',
     html: `<div class="dash-head"><h1>Invoices</h1></div>
-    <div class="card table-wrap">${list.length ? `<table class="table"><thead><tr><th>Invoice</th><th>Date</th><th>Items</th><th>GST</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody>
-      ${list.map(o => `<tr><td><b>${esc(o.invoice)}</b></td><td>${date(o.createdAt)}</td><td>${o.items.length}</td><td>${inr(o.gst)}</td><td><b>${inr(o.total)}</b></td><td>${badge(o.paid ? 'Paid' : 'Unpaid', o.paid ? 'green' : 'amber')}</td><td class="right"><a class="btn sm ghost" href="#/invoice/${o.id}">View</a></td></tr>`).join('')}
+    <div class="card table-wrap">${list.length ? `<table class="table"><thead><tr><th>Invoice</th><th>Date</th><th>Items</th><th>GST</th><th>Total</th><th>Balance</th><th>Status</th><th></th></tr></thead><tbody>
+      ${list.map(o => { const bal = D.orderBalance(o); return `<tr><td><b>${esc(o.invoice)}</b></td><td>${date(o.createdAt)}</td><td>${o.items.length}</td><td>${inr(o.gst)}</td><td><b>${inr(o.total)}</b></td><td>${bal ? inr(bal) : '—'}</td><td>${badge(bal ? 'Part-paid' : 'Paid', bal ? 'amber' : 'green')}</td>
+        <td class="right">${bal ? `<button class="btn sm primary" data-paynext="${o.id}">Pay</button> ` : ''}<a class="btn sm ghost" href="#/invoice/${o.id}">View</a></td></tr>`; }).join('')}
     </tbody></table>` : empty('No invoices yet.')}</div>`,
+    bind: bindPayNext,
   };
 }
 

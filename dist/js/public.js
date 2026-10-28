@@ -1,5 +1,5 @@
 // Public storefront: home, services, pricing, shop, cart, checkout, contact, auth.
-import { BUSINESS, CATEGORIES, ANNUAL_MONTHS_PAID, SOURCES, LEAD_SOURCES } from './data.js';
+import { BUSINESS, CATEGORIES, ANNUAL_MONTHS_PAID, SOURCES, LEAD_SOURCES, COMPETITOR_SOURCES, MILESTONE_MIN } from './data.js';
 import * as D from './db.js';
 import { esc, icon, toast, field, per, date, empty, $, $$ } from './ui.js';
 
@@ -168,11 +168,12 @@ function serviceCard(s) {
 function planCard(p, cycle) {
   const annual = cycle === 'year';
   const monthly = annual ? Math.round(p.price * ANNUAL_MONTHS_PAID / 12) : p.price;
+  const value = D.planValue(p);
   return `<article class="card plan ${p.popular ? 'pop' : ''}">
     ${p.popular ? '<span class="ribbon">Most popular</span>' : ''}
     <h3>${esc(p.name)}</h3><p class="muted">${esc(p.tagline)}</p>
     <div class="price">${p.price ? `${inr(monthly)}<small>/mo</small>` : 'Free'}</div>
-    ${p.price && annual ? `<p class="fine">Billed ${inr(p.price * ANNUAL_MONTHS_PAID)} yearly · 2 months free</p>` : p.value ? `<p class="fine">Worth ${inr(p.value)}/mo if bought separately</p>` : '<p class="fine">No card required</p>'}
+    ${p.price && annual ? `<p class="fine">Billed ${inr(p.price * ANNUAL_MONTHS_PAID)} yearly · 2 months free</p>` : value > p.price ? `<p class="fine">Worth ${inr(value)}/mo bought separately — save ${Math.round((1 - p.price / value) * 100)}%</p>` : '<p class="fine">No card required</p>'}
     <ul class="ticks col">${p.features.map(f => `<li>${icon('check')}${esc(f)}</li>`).join('')}</ul>
     ${p.price ? `<button class="btn ${p.popular ? 'primary' : 'ghost'} block" data-add="plan|${p.id}" data-go="/cart">Subscribe</button>` : `<a class="btn ghost block" href="#/register">Create free account</a>`}
   </article>`;
@@ -203,45 +204,203 @@ export function services(params, query) {
   };
 }
 
+const cell = v => v === 1 ? `<span class="yes" aria-label="Included">${icon('check')}</span>` : v === 0 ? '<span class="no" aria-label="Not included">—</span>' : esc(v);
+const unit = s => per(s.billing) || ' one-time';
+const defaultTier = s => { const i = s.tiers.findIndex(t => t.popular); return i < 0 ? 1 : i; };
+
+// Where our most popular package sits against the market range.
+export function position(s) {
+  const t = s.tiers.find(t => t.popular) || s.tiers[1];
+  const [lo, hi] = s.market;
+  if (t.price < lo) return ['Below market', 'green'];
+  if (t.price > hi) return ['Above market', 'amber'];
+  return t.price <= lo + (hi - lo) / 3 ? ['Lower third of market', 'green'] : ['Within market', 'blue'];
+}
+
+function splitPanel(s, ti) {
+  const t = s.tiers[ti];
+  const rows = D.splitFor(s, ti);
+  const gst = D.db().settings.gst;
+  const gross = Math.round(t.price * (1 + gst / 100));
+  const schedule = s.billing === 'once' && t.price >= MILESTONE_MIN ? D.milestoneSchedule(gross) : null;
+  return `<div class="split-panel" data-panel="${ti}" ${ti === defaultTier(s) ? '' : 'hidden'}>
+    <div class="stack" role="img" aria-label="Cost split of ${esc(t.name)}">${rows.map((r, i) => `<i class="c${i}" style="width:${r.pct}%" title="${esc(r.label)} ${r.pct}%"></i>`).join('')}</div>
+    <div class="split-grid">
+      <table class="table split-table"><thead><tr><th>Component</th><th>Share</th><th class="right">Amount</th></tr></thead><tbody>
+        ${rows.map((r, i) => `<tr><td><span class="sw c${i}"></span>${esc(r.label)}</td><td>${r.pct}%</td><td class="right">${inr(r.amount)}</td></tr>`).join('')}
+        <tr class="sum"><td>${esc(t.name)} package${s.billing === 'month' ? ' (monthly)' : ''}</td><td>100%</td><td class="right">${inr(t.price)}</td></tr>
+        <tr><td class="muted">GST ${gst}%</td><td></td><td class="right muted">${inr(gross - t.price)}</td></tr>
+        <tr class="sum"><td>Total payable${s.billing === 'month' ? ' per month' : ''}</td><td></td><td class="right">${inr(gross)}</td></tr>
+      </tbody></table>
+      <div class="card pay-card">
+        <h4>${schedule ? 'Pay in milestones' : s.billing === 'month' ? 'How billing works' : 'Payment'}</h4>
+        ${schedule ? `<ol class="milestones">${schedule.map(m => `<li><span><b>${m.pct}%</b> ${esc(m.label)}</span><b>${inr(m.amount)}</b></li>`).join('')}</ol><p class="fine">Choose “Pay in milestones” at checkout. Amounts include GST. Or pay in full upfront.</p>`
+        : s.billing === 'month' ? `<ul class="ticks col"><li>${icon('check')}Billed monthly in advance, GST extra</li><li>${icon('check')}${esc(s.term)}</li><li>${icon('check')}Premium / Elite members get this bundled — <a href="#/pricing">see plans</a></li></ul>`
+        : '<p class="muted">Paid in full at checkout — small projects start the same day.</p>'}
+      </div>
+    </div>
+  </div>`;
+}
+
 export function serviceDetail({ id }) {
   const s = D.service(id);
   if (!s) return notFound();
-  const addons = D.catalog().addons.slice(0, 6);
+  const addons = D.addonsFor(s.id);
+  const popular = s.tiers.findIndex(t => t.popular);
+  const sections = [['packages', 'Packages'], ['included', 'What’s included'], ['split', 'Price split'], ['addons', 'Add-ons'], ['compare', 'Competitor analysis'], ['process', 'Process']];
+  const [pos, tone] = position(s);
   return {
     title: s.name,
     html: `<section class="shell section">
       <a href="#/services" class="link back">← All services</a>
       <div class="detail-head">
         <span class="svc-ic lg">${icon(s.icon)}</span>
-        <div><h1>${esc(s.name)}</h1><p class="lead">${esc(s.summary)}</p>
-        <p class="muted">${icon('repeat')} ${s.billing === 'month' ? 'Monthly retainer · cancel anytime' : 'One-time project'} · Delivery: ${esc(s.delivery)}${s.note ? ' · ' + esc(s.note) : ''}</p></div>
+        <div><h1>${esc(s.name)}</h1><p class="lead">${esc(s.overview || s.summary)}</p>
+        <div class="facts"><span>${icon('repeat')}${s.billing === 'month' ? 'Monthly retainer' : 'One-time project'}</span><span>${icon('star')}${esc(s.delivery)}</span><span>${icon('receipt')}${esc(s.term || '')}</span><span>${icon('tag')}From ${inr(fromPrice(s))}${per(s.billing)}</span></div>
+        ${s.note ? `<p class="hint">${icon('ads')}${esc(s.note)}</p>` : ''}</div>
       </div>
-      ${marketBar(s, fromPrice(s))}
-      <div class="cards3 tiers">${s.tiers.map(t => `
+      <nav class="subnav" aria-label="On this page">${sections.map(([id, l]) => `<button data-jump="${id}">${l}</button>`).join('')}</nav>
+      <div id="packages">${marketBar(s, fromPrice(s))}</div>
+      <div class="cards3 tiers">${s.tiers.map((t, ti) => `
         <article class="card plan ${t.popular ? 'pop' : ''}">
           ${t.popular ? '<span class="ribbon">Best value</span>' : ''}
           <h3>${esc(t.name)}</h3>
-          <div class="price">${inr(t.price)}<small>${per(s.billing) || ' one-time'}</small></div>
-          <p class="fine">+ ${D.db().settings.gst}% GST · Members save up to 15%${s.billing === 'month' ? ' on one-time work' : ''}</p>
+          <div class="price">${inr(t.price)}<small>${unit(s)}</small></div>
+          <p class="fine">+ ${D.db().settings.gst}% GST${s.billing === 'once' && t.price >= MILESTONE_MIN ? ' · pay 40% to start' : ''}</p>
           <ul class="ticks col">${t.features.map(f => `<li>${icon('check')}${esc(f)}</li>`).join('')}</ul>
+          <button class="link-btn" data-jump="split" data-tier="${ti}">See price split →</button>
           <button class="btn ${t.popular ? 'primary' : 'ghost'} block" data-add="package|${s.id}|${esc(t.name)}">Add to cart</button>
         </article>`).join('')}
       </div>
     </section>
-    <section class="band"><div class="shell section">
-      <div class="sec-head"><h2>Popular add-ons</h2><a class="link" href="#/shop#addons">All add-ons ${icon('arrow')}</a></div>
+
+    <section class="band" id="included"><div class="shell section">
+      <div class="sec-head"><div><h2>Everything included</h2><p class="muted">${s.works.length} work items across the three packages.</p></div></div>
+      <div class="card table-wrap"><table class="table matrix">
+        <thead><tr><th>Work item</th>${s.tiers.map(t => `<th class="${t.popular ? 'pop-col' : ''}">${esc(t.name)}<small>${inr(t.price)}${per(s.billing)}</small></th>`).join('')}</tr></thead>
+        <tbody>${s.works.map(([label, ...v]) => `<tr><td>${esc(label)}</td>${v.map((x, i) => `<td class="${i === popular ? 'pop-col' : ''}">${cell(x)}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table></div>
+      <div class="cards2 below-matrix">
+        <div class="card"><h3>Ideal for</h3><ul class="ticks col">${s.idealFor.map(x => `<li>${icon('check')}${esc(x)}</li>`).join('')}</ul></div>
+        <div class="card"><h3>Not included</h3><ul class="ticks col excl">${s.excludes.map(x => `<li>${icon('x')}${esc(x)}</li>`).join('')}</ul></div>
+      </div>
+    </div></section>
+
+    <section class="shell section" id="split">
+      <div class="sec-head"><div><h2>Price split</h2><p class="muted">Where every rupee of each package goes${s.billing === 'once' ? ', and how you can pay for it' : ''}.</p></div>
+        <div class="toggle" role="group" aria-label="Package">${s.tiers.map((t, ti) => `<button data-tier-tab="${ti}" class="${ti === defaultTier(s) ? 'on' : ''}">${esc(t.name)}</button>`).join('')}</div></div>
+      ${s.tiers.map((_, ti) => splitPanel(s, ti)).join('')}
+    </section>
+
+    <section class="band" id="addons"><div class="shell section">
+      <div class="sec-head"><div><h2>Add-ons for ${esc(s.name)}</h2><p class="muted">Add to any package. Monthly add-ons renew with your plan.</p></div><a class="link" href="#/shop#addons">All add-ons ${icon('arrow')}</a></div>
       <div class="cards3">${addons.map(addonCard).join('')}</div>
     </div></section>
+
+    <section class="shell section" id="compare">
+      <div class="sec-head"><div><h2>Competitor analysis</h2><p class="muted">Published prices checked October 2026. Competitor prices may exclude GST, ad spend or setup.</p></div><a class="link" href="#/compare">All services ${icon('arrow')}</a></div>
+      ${marketBar(s, (s.tiers.find(t => t.popular) || s.tiers[1]).price)}
+      <p class="position">Our most popular package is <span class="badge ${tone}">${pos}</span> ${s.marketNote ? `<small class="muted">(${esc(s.marketNote)})</small>` : ''}</p>
+      ${compTable(s)}
+    </section>
+
+    <section class="band" id="process"><div class="shell section">
+      <h2>How we deliver</h2>
+      <ol class="timeline">${s.process.map(([t, d], i) => `<li><span>${i + 1}</span><div><b>${esc(t)}</b><p>${esc(d)}</p></div></li>`).join('')}</ol>
+    </div></section>
+
     <section class="shell section split">
       <div><h2>Need something custom?</h2><p class="lead">Tell us what you need and get a tailored quote for ${esc(s.name.toLowerCase())} within one working day.</p>
       <p><a class="btn ghost" href="${BUSINESS.whatsapp}" target="_blank" rel="noopener">${icon('wa')} Chat on WhatsApp</a></p></div>
       ${leadForm({ source: 'Service quote', service: s.id, title: 'Request a custom quote' })}
     </section>`,
-    bind: root => { bindCartButtons(root); bindLeadForms(root); },
+    bind: root => {
+      bindCartButtons(root); bindLeadForms(root);
+      const showTier = ti => {
+        $$('[data-tier-tab]', root).forEach(b => b.classList.toggle('on', b.dataset.tierTab === String(ti)));
+        $$('[data-panel]', root).forEach(p => { p.hidden = p.dataset.panel !== String(ti); });
+      };
+      $$('[data-tier-tab]', root).forEach(b => b.addEventListener('click', () => showTier(b.dataset.tierTab)));
+      $$('[data-jump]', root).forEach(b => b.addEventListener('click', () => {
+        if (b.dataset.tier) showTier(b.dataset.tier);
+        document.getElementById(b.dataset.jump)?.scrollIntoView({ behavior: 'smooth' });
+      }));
+    },
   };
 }
 
-const addonCard = a => `<article class="card addon"><div><h4>${esc(a.name)}</h4><p>${esc(a.desc)}</p></div><div class="addon-foot"><b>${inr(a.price)}<small>${per(a.billing) || ' once'}</small></b><button class="btn sm ghost" data-add="addon|${a.id}">${icon('plus')} Add</button></div></article>`;
+function compTable(s) {
+  const ours = s.tiers.map(t => `${esc(t.name)} ${inr(t.price)}`).join(' · ') + per(s.billing);
+  const srcLinks = keys => keys.map(k => COMPETITOR_SOURCES[k]).filter(Boolean).map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener" title="${esc(t)}">${esc(t.split(' — ')[0])}</a>`).join(', ');
+  return `<div class="card table-wrap"><table class="table comp">
+    <thead><tr><th>Provider</th><th>Price</th><th>What you get</th><th>Watch-outs</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr class="us"><td><b>Vintorex</b><small>Coimbatore agency</small></td><td><b>${ours}</b></td><td>${s.works.length} itemised work items, ${s.billing === 'once' ? 'milestone payments' : esc(s.term.toLowerCase())}, GST invoice, live dashboard.</td><td>${esc(s.excludes[0])}.</td><td>This page</td></tr>
+      ${s.competitors.map(c => `<tr><td><b>${esc(c.name)}</b><small>${esc(c.kind)}</small></td><td>${esc(c.price)}</td><td>${esc(c.includes)}</td><td>${esc(c.gaps)}</td><td>${srcLinks(c.src)}</td></tr>`).join('')}
+    </tbody></table>
+    ${s.competitors.length ? '' : `<p class="muted pad">No competitor publishes a rate card for this service — they quote per project. The market range above is our estimate.</p>`}</div>`;
+}
+
+// ---------------- Competitor analysis ----------------
+export function compare() {
+  const c = D.catalog();
+  const named = [...new Set(c.services.flatMap(s => s.competitors.filter(x => !/market|listings/i.test(x.kind)).map(x => x.name)))];
+  return {
+    title: 'Competitor analysis',
+    html: `<section class="shell section">
+      <div class="page-head"><h1>How our prices compare</h1>
+        <p class="lead">We checked published prices from ${named.length} named competitors — Coimbatore agencies, national agencies and DIY platforms — plus market-range guides for every service. Each row links to the full breakdown.</p>
+        <div class="facts"><span>${icon('search')}${c.services.length} services analysed</span><span>${icon('users')}${named.length} named competitors</span><span>${icon('receipt')}Prices checked Oct 2026, ex-GST</span></div>
+      </div>
+      <div class="card table-wrap"><table class="table comp-all">
+        <thead><tr><th>Service</th><th>Vintorex packages</th><th>Named competitors</th><th>Market range</th><th>Our position</th></tr></thead>
+        <tbody>${c.services.map(s => {
+          const [pos, tone] = position(s);
+          const comps = s.competitors.filter(x => !/market/i.test(x.kind));
+          return `<tr>
+            <td><a href="#/services/${s.id}#compare"><b>${esc(s.name)}</b></a><small>${s.billing === 'month' ? 'Monthly' : 'One-time'}</small></td>
+            <td>${s.tiers.map(t => `<div class="tier-line"><span>${esc(t.name)}</span><b>${inr(t.price)}</b></div>`).join('')}</td>
+            <td>${comps.length ? comps.map(x => `<div class="comp-line"><b>${esc(x.name)}</b><span>${esc(x.price)}</span></div>`).join('') : '<span class="muted">No published rate cards</span>'}</td>
+            <td>${inr(s.market[0])} – ${inr(s.market[1])}${per(s.billing)}${s.marketNote ? '<small class="muted">Estimate</small>' : ''}</td>
+            <td><span class="badge ${tone}">${pos}</span></td></tr>`;
+        }).join('')}</tbody>
+      </table></div>
+      <div class="cards2 below-matrix">
+        <div class="card"><h3>What we found</h3><ul class="ticks col">
+          <li>${icon('check')}Coimbatore agencies (Visual Birds, PG Softwares) publish social and SEO packages from ₹8,499–₹15,000/mo. Our entry tiers match or undercut them and include more posts and blog content.</li>
+          <li>${icon('check')}National SEO agencies start at ₹45,000/mo (iDigitalise). Our Premium SEO at ₹29,999 includes AI-search optimisation.</li>
+          <li>${icon('check')}DIY platforms (Shopify, Wix, Hostinger) look cheaper monthly, but leave design, setup, content and marketing to you.</li>
+          <li>${icon('check')}Most competitors don’t itemise deliverables. We list ${c.services.reduce((a, s) => a + s.works.length, 0)} work items and a price split for every package.</li>
+        </ul></div>
+        <div class="card"><h3>How to read this</h3><ul class="ticks col">
+          <li>${icon('check')}“Our position” compares our most popular package with the market range.</li>
+          <li>${icon('check')}Competitor prices are as published and may exclude GST, ad spend, platform fees or setup.</li>
+          <li>${icon('check')}Market ranges come from Indian pricing guides. Some are written by agencies, so treat them as indicative.</li>
+        </ul></div>
+      </div>
+      <h2 class="h3">Sources</h2>
+      <ul class="sources cols">${SOURCES.map(([t, u]) => `<li><a href="${u}" target="_blank" rel="noopener">${esc(t)}</a></li>`).join('')}</ul>
+    </section>`,
+  };
+}
+
+const addonCard = a => `<article class="card addon" data-for="${esc((a.for || []).join(' '))}"><div><h4>${esc(a.name)}</h4><p>${esc(a.desc)}</p>
+  <small class="for">${a.for?.length ? 'For ' + a.for.map(id => esc(D.service(id)?.name || id)).join(', ') : 'Works with every service'}</small></div>
+  <div class="addon-foot"><b>${inr(a.price)}<small>${per(a.billing) || ' once'}</small></b><button class="btn sm ghost" data-add="addon|${a.id}">${icon('plus')} Add</button></div></article>`;
+
+// All add-ons with a by-service filter.
+function addonBrowser(addons) {
+  const used = D.catalog().services.filter(s => addons.some(a => a.for?.includes(s.id)));
+  return `<nav class="chips" aria-label="Filter add-ons"><button class="chip on" data-afilter="">All (${addons.length})</button>${used.map(s => `<button class="chip" data-afilter="${s.id}">${esc(s.name)}</button>`).join('')}</nav>
+    <div class="cards3" data-addon-grid>${addons.map(addonCard).join('')}</div>`;
+}
+function bindAddonBrowser(root) {
+  $$('[data-afilter]', root).forEach(b => b.addEventListener('click', () => {
+    $$('[data-afilter]', root).forEach(x => x.classList.toggle('on', x === b));
+    const id = b.dataset.afilter;
+    $$('[data-addon-grid] .addon', root).forEach(card => { card.hidden = !!id && !!card.dataset.for && !card.dataset.for.split(' ').includes(id); });
+  }));
+}
 
 // ---------------- Pricing ----------------
 export function pricing() {
@@ -256,24 +415,22 @@ export function pricing() {
     </section>
 
     <section class="band"><div class="shell section">
-      <div class="sec-head"><div><h2>Service price list vs market</h2><p class="muted">Starting prices compared with typical India 2026 agency ranges. All prices exclude GST.</p></div></div>
+      <div class="sec-head"><div><h2>Full price list vs market</h2><p class="muted">Every package price, the India 2026 market range and where we sit. All prices exclude GST.</p></div><a class="btn ghost" href="#/compare">${icon('chart')} Full competitor analysis</a></div>
       <div class="table-wrap card"><table class="table">
-        <thead><tr><th>Service</th><th>Packages</th><th>Vintorex from</th><th>Market range</th><th>You save*</th><th></th></tr></thead>
+        <thead><tr><th>Service</th>${['Entry', 'Popular', 'Top'].map(h => `<th class="right">${h}</th>`).join('')}<th>Market range</th><th>Our position</th><th></th></tr></thead>
         <tbody>${c.services.map(s => {
-          const from = fromPrice(s);
-          const mid = Math.round((s.market[0] + s.market[1]) / 2);
-          const growth = s.tiers.find(t => t.popular) || s.tiers[1];
-          const save = Math.max(0, Math.round((1 - growth.price / mid) * 100));
-          return `<tr><td><b>${esc(s.name)}</b></td><td class="muted">${s.tiers.map(t => esc(t.name)).join(' · ')}</td><td><b>${inr(from)}</b>${per(s.billing)}</td><td>${inr(s.market[0])} – ${inr(s.market[1])}${per(s.billing)}</td><td>${save ? `<span class="badge green">${save}%</span>` : '—'}</td><td><a class="link" href="#/services/${s.id}">View</a></td></tr>`;
+          const [pos, tone] = position(s);
+          return `<tr><td><b>${esc(s.name)}</b><small class="muted block">${s.billing === 'month' ? 'per month' : 'one-time'}</small></td>
+            ${s.tiers.map(t => `<td class="right ${t.popular ? 'pop-col' : ''}"><small class="muted block">${esc(t.name)}</small><b>${inr(t.price)}</b></td>`).join('')}
+            <td>${inr(s.market[0])} – ${inr(s.market[1])}</td><td><span class="badge ${tone}">${pos}</span></td><td><a class="link" href="#/services/${s.id}">Details</a></td></tr>`;
         }).join('')}</tbody>
       </table></div>
-      <p class="fine">*Our most popular package compared with the midpoint of the market range. Market ranges are indicative and compiled from public pricing guides:</p>
-      <ul class="sources">${SOURCES.map(([t, u]) => `<li><a href="${u}" target="_blank" rel="noopener">${esc(t)}</a></li>`).join('')}</ul>
+      <p class="fine">“Our position” compares the most popular package with the market range. Sources and named competitor prices are on the <a href="#/compare">competitor analysis</a> page.</p>
     </div></section>
 
     <section class="shell section" id="addons">
       <div class="sec-head"><h2>Add-ons</h2><p class="muted">Bolt these onto any plan or project.</p></div>
-      <div class="cards3">${c.addons.map(addonCard).join('')}</div>
+      ${addonBrowser(c.addons)}
     </section>
 
     <section class="band"><div class="shell section faq">
@@ -285,7 +442,7 @@ export function pricing() {
          ['Do you work outside Coimbatore?', 'Yes — we work with clients across India and abroad. Video shoots are on-site in Coimbatore or remote with your footage.']]
         .map(([q, a]) => `<details class="card"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}
     </div></section>`,
-    bind: root => { bindCartButtons(root); bindCycle(root); },
+    bind: root => { bindCartButtons(root); bindCycle(root); bindAddonBrowser(root); },
   };
 }
 
@@ -306,9 +463,9 @@ export function shop() {
         </article>`).join('')}
       </div>
       <h2 class="h3" id="addons">Quick services & add-ons</h2>
-      <div class="cards3">${c.addons.map(addonCard).join('')}</div>
+      ${addonBrowser(c.addons)}
     </section>`,
-    bind: bindCartButtons,
+    bind: root => { bindCartButtons(root); bindAddonBrowser(root); },
   };
 }
 
@@ -387,29 +544,48 @@ export function checkout() {
             ${field('GSTIN (optional)', 'gstin', { value: user.gstin || '', placeholder: 'For B2B invoices' })}
             ${field('City', 'city', { value: user.city || 'Coimbatore' })}
           </div>
+          ${q.milestones ? `<h3>Payment plan</h3>
+          <div class="pay-plans">
+            <label class="pay-opt"><input type="radio" name="plan" value="full" checked><span><b>Pay in full</b><small>${inr(q.total)} today</small></span></label>
+            <label class="pay-opt"><input type="radio" name="plan" value="milestone"><span><b>Pay in milestones</b><small>${inr(q.milestones[0].amount)} today, then ${q.milestones.slice(1).map(m => inr(m.amount)).join(' + ')}</small></span></label>
+          </div>
+          <ol class="milestones small">${q.milestones.map((m, i) => `<li><span><b>${m.pct}%</b> ${esc(m.label)}${i === 0 && q.lines.some(l => !(l.type === 'package' && l.info.billing === 'once')) ? ' <small class="muted">+ other items in full</small>' : ''}</span><b>${inr(m.amount)}</b></li>`).join('')}</ol>` : ''}
           <h3>Payment method</h3>
           <div class="pay-methods">
             ${['UPI', 'Card', 'Net banking', 'Bank transfer'].map((m, i) => `<label class="pay-opt"><input type="radio" name="method" value="${m}" ${i ? '' : 'checked'}><span>${esc(m)}</span></label>`).join('')}
           </div>
           <p class="hint">${icon('shield')} Demo mode: payment is simulated. Connect a Razorpay key in Admin → Settings before going live.</p>
           <label class="check"><input type="checkbox" required> I agree to the <a href="#/terms">terms</a> and <a href="#/terms">refund policy</a>.</label>
-          <button class="btn primary lg block">Pay ${inr(q.total)}</button>
+          <button class="btn primary lg block" id="pay-btn">Pay ${inr(q.total)}</button>
         </form>
         ${summary(q, '')}
       </div>
     </section>`,
-    bind: root => $('#pay', root).addEventListener('submit', e => {
-      e.preventDefault();
-      const f = Object.fromEntries(new FormData(e.target));
-      Object.assign(user, { name: f.name, phone: f.phone, company: f.company, gstin: f.gstin, city: f.city });
-      const btn = $('button.lg', e.target); btn.disabled = true; btn.textContent = 'Processing payment…';
-      setTimeout(() => {
-        const order = D.placeOrder(user, D.getCart(), coupon, f.method);
-        coupon = ''; D.setCart([]);
-        go('/order/' + order.id);
-      }, 900);
-    }),
+    bind: root => {
+      const form = $('#pay', root);
+      $$('input[name=plan]', form).forEach(r => r.addEventListener('change', () => {
+        $('#pay-btn', form).textContent = `Pay ${inr(r.value === 'milestone' ? q.milestones[0].amount : q.total)}`;
+      }));
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const f = Object.fromEntries(new FormData(form));
+        Object.assign(user, { name: f.name, phone: f.phone, company: f.company, gstin: f.gstin, city: f.city });
+        const btn = $('#pay-btn', form); btn.disabled = true; btn.textContent = 'Processing payment…';
+        setTimeout(() => {
+          const order = D.placeOrder(user, D.getCart(), coupon, f.method, f.plan || 'full');
+          coupon = ''; D.setCart([]);
+          go('/order/' + order.id);
+        }, 900);
+      });
+    },
   };
+}
+
+// Payment schedule shared by the invoice, order confirmation and dashboards.
+export function paymentSchedule(o) {
+  const pays = D.orderPayments(o);
+  if (pays.length < 2) return '';
+  return `<ol class="milestones">${pays.map(p => `<li class="${p.paid ? 'paid' : ''}"><span>${p.paid ? icon('check') : '<i class="dotpend"></i>'}<b>${esc(p.label)}</b>${p.paid ? ` <small class="muted">paid ${date(p.paidAt)} · ${esc(p.method || '')}</small>` : ' <small class="muted">due</small>'}</span><b>${inr(p.amount)}</b></li>`).join('')}</ol>`;
 }
 
 export function orderDone({ id }) {
@@ -419,7 +595,8 @@ export function orderDone({ id }) {
     title: 'Order confirmed',
     html: `<section class="shell section narrow center">
       <div class="success-box big">${icon('check')}<h1>Payment successful</h1>
-      <p class="lead">Order <b>${esc(o.invoice)}</b> for <b>${inr(o.total)}</b> is confirmed. A project manager will contact you within 2 working hours.</p>
+      <p class="lead">Order <b>${esc(o.invoice)}</b> for <b>${inr(o.total)}</b> is confirmed${D.orderBalance(o) ? ` — you paid <b>${inr(D.orderPaid(o))}</b> today, and the balance of ${inr(D.orderBalance(o))} is due at the milestones below` : ''}. A project manager will contact you within 2 working hours.</p>
+      ${D.orderBalance(o) ? `<div class="card left">${paymentSchedule(o)}</div>` : ''}
       <div class="row gap center"><a class="btn primary" href="#/account/orders">Track my order</a><a class="btn ghost" href="#/invoice/${o.id}">View invoice</a></div></div>
     </section>`,
   };
@@ -560,7 +737,7 @@ export function invoice({ id }) {
       <div class="row between noprint"><a class="link" href="#/${user.role === 'admin' ? 'admin/orders' : 'account/orders'}">← Back</a><button class="btn primary" onclick="print()">Print / Save PDF</button></div>
       <article class="card invoice">
         <header class="row between"><div><div class="logo">${logoMark()}<span>${esc(s.businessName)}</span></div><p class="muted">${esc(s.address)}<br>${esc(s.phone)} · ${esc(s.email)}<br>GSTIN ${esc(s.gstin)}</p></div>
-        <div class="right"><h2>Tax invoice</h2><p><b>${esc(o.invoice)}</b><br>${date(o.createdAt)}<br>${o.paid ? '<span class="badge green">Paid</span>' : '<span class="badge amber">Unpaid</span>'} via ${esc(o.method)}</p></div></header>
+        <div class="right"><h2>Tax invoice</h2><p><b>${esc(o.invoice)}</b><br>${date(o.createdAt)}<br>${o.paid ? '<span class="badge green">Paid</span>' : `<span class="badge amber">Part-paid · ${inr(D.orderBalance(o))} due</span>`} via ${esc(o.method)}</p></div></header>
         <div class="bill-to"><small class="muted">Bill to</small><p><b>${esc(c.name)}</b>${c.company ? '<br>' + esc(c.company) : ''}<br>${esc(c.email)}<br>${esc(c.phone || '')}${c.gstin ? '<br>GSTIN ' + esc(c.gstin) : ''}</p></div>
         <table class="table"><thead><tr><th>Item</th><th>Qty</th><th>Rate</th><th class="right">Amount</th></tr></thead>
         <tbody>${o.items.map(i => `<tr><td>${esc(i.title)}</td><td>${i.qty}</td><td>${inr(i.unit)}${per(i.billing)}</td><td class="right">${inr(i.total)}</td></tr>`).join('')}</tbody></table>
@@ -570,7 +747,9 @@ export function invoice({ id }) {
           <div><dt>CGST (${s.gst / 2}%)</dt><dd>${inr(o.gst / 2)}</dd></div>
           <div><dt>SGST (${s.gst / 2}%)</dt><dd>${inr(o.gst / 2)}</dd></div>
           <div class="total"><dt>Total</dt><dd>${inr(o.total)}</dd></div>
+          ${D.orderBalance(o) ? `<div><dt>Paid to date</dt><dd>${inr(D.orderPaid(o))}</dd></div><div class="total"><dt>Balance due</dt><dd>${inr(D.orderBalance(o))}</dd></div>` : ''}
         </dl>
+        ${D.orderPayments(o).length > 1 ? `<h4>Payment schedule</h4>${paymentSchedule(o)}` : ''}
         <p class="fine">Thank you for your business. This is a computer-generated invoice.</p>
       </article>
     </section>`,

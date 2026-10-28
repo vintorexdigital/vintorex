@@ -39,6 +39,7 @@ function dashboard() {
   const months = [...Array(6)].map((_, i) => { const m = new Date(now.getFullYear(), now.getMonth() - 5 + i, 1); return { key: m.getFullYear() + '-' + m.getMonth(), label: m.toLocaleString('en-IN', { month: 'short' }), value: 0 }; });
   d.orders.filter(o => o.status !== 'Cancelled').forEach(o => { const t = new Date(o.createdAt); const m = months.find(m => m.key === t.getFullYear() + '-' + t.getMonth()); if (m) m.value += o.total; });
   const thisMonth = months.at(-1).value;
+  const outstanding = d.orders.filter(o => o.status !== 'Cancelled').reduce((s, o) => s + D.orderBalance(o), 0);
   const activeSubs = d.subscriptions.filter(s => s.status === 'Active');
   const mrr = activeSubs.reduce((s, x) => s + D.subscriptionMonthly(x), 0);
   const leads30 = d.leads.filter(l => Date.now() - new Date(l.createdAt) < 30 * 864e5);
@@ -58,13 +59,13 @@ function dashboard() {
     <div class="dash-head"><div><h1>Dashboard</h1><p class="muted">${now.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}</p></div>
       <div class="row gap"><button class="btn ghost" data-newlead>${icon('plus')} Add lead</button><a class="btn primary" href="#/admin/orders">Orders</a></div></div>
     <div class="kpis">
-      <div class="kpi"><small>Revenue this month</small><b>${inr(thisMonth)}</b><span>incl. GST</span></div>
+      <div class="kpi"><small>Bookings this month</small><b>${inr(thisMonth)}</b><span>${outstanding ? `<a href="#/admin/orders">${inr(outstanding)} milestone balance due</a>` : 'incl. GST · nothing outstanding'}</span></div>
       <div class="kpi"><small>Monthly recurring (MRR)</small><b>${inr(mrr)}</b><span>${activeSubs.length} active subscriptions</span></div>
       <div class="kpi"><small>New leads (30d)</small><b>${leads30.length}</b><span>${openPipe.length} open · ${k(openPipe.reduce((s, l) => s + (l.value || 0), 0))} pipeline</span></div>
       <div class="kpi"><small>Win rate</small><b>${winRate}%</b><span>${closed.length} closed leads</span></div>
     </div>
     <div class="dash-grid">
-      <section class="card span2"><div class="card-head"><h3>Revenue — last 6 months</h3></div>${barChart(months, { fmt: k })}</section>
+      <section class="card span2"><div class="card-head"><h3>Bookings — last 6 months</h3></div>${barChart(months, { fmt: k })}</section>
       <section class="card"><div class="card-head"><h3>Follow-ups due</h3><a class="link" href="#/admin/pipeline">Pipeline</a></div>
         ${due.length ? due.slice(0, 6).map(l => `<a class="list-row link-row" href="#/admin/leads/${l.id}"><div><b>${esc(l.name)}</b><small class="muted">${esc(l.company || l.source)} · ${esc(l.stage)}</small></div><span class="${new Date(l.followUp) < Date.now() ? 'overdue' : 'muted'}">${ago(l.followUp)}</span></a>`).join('') : empty('No follow-ups due.')}</section>
       <section class="card"><div class="card-head"><h3>Lead funnel</h3></div>
@@ -325,20 +326,33 @@ function customerDetail(user, query, id) {
 
 // ---------------- Orders ----------------
 function orderTable(list, compact = false) {
-  return `<div class="table-wrap"><table class="table"><thead><tr><th>Invoice</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th>${compact ? '' : '<th>Progress</th><th></th>'}</tr></thead><tbody>
+  return `<div class="table-wrap"><table class="table"><thead><tr><th>Invoice</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th>${compact ? '' : '<th>Progress</th><th></th>'}</tr></thead><tbody>
   ${list.map(o => {
     const c = userById(o.customerId);
     const proj = o.items.filter(i => i.type !== 'product' && i.billing === 'once');
     const prog = proj.length ? Math.round(proj.reduce((s, i) => s + i.progress, 0) / proj.length) : 100;
+    const bal = D.orderBalance(o);
+    const pays = D.orderPayments(o);
     return `<tr><td><b>${esc(o.invoice)}</b><small class="muted block">${date(o.createdAt)}</small></td>
     <td>${c ? `<a href="#/admin/customers/${c.id}">${esc(c.name)}</a>` : '—'}</td>
     <td class="muted">${o.items.map(i => esc(i.title)).join('<br>')}</td><td><b>${inr(o.total)}</b></td>
+    <td>${bal ? `${badge(`${pays.filter(p => p.paid).length}/${pays.length} paid`, 'amber')}<small class="muted block">${inr(bal)} due</small>${compact ? '' : `<button class="btn sm ghost" data-record="${o.id}">Record payment</button>`}` : badge(pays.length > 1 ? 'Milestones paid' : 'Paid', 'green')}</td>
     <td>${compact ? badge(o.status) : `<select data-status="${o.id}" aria-label="Order status">${ORDER_STATUSES.map(s => `<option ${s === o.status ? 'selected' : ''}>${s}</option>`).join('')}</select>`}</td>
     ${compact ? '' : `<td>${proj.length ? `<input type="range" min="0" max="100" step="5" value="${prog}" data-progress="${o.id}" aria-label="Progress"> <span class="muted">${prog}%</span>` : '<span class="muted">—</span>'}</td>
     <td class="right"><a class="btn sm ghost" href="#/invoice/${o.id}">Invoice</a></td>`}</tr>`;
   }).join('')}</tbody></table></div>`;
 }
 function bindOrderControls(root) {
+  $$('[data-record]', root).forEach(b => b.addEventListener('click', async () => {
+    const o = D.db().orders.find(o => o.id === b.dataset.record);
+    const next = D.orderPayments(o).find(p => !p.paid);
+    const f = await modal({ title: `Record payment — ${o.invoice}`, submit: `Mark ${inr(next.amount)} paid`, body: `
+      <p><b>${esc(next.label)}</b> · ${inr(next.amount)} (balance ${inr(D.orderBalance(o))})</p>
+      ${field('Received via', 'method', { options: ['UPI', 'Bank transfer', 'Cash', 'Cheque', 'Card'] })}` });
+    if (!f) return;
+    D.payNext(o, f.get('method'), D.currentUser().name);
+    toast('Payment recorded'); rerender();
+  }));
   $$('[data-status]', root).forEach(s => s.addEventListener('change', () => {
     const o = D.db().orders.find(o => o.id === s.dataset.status);
     o.status = s.value;
@@ -410,7 +424,9 @@ function catalog(user, query) {
   const tabs = [['services', 'Service packages'], ['plans', 'Membership plans'], ['addons', 'Add-ons'], ['products', 'Downloads'], ['coupons', 'Coupons']];
   let body = '';
   if (tab === 'services') body = c.services.map((s, si) => `<section class="card"><div class="card-head"><div><h3>${esc(s.name)}</h3><small class="muted">Market ${inr(s.market[0])}–${inr(s.market[1])}${per(s.billing)} · ${s.billing === 'month' ? 'Monthly' : 'One-time'}</small></div><a class="link" href="#/services/${s.id}" target="_blank">View page</a></div>
-    <div class="price-edit">${s.tiers.map((t, ti) => `<label><span>${esc(t.name)}</span><input type="number" min="0" step="1" value="${t.price}" data-price="services|${si}|${ti}" aria-label="${esc(s.name + ' ' + t.name)} price"><small class="${t.price < s.market[0] ? 'good' : t.price > s.market[1] ? 'overdue' : 'muted'}">${t.price < s.market[0] ? 'Below market' : t.price > s.market[1] ? 'Above market' : 'Within market'}</small></label>`).join('')}</div></section>`).join('');
+    <div class="price-edit">${s.tiers.map((t, ti) => `<label><span>${esc(t.name)}</span><input type="number" min="0" step="1" value="${t.price}" data-price="services|${si}|${ti}" aria-label="${esc(s.name + ' ' + t.name)} price"><small class="${t.price < s.market[0] ? 'good' : t.price > s.market[1] ? 'overdue' : 'muted'}">${t.price < s.market[0] ? 'Below market' : t.price > s.market[1] ? 'Above market' : 'Within market'}</small></label>`).join('')}</div>
+    ${s.competitors.length ? `<details class="comp-peek"><summary>Competitor prices (${s.competitors.length})</summary>${s.competitors.map(x => `<div class="list-row"><span><b>${esc(x.name)}</b> <small class="muted">${esc(x.kind)}</small></span><span>${esc(x.price)}</span></div>`).join('')}</details>` : ''}
+    <p class="fine">${s.works.length} work items · price split scales with the price you set.</p></section>`).join('');
   if (tab === 'plans') body = c.plans.map((p, i) => `<section class="card"><div class="card-head"><h3>${esc(p.name)}</h3></div><div class="price-edit">
     <label><span>Monthly price</span><input type="number" min="0" value="${p.price}" data-price="plans|${i}|price"></label>
     <label><span>Member discount %</span><input type="number" min="0" max="50" value="${p.discount}" data-price="plans|${i}|discount"></label></div>

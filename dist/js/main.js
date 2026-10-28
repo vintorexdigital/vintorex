@@ -8,7 +8,7 @@ import { esc, icon, initials, $, $$ } from './ui.js';
 
 const routes = [
   ['/', Pub.home], ['/services', Pub.services], ['/services/:id', Pub.serviceDetail],
-  ['/pricing', Pub.pricing], ['/shop', Pub.shop], ['/cart', Pub.cart], ['/checkout', Pub.checkout],
+  ['/pricing', Pub.pricing], ['/compare', Pub.compare], ['/shop', Pub.shop], ['/cart', Pub.cart], ['/checkout', Pub.checkout],
   ['/order/:id', Pub.orderDone], ['/invoice/:id', Pub.invoice], ['/contact', Pub.contact], ['/about', Pub.about],
   ['/terms', Pub.terms], ['/login', Pub.login], ['/register', Pub.register],
   ['/account', guard('customer', Acc.view)], ['/account/:tab', guard('customer', Acc.view)],
@@ -59,7 +59,7 @@ function cartCount() { return D.getCart().reduce((s, i) => s + (i.qty || 1), 0);
 
 function header(user) {
   const here = (location.hash.slice(1) || '/').split('?')[0];
-  const nav = [['/services', 'Services'], ['/pricing', 'Pricing'], ['/shop', 'Shop'], ['/about', 'About'], ['/contact', 'Contact']];
+  const nav = [['/services', 'Services'], ['/pricing', 'Pricing'], ['/compare', 'Compare'], ['/shop', 'Shop'], ['/about', 'About'], ['/contact', 'Contact']];
   return `<a class="skip" href="#main">Skip to content</a>
   <header class="topbar"><div class="shell nav">
     <a class="logo" href="#/">${Pub.logoMark()}<span>Vintorex<small>Digital Solutions</small></span></a>
@@ -78,7 +78,7 @@ function footer() {
     <div><a class="logo" href="#/">${Pub.logoMark()}<span>Vintorex<small>Digital Solutions</small></span></a><p class="muted">${esc(BUSINESS.tagline)} Digital marketing, web and cloud services from Coimbatore.</p>
       <div class="row gap wrap">${Object.entries(BUSINESS.social).map(([n, u]) => `<a class="chip" href="${u}" target="_blank" rel="noopener">${n}</a>`).join('')}</div></div>
     <div><h4>Services</h4>${D.catalog().services.slice(0, 7).map(s => `<a href="#/services/${s.id}">${esc(s.name)}</a>`).join('')}</div>
-    <div><h4>Company</h4><a href="#/about">About</a><a href="#/pricing">Pricing</a><a href="#/shop">Shop</a><a href="#/contact">Contact</a><a href="#/terms">Terms & refunds</a></div>
+    <div><h4>Company</h4><a href="#/about">About</a><a href="#/pricing">Pricing</a><a href="#/compare">Competitor analysis</a><a href="#/shop">Shop</a><a href="#/contact">Contact</a><a href="#/terms">Terms & refunds</a></div>
     <div><h4>Contact</h4><a href="tel:+918667209838">${esc(BUSINESS.phone)}</a><a href="mailto:${BUSINESS.email}">${esc(BUSINESS.email)}</a><a href="${BUSINESS.whatsapp}" target="_blank" rel="noopener">WhatsApp</a><p class="muted">${esc(BUSINESS.address)}</p></div>
   </div><div class="shell fine">© ${new Date().getFullYear()} ${esc(BUSINESS.name)}. All prices exclude GST.</div></footer>
   <a class="wa-float" href="${BUSINESS.whatsapp}" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">${icon('wa')}</a>`;

@@ -25,7 +25,16 @@ Admin → Settings → **Reset demo data** restores the seed data.
 - **Storefront** (`js/public.js`): home, 14 services with 3 packages each, pricing with memberships and a market comparison, shop (digital downloads and add-ons), cart with coupons, member discounts and GST, checkout, GST invoice, and lead forms (contact, free audit, service quote).
 - **Customer dashboard** (`js/account.js`): plan upgrade, pause and cancel, monthly add-ons, project progress, downloads, invoices, support tickets, profile.
 - **Admin / CRM** (`js/admin.js`): KPIs (revenue, MRR, win rate), lead list with scoring, filters and CSV export, drag-and-drop pipeline, lead notes and follow-ups, lead → customer conversion, customers, orders (status and progress), subscriptions, price editor for services, plans, add-ons, downloads and coupons, support inbox, business and GST settings.
-- **Catalog and prices**: `js/data.js`. Market ranges come from public India 2026 pricing guides, listed in `SOURCES`.
+- **Service catalog** (`js/services.js`): for each of the 14 services, the overview, ideal customers, 3 packages, every work item per package, exclusions, delivery process, a percentage cost split per package, and named competitor prices with source links. There are also 31 add-ons, each tagged with the services it applies to. After editing, run the check below, and bump `CATALOG_VERSION` in `js/data.js` so browsers with saved data pick up the new catalog.
+- **Competitor analysis** (`#/compare`): all services against named competitors and market ranges. Each service page also has its own competitor table.
+- **Milestone payments**: one-time projects of ₹10,000 or more can be paid 40% / 40% / 20%. Customers pay later instalments from their dashboard, and admins can record offline payments from Orders.
+- **Plans and other settings**: `js/data.js`.
+
+Catalog check (split columns sum to 100, references resolve):
+
+```bash
+node -e "import('./dist/js/data.js').then(({SERVICES:S})=>S.forEach(s=>[1,2,3].forEach(t=>{const n=s.split.reduce((a,r)=>a+r[t],0);if(n!==100)console.log(s.id,t,n)})))"
+```
 
 ## Before going live
 
