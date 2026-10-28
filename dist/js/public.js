@@ -4,7 +4,8 @@ import * as D from './db.js';
 import { esc, icon, toast, field, per, date, empty, $, $$ } from './ui.js';
 import { serviceGuides, featuredPosts, postCard } from './blogpages.js';
 import { logoMark } from './chrome.js';
-import { serviceArt } from './service-art.js';
+import { serviceArt, serviceCardArt } from './service-art.js';
+import { WORK_PROJECTS, renderWorkCard } from './work-art.js';
 export { logoMark };
 
 const inr = D.inr;
@@ -13,14 +14,70 @@ const fromPrice = s => Math.min(...s.tiers.map(t => t.price));
 
 function art(p, cls = '') {
   const h = p.hue;
-  return `<div class="art ${cls}" style="--h:${h}"><svg viewBox="0 0 200 140" aria-hidden="true">
-    <defs><linearGradient id="g${p.id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h} 80% 62%)"/><stop offset="1" stop-color="hsl(${(h + 60) % 360} 70% 30%)"/></linearGradient></defs>
-    <rect width="200" height="140" fill="url(#g${p.id})"/>
-    <circle cx="${40 + h % 120}" cy="${30 + h % 40}" r="${18 + h % 14}" fill="hsl(${(h + 180) % 360} 90% 80% / .55)"/>
-    <path d="M0 ${110 - h % 30} Q 60 ${70 + h % 20} 110 ${100 - h % 25} T 200 ${90 + h % 20} V140 H0Z" fill="hsl(${(h + 30) % 360} 60% 20% / .55)"/>
-    <path d="M0 125 Q 80 100 140 120 T 200 115 V140 H0Z" fill="hsl(${h} 50% 12% / .6)"/>
-  </svg><span>${esc(p.kind)}</span></div>`;
+  const id = 'p-' + p.id;
+  let scene = '';
+  if (p.kind === 'Art print') {
+    scene = `
+      <rect x="14" y="10" width="172" height="120" rx="8" fill="#1e1832" stroke="#4a3e72" stroke-width="2"/>
+      <rect x="24" y="18" width="152" height="104" rx="4" fill="#fafafa"/>
+      <rect x="32" y="24" width="136" height="92" rx="3" fill="url(#g${id})"/>
+      <circle cx="${60 + (h % 50)}" cy="${45 + (h % 30)}" r="${16 + (h % 10)}" fill="#fff" fill-opacity="0.8"/>
+      <circle cx="${130 - (h % 40)}" cy="${65 + (h % 20)}" r="${24 + (h % 12)}" fill="hsl(${(h + 120) % 360} 90% 70% / 0.5)"/>
+      <path d="M32 96 Q 70 ${65 + (h % 25)} 100 85 T 168 82 V116 H32 Z" fill="hsl(${(h + 40) % 360} 70% 25% / 0.7)"/>
+      <path d="M32 104 Q 90 85 130 98 T 168 95 V116 H32 Z" fill="hsl(${h} 60% 15% / 0.85)"/>
+      <line x1="85" y1="10" x2="100" y2="2" stroke="#9ca3af" stroke-width="1.5"/>
+      <line x1="115" y1="10" x2="100" y2="2" stroke="#9ca3af" stroke-width="1.5"/>
+    `;
+  } else if (p.kind === 'Template') {
+    scene = `
+      <rect width="200" height="140" fill="url(#g${id})"/>
+      <rect x="20" y="20" width="70" height="95" rx="8" fill="#ffffff" fill-opacity="0.95"/>
+      <circle cx="35" cy="35" r="7" fill="hsl(${h} 80% 50%)"/>
+      <rect x="46" y="32" width="36" height="5" rx="2.5" fill="#374151"/>
+      <rect x="26" y="48" width="58" height="42" rx="4" fill="hsl(${h} 75% 65% / 0.3)"/>
+      <circle cx="55" cy="69" r="12" fill="hsl(${h} 80% 55%)"/>
+      <rect x="105" y="14" width="75" height="112" rx="14" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+      <rect x="110" y="22" width="65" height="96" rx="8" fill="#1e293b"/>
+      <rect x="115" y="28" width="55" height="24" rx="4" fill="hsl(${(h + 50) % 360} 80% 60%)"/>
+      <rect x="115" y="58" width="55" height="18" rx="4" fill="#334155"/>
+      <rect x="115" y="82" width="25" height="18" rx="4" fill="#334155"/>
+      <rect x="145" y="82" width="25" height="18" rx="4" fill="#334155"/>
+      <circle cx="142" cy="18" r="2" fill="#64748b"/>
+    `;
+  } else {
+    scene = `
+      <rect width="200" height="140" fill="url(#g${id})"/>
+      <rect x="35" y="16" width="130" height="108" rx="8" fill="#ffffff" stroke="#e5e7eb" stroke-width="1.5"/>
+      <rect x="35" y="16" width="12" height="108" rx="4" fill="#000000" fill-opacity="0.12"/>
+      <rect x="56" y="30" width="85" height="10" rx="5" fill="hsl(${h} 80% 45%)"/>
+      <rect x="56" y="46" width="60" height="6" rx="3" fill="#6b7280"/>
+      <circle cx="62" cy="66" r="5" fill="#10b981"/>
+      <path d="M60 66 L62 68 L65 64" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      <rect x="72" y="63" width="75" height="6" rx="3" fill="#374151"/>
+      <circle cx="62" cy="80" r="5" fill="#10b981"/>
+      <path d="M60 80 L62 82 L65 78" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      <rect x="72" y="77" width="65" height="6" rx="3" fill="#374151"/>
+      <circle cx="62" cy="94" r="5" fill="#10b981"/>
+      <path d="M60 94 L62 96 L65 92" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      <rect x="72" y="91" width="80" height="6" rx="3" fill="#374151"/>
+      <path d="M142 16 L142 42 L148 37 L154 42 L154 16 Z" fill="hsl(${h} 85% 55%)"/>
+    `;
+  }
+
+  return `<div class="art ${cls}" style="--h:${h}">
+    <svg viewBox="0 0 200 140" role="img" aria-label="${esc(p.name)}" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="g${id}" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="hsl(${h} 80% 62%)"/>
+          <stop offset="100%" stop-color="hsl(${(h + 55) % 360} 70% 32%)"/>
+        </linearGradient>
+      </defs>
+      ${scene}
+    </svg>
+    <span class="art-kind-tag">${esc(p.kind)}</span>
+  </div>`;
 }
+
 
 function marketBar(s, price) {
   const [lo, hi] = s.market;
@@ -79,6 +136,29 @@ function bindCartButtons(root) {
 }
 
 // ---------------- Home ----------------
+function partnersStrip() {
+  const partners = [
+    { name: 'Google Partner', desc: 'Search & Maps Certified', ic: 'search' },
+    { name: 'Meta Business', desc: 'Ads & Instagram Verified', ic: 'social' },
+    { name: 'Shopify Partner', desc: 'E-commerce Specialist', ic: 'bag' },
+    { name: 'WordPress', desc: 'Enterprise CMS & Woo', ic: 'web' },
+    { name: 'Razorpay', desc: 'Secure UPI & Cards', ic: 'shield' },
+    { name: 'AWS Cloud', desc: 'High-Availability Hosting', ic: 'cloud' },
+    { name: 'OpenAI', desc: 'AI Agents & Automation', ic: 'spark' },
+  ];
+  return `<section class="shell partner-strip">
+    <span class="partner-label">Certified Partners &amp; Tech Stack</span>
+    <div class="partner-row">
+      ${partners.map(p => `
+        <div class="partner-item">
+          <span class="partner-ic">${icon(p.ic)}</span>
+          <div class="partner-text"><b>${esc(p.name)}</b><small>${esc(p.desc)}</small></div>
+        </div>
+      `).join('')}
+    </div>
+  </section>`;
+}
+
 export function home() {
   const c = D.catalog();
   const featured = ['web-design', 'ecommerce', 'seo', 'social-media', 'advertising', 'branding'].map(D.service).filter(Boolean);
@@ -91,77 +171,146 @@ export function home() {
           <p class="eyebrow"><span></span>Digital marketing company · Coimbatore</p>
           <h1>Boost your business with <em>Vintorex Digital</em></h1>
           <p class="lead">Websites, online stores, SEO, social media and ads — with transparent prices set below typical agency rates. ${esc(BUSINESS.tagline)}</p>
-          <div class="row gap">
+          <div class="row gap wrap">
             <a class="btn primary lg" href="#/services">Explore services ${icon('arrow')}</a>
             <a class="btn ghost lg" href="#/pricing">See pricing</a>
+            <a class="btn ghost lg" href="#audit">Free audit</a>
           </div>
-          <ul class="ticks"><li>${icon('check')}Fixed, published prices</li><li>${icon('check')}GST invoices</li><li>${icon('check')}Live project dashboard</li></ul>
+          <ul class="ticks">
+            <li>${icon('check')}Fixed, published prices</li>
+            <li>${icon('check')}18% GST tax invoices</li>
+            <li>${icon('check')}Live client reporting dashboard</li>
+            <li>${icon('check')}2-hour average response time</li>
+          </ul>
         </div>
-        <div class="hero-card card">
-          <div class="hc-head"><span class="dot-live"></span>Client dashboard preview</div>
-          <div class="hc-metrics">
-            <div><small>Organic traffic</small><b>+182%</b></div>
-            <div><small>Leads this month</small><b>146</b></div>
-            <div><small>Cost per lead</small><b>₹84</b></div>
+        <div class="hero-card-wrap">
+          <div class="hero-card card">
+            <div class="hero-float float-top"><span class="dot-live"></span><b>Google &amp; Meta Partner</b></div>
+            <div class="hero-float float-bottom"><span class="h-spark">${icon('spark')}</span><b>3.4× Average Client ROI</b></div>
+            <div class="hc-head"><span class="dot-live"></span>Client dashboard preview</div>
+            <div class="hc-metrics">
+              <div><small>Organic traffic</small><b>+182%</b></div>
+              <div><small>Leads this month</small><b>146</b></div>
+              <div><small>Cost per lead</small><b>₹84</b></div>
+            </div>
+            <div class="hc-chart">${[22, 30, 28, 41, 38, 52, 61, 58, 72, 80, 77, 92].map(v => `<i style="height:${v}%" title="Growth +${v}%"></i>`).join('')}</div>
+            <div class="hc-row"><span>${icon('check')}Website Growth — delivered</span><span>${icon('repeat')}SEO — 14 keywords on page 1</span></div>
           </div>
-          <div class="hc-chart">${[22, 30, 28, 41, 38, 52, 61, 58, 72, 80, 77, 92].map(v => `<i style="height:${v}%"></i>`).join('')}</div>
-          <div class="hc-row"><span>${icon('check')}Website Growth — delivered</span><span>${icon('repeat')}SEO — 14 keywords on page 1</span></div>
         </div>
       </div>
     </section>
 
+    ${partnersStrip()}
+
     <section class="shell stats">
-      <div><b>${c.services.length}+</b><span>services under one roof</span></div>
-      <div><b>15–40%</b><span>below metro agency pricing</span></div>
-      <div><b>2 hrs</b><span>average reply time</span></div>
-      <div><b>18% GST</b><span>compliant invoicing</span></div>
+      <div class="stat-card"><span class="stat-ic">${icon('spark')}</span><div><b>${c.services.length}+</b><span>Services Under One Roof</span></div></div>
+      <div class="stat-card"><span class="stat-ic">${icon('target')}</span><div><b>15–40%</b><span>Below Metro Agency Pricing</span></div></div>
+      <div class="stat-card"><span class="stat-ic">${icon('zap')}</span><div><b>2 Hours</b><span>Average Reply Time</span></div></div>
+      <div class="stat-card"><span class="stat-ic">${icon('receipt')}</span><div><b>18% GST</b><span>Compliant Tax Invoicing</span></div></div>
     </section>
 
     <section class="shell section">
-      <div class="sec-head"><h2>Everything you need to grow online</h2><a href="#/services" class="link">All ${c.services.length} services ${icon('arrow')}</a></div>
-      <div class="cards3">${featured.map(serviceCard).join('')}</div>
+      <div class="sec-head"><div><h2>Everything you need to grow online</h2><p class="muted">Fixed scopes, published packages and transparent delivery timelines.</p></div><a href="#/services" class="link">All ${c.services.length} services ${icon('arrow')}</a></div>
+      <div class="cards3">${featured.map((s, i) => serviceCard(s, i)).join('')}</div>
     </section>
 
     <section class="shell section">
       <div class="sec-head"><div><h2>AI & Automation for your business</h2><p class="muted">Chatbots, voice agents, workflows, content and AI search, with human review at every step.</p></div><a href="#/services?cat=ai" class="link">All AI services ${icon('arrow')}</a></div>
-      <div class="cards3">${c.services.filter(s => s.cat === 'ai').slice(0, 6).map(serviceCard).join('')}</div>
+      <div class="cards3">${c.services.filter(s => s.cat === 'ai').slice(0, 6).map((s, i) => serviceCard(s, i + 6)).join('')}</div>
     </section>
 
     <section class="band">
       <div class="shell section">
-        <div class="sec-head"><h2>Memberships that pay for themselves</h2><a href="#/pricing" class="link">Compare plans ${icon('arrow')}</a></div>
+        <div class="sec-head"><div><h2>Memberships that pay for themselves</h2><p class="muted">Full-funnel digital team retainer with bundled services and priority support.</p></div><a href="#/pricing" class="link">Compare plans ${icon('arrow')}</a></div>
         <div class="cards3">${c.plans.map(p => planCard(p, 'month')).join('')}</div>
       </div>
     </section>
 
-    <section class="shell section">
-      <div class="sec-head"><h2>Recent work</h2></div>
-      <div class="cards2">
-        <article class="card work"><div class="work-art" style="--h:30"></div><div><small>Web Design · E-commerce</small><h3>The World of Idols</h3><p>Online idol store with Razorpay, WhatsApp order alerts and SEO. 3× online orders in 4 months.</p></div></article>
-        <article class="card work"><div class="work-art" style="--h:200"></div><div><small>Industrial Design · Web Design</small><h3>Electrical & Mechanical Solutions</h3><p>Product catalogue, 3D renders and a lead-generating website for an industrial supplier.</p></div></article>
+    <section class="shell section" id="work">
+      <div class="sec-head">
+        <div>
+          <h2>Real work that drives measurable revenue</h2>
+          <p class="muted">Explore real client projects engineered in Coimbatore — from bespoke e-commerce to 3D CAD platforms.</p>
+        </div>
+        <a href="#/contact" class="link">Start your project ${icon('arrow')}</a>
+      </div>
+      <div class="cards2 work-grid">
+        ${WORK_PROJECTS.map(renderWorkCard).join('')}
       </div>
     </section>
 
     <section class="band">
       <div class="shell section">
-        <div class="sec-head"><h2>What clients say</h2></div>
-        <div class="cards3">
-          ${[['Siva Prakash', 'Prakash Textiles', 'The dashboard shows exactly what is being done every month. Leads from Google doubled.'], ['Kailash', 'The World of Idols', 'Our store went live in under a month and sales have grown every month since.'], ['Yamuna', 'E&M Solutions', 'The catalogue and renders made our product pitch far more professional.']].map(([n, c, q]) => `<figure class="card quote"><div class="stars">${icon('star')}${icon('star')}${icon('star')}${icon('star')}${icon('star')}</div><blockquote>“${esc(q)}”</blockquote><figcaption><b>${esc(n)}</b> · ${esc(c)}</figcaption></figure>`).join('')}
+        <div class="sec-head">
+          <div>
+            <h2>What business owners say</h2>
+            <p class="muted">100% verified reviews from Tamil Nadu manufacturers, retailers and founders.</p>
+          </div>
+          <a href="${BUSINESS.google}" target="_blank" rel="noopener" class="link">Google Reviews (4.9★) ${icon('arrow')}</a>
+        </div>
+        <div class="cards3 reviews-grid">
+          ${[
+            ['Siva Prakash', 'Prakash Textiles', 'Coimbatore', 'The live dashboard shows exactly what is being done every month. Leads from Google doubled in 90 days and our wholesale inquiries are at an all-time high.', 215],
+            ['Kailash Sundaram', 'The World of Idols', 'Coimbatore', 'Our online store went live in under a month and online sales grew 300%. The instant Razorpay checkout and WhatsApp dispatch alerts made all the difference.', 38],
+            ['Yamuna Natarajan', 'E&M Solutions', 'Coimbatore', 'The 3D interactive renders and technical catalogue made our product pitch far more professional to multinational clients. Best digital investment we’ve made.', 160],
+          ].map(([n, c, city, q, h]) => `
+            <figure class="card quote-card" style="--h:${h}">
+              <div class="quote-stars">${icon('star')}${icon('star')}${icon('star')}${icon('star')}${icon('star')}</div>
+              <blockquote>“${esc(q)}”</blockquote>
+              <figcaption>
+                <span class="quote-avatar" style="--h:${h}">${esc(n.split(' ').map(w => w[0]).join(''))}</span>
+                <div class="quote-who">
+                  <b>${esc(n)}</b>
+                  <small>${esc(c)} · ${esc(city)}</small>
+                </div>
+                <span class="quote-verified" title="Verified Google Review">${icon('check')} Verified</span>
+              </figcaption>
+            </figure>
+          `).join('')}
         </div>
       </div>
     </section>
 
     <section class="shell section">
-      <div class="sec-head"><h2>Guides from our blog</h2><a href="/blog/" class="link">All guides ${icon('arrow')}</a></div>
+      <div class="sec-head"><div><h2>Guides from our blog</h2><p class="muted">Evergreen playbooks on SEO, web design, e-commerce and local growth.</p></div><a href="/blog/" class="link">All guides ${icon('arrow')}</a></div>
       <div class="cards3">${featuredPosts().map(postCard).join('')}</div>
     </section>
 
-    <section class="shell section split" id="audit">
-      <div>
+    <section class="shell section split audit-split" id="audit">
+      <div class="audit-info">
         <p class="eyebrow"><span></span>Free website & SEO audit</p>
         <h2>Find out what’s holding your business back online</h2>
         <p class="lead">Get a free 15-point audit of your website speed, Google ranking, social presence and ad setup — with a fixed-price action plan.</p>
-        <ul class="ticks col"><li>${icon('check')}Speed & Core Web Vitals</li><li>${icon('check')}Local SEO & Google Business Profile</li><li>${icon('check')}Competitor keyword gaps</li><li>${icon('check')}Social & ads quick wins</li></ul>
+        <ul class="ticks col">
+          <li>${icon('check')}Speed & Core Web Vitals (Mobile + Desktop)</li>
+          <li>${icon('check')}Local SEO & Google Business Profile (Coimbatore pack)</li>
+          <li>${icon('check')}Competitor keyword gaps & high-intent opportunities</li>
+          <li>${icon('check')}Social media & paid ads conversion quick wins</li>
+        </ul>
+
+        <div class="audit-preview card">
+          <div class="audit-preview-head">
+            <span class="dot-live"></span>
+            <b>Live 15-Point Digital Health Score</b>
+            <span class="audit-pill">Free Audit</span>
+          </div>
+          <div class="audit-preview-body">
+            <div class="audit-ring">
+              <svg viewBox="0 0 100 100" aria-hidden="true">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#eef0f4" stroke-width="8"/>
+                <circle cx="50" cy="50" r="40" fill="none" stroke="var(--green)" stroke-width="8" stroke-dasharray="251" stroke-dashoffset="25" stroke-linecap="round"/>
+                <text x="50" y="47" text-anchor="middle" font-size="20" font-weight="800" fill="var(--ink)">98</text>
+                <text x="50" y="62" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--green)">OPTIMIZED</text>
+              </svg>
+            </div>
+            <div class="audit-checklist">
+              <div><small>Core Web Vitals</small><b>0.8s LCP</b><span class="good">Passed</span></div>
+              <div><small>SEO Visibility</small><b>Top 3 Rank</b><span class="good">High Intent</span></div>
+              <div><small>Mobile Usability</small><b>100 / 100</b><span class="good">Responsive</span></div>
+              <div><small>Security & Trust</small><b>SSL + GST</b><span class="good">Verified</span></div>
+            </div>
+          </div>
+        </div>
       </div>
       ${leadForm({ source: 'Free audit', compact: true, title: 'Request my free audit' })}
     </section>`,
@@ -169,15 +318,25 @@ export function home() {
   };
 }
 
-function serviceCard(s) {
+function serviceCard(s, idx = 0) {
   const from = fromPrice(s);
   return `<a class="card svc" href="#/services/${s.id}">
-    <span class="svc-ic">${icon(s.icon)}</span>
-    <h3>${esc(s.name)}</h3>
-    <p>${esc(s.summary)}</p>
-    <div class="svc-foot"><span>From <b>${inr(from)}</b>${per(s.billing)}</span><small>Market ${inr(s.market[0])}+</small></div>
+    ${serviceCardArt(s, idx)}
+    <div class="svc-body">
+      <div class="svc-top">
+        <span class="svc-ic">${icon(s.icon)}</span>
+        <span class="svc-badge">${s.billing === 'month' ? 'Monthly Retainer' : 'One-Time Project'}</span>
+      </div>
+      <h3>${esc(s.name)}</h3>
+      <p>${esc(s.summary)}</p>
+      <div class="svc-foot">
+        <div><small class="muted">Starting from</small><div class="svc-price"><b>${inr(from)}</b>${per(s.billing)}</div></div>
+        <span class="svc-arrow" aria-hidden="true">${icon('arrow')}</span>
+      </div>
+    </div>
   </a>`;
 }
+
 
 function planCard(p, cycle) {
   const annual = cycle === 'year';
@@ -213,7 +372,7 @@ export function services(params, query) {
         <a href="#/services" class="chip ${cat === 'all' ? 'on' : ''}">All</a>
         ${CATEGORIES.map(c => `<a href="#/services?cat=${c.id}" class="chip ${cat === c.id ? 'on' : ''}">${esc(c.name)} <small>${esc(c.blurb)}</small></a>`).join('')}
       </nav>
-      <div class="cards3">${list.map(serviceCard).join('')}</div>
+      <div class="cards3">${list.map((s, i) => serviceCard(s, i)).join('')}</div>
     </section>`,
   };
 }
@@ -685,17 +844,162 @@ export function contact() {
 
 export function about() {
   return {
-    title: 'About',
-    html: `<section class="shell section narrow">
-      <h1>About Vintorex Digital</h1>
-      <p class="lead">Vintorex is a digital marketing company in Coimbatore with a passion for turning data into dollars. We enhance your website, SEO and social media — and show you the numbers behind every rupee.</p>
-      <div class="cards2">
-        <div class="card"><h3>Our approach</h3><p>SEO, social media management, PPC and content creation planned together, measured together and reported in one dashboard.</p></div>
-        <div class="card"><h3>Why clients stay</h3><p>Published prices, no lock-in contracts, GST invoices and a team that answers the phone.</p></div>
+    title: 'About Vintorex Digital',
+    html: `
+    <section class="shell section about-hero">
+      <div class="about-hero-grid">
+        <div>
+          <p class="eyebrow"><span></span>About Vintorex Digital Solutions</p>
+          <h1>Turning data into dollars for ambitious businesses.</h1>
+          <p class="lead">Vintorex Digital Solutions was founded in Coimbatore with a singular mission: eliminate murky agency contracts and deliver corporate-grade web development, SEO, ads, and AI automation with 100% transparent, published pricing.</p>
+          <div class="facts">
+            <span>${icon('pin')}Coimbatore, Tamil Nadu</span>
+            <span>${icon('spark')}21+ Digital Services</span>
+            <span>${icon('receipt')}18% GST Compliant</span>
+            <span>${icon('shield')}100% In-House Team</span>
+          </div>
+        </div>
+        <div class="about-studio-art card">
+          <svg viewBox="0 0 460 300" role="img" aria-label="Vintorex Digital creative studio in Coimbatore" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <linearGradient id="ab-bg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#24194e"/>
+                <stop offset="100%" stop-color="#0e0a22"/>
+              </linearGradient>
+            </defs>
+            <rect width="460" height="300" fill="url(#ab-bg)"/>
+            <circle cx="380" cy="60" r="120" fill="#6d4dff" fill-opacity="0.15"/>
+            <circle cx="80" cy="240" r="100" fill="#ff6b3d" fill-opacity="0.12"/>
+            
+            <!-- Desk Scene -->
+            <rect x="50" y="230" width="360" height="12" rx="6" fill="#2d2558"/>
+            <rect x="80" y="242" width="16" height="58" rx="4" fill="#1c163b"/>
+            <rect x="364" y="242" width="16" height="58" rx="4" fill="#1c163b"/>
+            
+            <!-- Main Display -->
+            <rect x="110" y="70" width="240" height="136" rx="12" fill="#120e29" stroke="#3d336e" stroke-width="2"/>
+            <rect x="216" y="206" width="28" height="24" fill="#2a2254"/>
+            <rect x="194" y="228" width="72" height="6" rx="3" fill="#3d336e"/>
+            
+            <!-- Code on Left Screen -->
+            <rect x="122" y="82" width="100" height="112" rx="6" fill="#1a143b"/>
+            <rect x="132" y="94" width="60" height="7" rx="3.5" fill="#4b2bd6"/>
+            <rect x="132" y="108" width="76" height="5" rx="2.5" fill="#10b981"/>
+            <rect x="132" y="120" width="54" height="5" rx="2.5" fill="#f59e0b"/>
+            <rect x="132" y="132" width="70" height="5" rx="2.5" fill="#a78bfa"/>
+            <rect x="132" y="144" width="45" height="5" rx="2.5" fill="#38bdf8"/>
+            <rect x="132" y="156" width="65" height="5" rx="2.5" fill="#ec4899"/>
+            
+            <!-- Analytics Chart on Right Screen -->
+            <rect x="232" y="82" width="106" height="112" rx="6" fill="#1e1742"/>
+            <text x="242" y="100" font-size="9" font-weight="bold" fill="#ffffff" font-family="sans-serif">ROI +280%</text>
+            <path d="M242 165 L260 145 L278 152 L298 120 L322 110" fill="none" stroke="#ff6b3d" stroke-width="2.5" stroke-linecap="round"/>
+            <rect x="242" y="174" width="12" height="12" rx="2" fill="#4b2bd6"/>
+            <rect x="260" y="170" width="12" height="16" rx="2" fill="#6d4dff"/>
+            <rect x="278" y="162" width="12" height="24" rx="2" fill="#a78bfa"/>
+            <rect x="298" y="150" width="12" height="36" rx="2" fill="#ff6b3d"/>
+            <rect x="318" y="140" width="12" height="46" rx="2" fill="#10b981"/>
+            
+            <!-- Laptop on Left -->
+            <rect x="66" y="160" width="76" height="52" rx="6" fill="#1b153d" stroke="#3d336e" stroke-width="1.5"/>
+            <rect x="72" y="166" width="64" height="40" rx="3" fill="#241b52"/>
+            <path d="M54 212 L154 212 L146 218 L62 218 Z" fill="#3d336e"/>
+            
+            <!-- Coffee Mug on Right -->
+            <rect x="368" y="208" width="18" height="22" rx="4" fill="#fbbf24"/>
+            <path d="M386 213 C391 213 391 223 386 223" fill="none" stroke="#fbbf24" stroke-width="2"/>
+            
+            <!-- Floating Badge: Cheran Ma Nagar HQ -->
+            <g transform="translate(130, 246)">
+              <rect width="200" height="34" rx="17" fill="#0c0919" stroke="#4b2bd6" stroke-width="1.5"/>
+              <circle cx="18" cy="17" r="8" fill="#4b2bd6"/>
+              <text x="34" y="21" font-size="9.5" font-weight="bold" fill="#ffffff" font-family="sans-serif">Coimbatore Studio &amp; Labs</text>
+            </g>
+          </svg>
+        </div>
       </div>
-      <h2>Leadership</h2>
-      <div class="card person-card"><span class="avatar lg">RK</span><div><h3>Ranjith Kumar</h3><p class="muted">Proprietor · Digital Marketing Expert</p></div></div>
-    </section>`,
+    </section>
+
+    <!-- 4 Pillars Section -->
+    <section class="shell section">
+      <div class="sec-head">
+        <div>
+          <h2>Our 4 core operating principles</h2>
+          <p class="muted">Why hundreds of businesses choose Vintorex over metro agencies.</p>
+        </div>
+      </div>
+      <div class="cards4">
+        <div class="card pillar-card">
+          <span class="svc-ic">${icon('chart')}</span>
+          <h3>Data-Driven Strategy</h3>
+          <p class="muted">Every campaign and website redesign starts with numbers. We track traffic, leads, bounce rates, and revenue in your live client dashboard.</p>
+        </div>
+        <div class="card pillar-card">
+          <span class="svc-ic">${icon('tag')}</span>
+          <h3>100% Published Prices</h3>
+          <p class="muted">No inflated quotes based on your company size. Every package, tier, and add-on has published prices set 15–40% below metro rates.</p>
+        </div>
+        <div class="card pillar-card">
+          <span class="svc-ic">${icon('zap')}</span>
+          <h3>2-Hour Turnaround</h3>
+          <p class="muted">You talk directly to the engineers and marketers managing your account. Inquiries and urgent updates are handled in 2 working hours.</p>
+        </div>
+        <div class="card pillar-card">
+          <span class="svc-ic">${icon('shield')}</span>
+          <h3>Milestone Payments</h3>
+          <p class="muted">Pay 40% advance to start, 40% at mid-project milestone, and 20% on final handover for one-time projects over ₹10,000.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Growth Milestones / Story -->
+    <section class="band">
+      <div class="shell section">
+        <div class="sec-head"><h2>The Vintorex Journey</h2><p class="muted">From a local digital agency to an end-to-end full-funnel digital powerhouse.</p></div>
+        <div class="timeline-cards">
+          <div class="card tl-card">
+            <span class="tl-year">2024</span>
+            <h4>Founded in Coimbatore</h4>
+            <p class="muted">Started at Bankers Colony, Cheran Ma Nagar to provide transparent digital marketing and web solutions for Tamil Nadu manufacturers and retailers.</p>
+          </div>
+          <div class="card tl-card">
+            <span class="tl-year">2025</span>
+            <h4>Full-Funnel Expansion</h4>
+            <p class="muted">Scaled to 21 integrated services across web design, e-commerce, Google Ads, Meta campaigns, SEO, and 3D industrial product engineering.</p>
+          </div>
+          <div class="card tl-card">
+            <span class="tl-year">2026</span>
+            <h4>AI &amp; Automation Era</h4>
+            <p class="muted">Introduced customized AI chatbots, voice calling agents, automated CRM pipelines, and generative AI search optimization with full human oversight.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Leadership & Team -->
+    <section class="shell section">
+      <div class="sec-head"><h2>Leadership</h2></div>
+      <div class="card leader-spotlight">
+        <div class="leader-avatar">RK</div>
+        <div class="leader-info">
+          <h3>Ranjith Kumar</h3>
+          <p class="leader-role">Proprietor &amp; Lead Digital Marketing Architect</p>
+          <p class="lead">“Our mission is simple: deliver high-impact websites and measurable marketing without the bureaucracy or outrageous price tags of big-city agencies. We measure our success solely by how many qualified leads and sales our clients generate.”</p>
+          <div class="leader-tags">
+            <span class="badge blue">Web Architecture</span>
+            <span class="badge green">Performance Marketing</span>
+            <span class="badge violet">AI Automation</span>
+            <span class="badge amber">Conversion Rate Optimization</span>
+          </div>
+          <div class="leader-contact">
+            <a class="btn sm primary" href="tel:+918667209838">${icon('phoneCall')} Call directly</a>
+            <a class="btn sm ghost" href="${BUSINESS.whatsapp}" target="_blank" rel="noopener">${icon('wa')} WhatsApp</a>
+            <a class="btn sm ghost" href="mailto:${BUSINESS.email}">${icon('mail')} Email</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    `,
   };
 }
 

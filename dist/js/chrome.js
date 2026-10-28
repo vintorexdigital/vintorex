@@ -34,6 +34,15 @@ export function siteFooter({ base = '', services = SERVICES } = {}) {
       <a class="f-pill" href="mailto:${BUSINESS.email}">${icon('mail')}<span>${esc(BUSINESS.email)}</span></a>
       <a class="f-pill" href="${BUSINESS.whatsapp}" target="_blank" rel="noopener">${icon('wa')}<span>WhatsApp</span></a>
       <a class="f-pill" href="${BUSINESS.google}" target="_blank" rel="noopener">${icon('star')}<span>Reviews on Google</span></a></div>
-  </div><div class="shell fine">© ${esc(BUSINESS.name)}. All prices exclude GST.</div></footer>
+  </div>
+  <div class="shell foot-payments">
+    <div class="foot-pay-chips">
+      <span class="pay-chip">⚡ Instant UPI (GPay, PhonePe, Paytm)</span>
+      <span class="pay-chip">💳 RuPay, Visa, Mastercard</span>
+      <span class="pay-chip">🏦 Net Banking</span>
+      <span class="pay-chip">🛡️ 18% GST Invoicing &amp; Input Tax Credit</span>
+    </div>
+  </div>
+  <div class="shell fine">© ${esc(BUSINESS.name)}. All prices exclude GST.</div></footer>
   <a class="wa-float" href="${BUSINESS.whatsapp}" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">${icon('wa')}</a>`;
 }

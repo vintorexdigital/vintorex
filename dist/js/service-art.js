@@ -116,3 +116,30 @@ export function serviceArt(s, index = 0) {
     <figcaption>${a.chips.map(c => `<span>${esc(c)}</span>`).join('')}</figcaption>
   </figure>`;
 }
+
+// Compact visual illustration banner for service cards.
+export function serviceCardArt(s, index = 0) {
+  const a = ART[s.id];
+  if (!a) return '';
+  const h = ((HUE[s.cat] ?? 255) + (index * 13) % 40) % 360;
+  const id = 'sc-' + s.id;
+  return `<div class="svc-thumb" style="--h:${h}">
+    <svg viewBox="0 0 400 240" role="img" aria-label="${esc(a.alt)}" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="${id}-g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="hsl(${h} 76% 56%)"/>
+          <stop offset="100%" stop-color="hsl(${(h + 45) % 360} 70% 30%)"/>
+        </linearGradient>
+      </defs>
+      <rect width="400" height="240" fill="url(#${id}-g)"/>
+      <circle cx="360" cy="20" r="85" fill="#fff" fill-opacity=".09"/>
+      <circle cx="30" cy="230" r="75" fill="#fff" fill-opacity=".07"/>
+      <g transform="translate(10, -20) scale(0.95)" style="color:hsl(${h} 70% 28%)">
+        ${SCENES[a.scene]()}
+      </g>
+    </svg>
+    <div class="svc-thumb-overlay"></div>
+    <span class="svc-cat-tag">${esc(a.chips[0])}</span>
+  </div>`;
+}
+
