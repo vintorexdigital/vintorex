@@ -596,8 +596,55 @@ export function pricing() {
 }
 
 // ---------------- Shop ----------------
+const SHOP_SORTS = {
+  featured: ['Featured', null],
+  'price-asc': ['Price: low to high', (a, b) => a.price - b.price],
+  'price-desc': ['Price: high to low', (a, b) => b.price - a.price],
+  'name-asc': ['Name: A to Z', (a, b) => a.name.localeCompare(b.name)],
+  'name-desc': ['Name: Z to A', (a, b) => b.name.localeCompare(a.name)],
+  discount: ['Biggest discount', (a, b) => (1 - b.price / b.mrp) - (1 - a.price / a.mrp)],
+};
+const productCard = p => `<article class="card product">
+  ${art(p)}
+  <div class="product-body"><h4>${esc(p.name)}</h4>
+  <div class="row between"><span><b>${inr(p.price)}</b> <s>${inr(p.mrp)}</s></span><span class="badge green">${Math.round((1 - p.price / p.mrp) * 100)}% off</span></div>
+  <button class="btn sm primary block" data-add="product|${p.id}">Add to cart</button></div>
+</article>`;
+// Products per page follow the screen: fewer on phones, more on wide displays.
+const shopPageSize = () => innerWidth >= 1200 ? 12 : innerWidth >= 700 ? 9 : 6;
+
+// Search, type filter, sort and pagination for the downloads grid.
+function bindShopBrowser(root, items) {
+  const form = $('[data-shop-tools]', root), grid = $('[data-shop-grid]', root), pager = $('[data-shop-pager]', root), count = $('[data-shop-count]', root);
+  let page = 1;
+  const draw = (scroll) => {
+    const q = form.q.value.trim().toLowerCase(), kind = form.kind.value, cmp = SHOP_SORTS[form.sort.value][1];
+    let list = items.filter(p => (!kind || p.kind === kind) && (!q || `${p.name} ${p.kind}`.toLowerCase().includes(q)));
+    if (cmp) list = [...list].sort(cmp);
+    const size = shopPageSize(), pages = Math.max(1, Math.ceil(list.length / size));
+    page = Math.min(page, pages);
+    const from = (page - 1) * size;
+    grid.innerHTML = list.length ? list.slice(from, from + size).map(productCard).join('') : '<p class="muted">No downloads match your search.</p>';
+    count.textContent = list.length ? `Showing ${from + 1}–${Math.min(from + size, list.length)} of ${list.length} downloads` : '';
+    const nums = [...new Set([1, page - 1, page, page + 1, pages])].filter(n => n >= 1 && n <= pages).sort((a, b) => a - b);
+    pager.hidden = pages < 2;
+    pager.innerHTML = pages < 2 ? '' : `<button class="chip" data-page="${page - 1}" ${page === 1 ? 'disabled' : ''} aria-label="Previous page">‹ Prev</button>`
+      + nums.map((n, i) => `${i && n - nums[i - 1] > 1 ? '<span class="pager-gap" aria-hidden="true">…</span>' : ''}<button class="chip${n === page ? ' on' : ''}" data-page="${n}" ${n === page ? 'aria-current="page"' : ''} aria-label="Page ${n}">${n}</button>`).join('')
+      + `<button class="chip" data-page="${page + 1}" ${page === pages ? 'disabled' : ''} aria-label="Next page">Next ›</button>`;
+    bindCartButtons(grid);
+    if (scroll) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  form.addEventListener('submit', e => e.preventDefault());
+  form.addEventListener('input', () => { page = 1; draw(); });
+  pager.addEventListener('click', e => { const b = e.target.closest('[data-page]'); if (b && !b.disabled) { page = +b.dataset.page; draw(true); } });
+  let lastSize = shopPageSize();
+  addEventListener('resize', () => { if (!grid.isConnected) return; const n = shopPageSize(); if (n !== lastSize) { lastSize = n; draw(); } });
+  draw();
+}
+
 export function shop() {
   const c = D.catalog();
+  const items = c.products.filter(p => p.active !== false);
   return {
     title: 'Shop',
     description: 'Digital downloads, templates, SEO spreadsheets, client agreements, and quick add-on services with instant delivery from Vintorex Digital.',
@@ -607,18 +654,18 @@ export function shop() {
     html: `<section class="shell section">
       <div class="page-head"><h1>Shop</h1><p class="lead">Digital downloads, templates and quick add-on services — instant checkout.</p></div>
       <h2 class="h3">Digital downloads</h2>
-      <div class="cards4">${c.products.filter(p => p.active !== false).map(p => `
-        <article class="card product">
-          ${art(p)}
-          <div class="product-body"><h4>${esc(p.name)}</h4>
-          <div class="row between"><span><b>${inr(p.price)}</b> <s>${inr(p.mrp)}</s></span><span class="badge green">${Math.round((1 - p.price / p.mrp) * 100)}% off</span></div>
-          <button class="btn sm primary block" data-add="product|${p.id}">Add to cart</button></div>
-        </article>`).join('')}
-      </div>
+      <form class="filters card shop-tools" role="search" data-shop-tools>
+        <input type="search" name="q" placeholder="Search downloads…" aria-label="Search downloads" autocomplete="off">
+        <select name="kind" aria-label="Filter by type"><option value="">All types</option>${[...new Set(items.map(p => p.kind))].map(k => `<option>${esc(k)}</option>`).join('')}</select>
+        <select name="sort" aria-label="Sort downloads">${Object.entries(SHOP_SORTS).map(([k, v]) => `<option value="${k}">${v[0]}</option>`).join('')}</select>
+      </form>
+      <p class="muted shop-count" data-shop-count aria-live="polite"></p>
+      <div class="cards4" data-shop-grid></div>
+      <nav class="pager" aria-label="Shop pages" data-shop-pager></nav>
       <h2 class="h3" id="addons">Quick services & add-ons</h2>
       ${addonBrowser(c.addons)}
     </section>`,
-    bind: root => { bindCartButtons(root); bindAddonBrowser(root); },
+    bind: root => { bindShopBrowser(root, items); bindCartButtons($('[data-addon-grid]', root)); bindAddonBrowser(root); },
   };
 }
 
