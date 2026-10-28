@@ -41,7 +41,7 @@ After adding or editing a guide, regenerate the static pages:
 npm run build:blog
 ```
 
-The command writes `dist/blog/index.html`, one `dist/blog/<slug>/index.html` per guide, `dist/sitemap.xml` and `dist/robots.txt`. Each page has a canonical URL, Open Graph tags and BlogPosting, FAQPage and BreadcrumbList structured data. The build stops with an error if a service has fewer than two guides or a link points at an unknown service. Commit the generated files, since hosting serves `dist/` as-is.
+The command writes `dist/blog/index.html`, one `dist/blog/<slug>/index.html` per guide, `dist/sitemap.xml` and `dist/robots.txt`. It also refreshes the canonical link and LocalBusiness structured data (address, map pin, Google profile) in `dist/index.html`. Those details come from `BUSINESS` in `js/data.js`, so rebuild after changing them. Each page has a canonical URL, Open Graph tags and BlogPosting, FAQPage and BreadcrumbList structured data. The build stops with an error if a service has fewer than two guides or a link points at an unknown service. Commit the generated files, since hosting serves `dist/` as-is.
 
 Canonical and sitemap URLs default to `https://vintorex.com`. If the app is served from another domain, rebuild with:
 

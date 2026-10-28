@@ -627,11 +627,17 @@ export function contact() {
           <li>${icon('phoneCall')}<a href="tel:+918667209838">${esc(BUSINESS.phone)}</a></li>
           <li>${icon('wa')}<a href="${BUSINESS.whatsapp}" target="_blank" rel="noopener">WhatsApp chat</a></li>
           <li>${icon('mail')}<a href="mailto:${BUSINESS.email}">${esc(BUSINESS.email)}</a></li>
-          <li>${icon('home')}<span>${esc(BUSINESS.address)}</span></li>
+          <li>${icon('pin')}<a href="${BUSINESS.maps}" target="_blank" rel="noopener">${esc(BUSINESS.address)}</a></li>
+          <li>${icon('star')}<a href="${BUSINESS.google}" target="_blank" rel="noopener">Reviews on Google</a></li>
         </ul>
         <div class="row gap wrap">${Object.entries(BUSINESS.social).map(([n, u]) => `<a class="chip" href="${u}" target="_blank" rel="noopener">${esc(n)}</a>`).join('')}</div>
       </div>
       ${leadForm({ source: 'Website form', title: 'Send us a message' })}
+    </section>
+    <section class="shell section visit" id="visit">
+      <div class="sec-head"><div><h2>Visit our office</h2><p class="muted">${esc(BUSINESS.address)}</p></div>
+        <div class="row gap wrap"><a class="btn primary" href="${BUSINESS.maps}" target="_blank" rel="noopener">${icon('pin')} Get directions</a><a class="btn ghost" href="${BUSINESS.google}" target="_blank" rel="noopener">${icon('star')} Reviews on Google</a></div></div>
+      <div class="map-frame card"><iframe src="${BUSINESS.mapEmbed}" title="Map showing the Vintorex Digital Solutions office in Coimbatore" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
     </section>`,
     bind: bindLeadForms,
   };
@@ -661,7 +667,7 @@ export function terms() {
       <h3>Services</h3><p>Project scope is defined by the package purchased. Additional work is quoted separately. Monthly retainers renew automatically until cancelled from your dashboard.</p>
       <h3>Refunds</h3><p>One-time projects can be refunded in full before work starts, and 50% before the first design is delivered. Monthly plans are non-refundable for the current period. Digital downloads are non-refundable once downloaded.</p>
       <h3>Delivery</h3><p>Digital downloads are delivered instantly in your dashboard. Service timelines are shown on each package.</p>
-      <h3>Privacy</h3><p>We use your details only to deliver services and contact you about your enquiry. We never sell your data.</p>
+      <h3>Privacy</h3><p>We use your details only to deliver services and contact you about your enquiry. We never sell your data. Our contact page shows an embedded Google Map, which is provided by Google under its own privacy policy.</p>
     </section>`,
   };
 }

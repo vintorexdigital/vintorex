@@ -15,6 +15,12 @@ export const BUSINESS = {
   whatsapp: 'https://wa.me/918667209838',
   email: 'vintorexdigital@gmail.com',
   address: '38 Bankers Colony Phase 2, Cheran Ma Nagar, Coimbatore 641035',
+  // Google Business Profile, Maps place and embed for the office.
+  google: 'https://share.google/ecgLIdKfKoap3hnMo',
+  maps: 'https://maps.app.goo.gl/Z5dYBa4UCpSNU6m99',
+  mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3915.6927226625253!2d77.0197313758046!3d11.06164868910501!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba8f9c83d370637%3A0xdd8ff0b730ce3276!2svintorex%20digital%20solutions!5e0!3m2!1sen!2sin!4v1793195448916!5m2!1sen!2sin',
+  geo: { lat: 11.0616487, lng: 77.0223063 },
+  postal: { street: '38 Bankers Colony Phase 2, Cheran Ma Nagar', city: 'Coimbatore', region: 'Tamil Nadu', code: '641035', country: 'IN' },
   gst: 18,
   social: {
     Facebook: 'https://www.facebook.com/profile.php?id=61562287629028',

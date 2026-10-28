@@ -1,9 +1,10 @@
 // Generates static, indexable blog pages from dist/js/blog:
 //   dist/blog/index.html, dist/blog/<slug>/index.html, dist/sitemap.xml, dist/robots.txt
+// and refreshes the LocalBusiness structured data in dist/index.html.
 //
 // Usage: npm run build:blog   (or SITE_URL=https://example.com npm run build:blog)
 // Output is deterministic, so re-running without content changes leaves git clean.
-import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { POSTS, postsFor, toc } from '../dist/js/blog/index.js';
@@ -29,7 +30,17 @@ if (problems.length) { console.error('Blog build failed:\n- ' + problems.join('\
 
 // ---------- page shell ----------
 const FAVICON = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%234b2bd6'/%3E%3Cpath d='m8 9 8 15 8-15' fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E`;
-const ORG = { '@type': 'Organization', name: BUSINESS.name, url: SITE + '/', email: BUSINESS.email, telephone: BUSINESS.phone, address: BUSINESS.address, sameAs: Object.values(BUSINESS.social) };
+const ORG = {
+  '@type': 'LocalBusiness', '@id': SITE + '/#business',
+  name: BUSINESS.name, url: SITE + '/', email: BUSINESS.email, telephone: BUSINESS.phone,
+  address: {
+    '@type': 'PostalAddress', streetAddress: BUSINESS.postal.street, addressLocality: BUSINESS.postal.city,
+    addressRegion: BUSINESS.postal.region, postalCode: BUSINESS.postal.code, addressCountry: BUSINESS.postal.country,
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: BUSINESS.geo.lat, longitude: BUSINESS.geo.lng },
+  hasMap: BUSINESS.maps,
+  sameAs: [...Object.values(BUSINESS.social), BUSINESS.google],
+};
 const jsonLd = data => `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`;
 
 function page({ path, title, description, type = 'website', body, schema = [] }) {
@@ -144,6 +155,13 @@ await out('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
 ${urls.map(u => `  <url><loc>${SITE}${u}</loc></url>`).join('\n')}
 </urlset>
 `);
+// The app's home page carries the same business details for local search.
+const appIndex = join(DIST, 'index.html');
+const html = await readFile(appIndex, 'utf8');
+const block = /<!-- business-jsonld -->[\s\S]*?<!-- \/business-jsonld -->/;
+if (!block.test(html)) { console.error('dist/index.html is missing the business-jsonld markers'); process.exit(1); }
+await writeFile(appIndex, html.replace(block, `<!-- business-jsonld -->\n  <link rel="canonical" href="${SITE}/">\n  ${jsonLd({ '@context': 'https://schema.org', ...ORG })}\n  <!-- /business-jsonld -->`));
+
 await out('robots.txt', `User-agent: *
 Allow: /
 

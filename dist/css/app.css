@@ -637,3 +637,9 @@ section[id] { scroll-margin-top: 120px; }
   .nav-links.open { display: flex; }
   .nav-actions { margin-left: auto; }
 }
+/* office map on the contact page */
+.visit { padding-top: 0; }
+.map-frame { padding: 0; overflow: hidden; aspect-ratio: 16 / 7; min-height: 320px; }
+.map-frame iframe { display: block; width: 100%; height: 100%; border: 0; }
+.footer .foot-grid p.muted { margin: 4px 0 8px; }
+@media (max-width: 640px) { .map-frame { aspect-ratio: 4 / 3; min-height: 260px; } }
