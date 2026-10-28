@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="rk-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4b2bd6"/>
+      <stop offset="100%" stop-color="#ff6b3d"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" rx="30" fill="url(#rk-bg)"/>
+  <!-- Stylized avatar silhouette with monogram -->
+  <circle cx="200" cy="150" r="70" fill="#ffffff" fill-opacity="0.95"/>
+  <path d="M100 340 C100 250 150 240 200 240 C250 240 300 250 300 340 Z" fill="#ffffff" fill-opacity="0.95"/>
+  <text x="200" y="165" text-anchor="middle" font-size="44" font-weight="800" fill="#4b2bd6" font-family="sans-serif">RK</text>
+  <!-- Badges -->
+  <rect x="70" y="330" width="260" height="36" rx="18" fill="#130e28"/>
+  <text x="200" y="353" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff" font-family="sans-serif">Ranjith Kumar · Vintorex</text>
+</svg>

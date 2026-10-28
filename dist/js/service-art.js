@@ -98,48 +98,30 @@ export const ART = {
   'ai-geo': { scene: 'cite', alt: 'AI answer card with a star, source tags and a visibility meter for a business', chips: ['AI answers', 'Entities', 'Citations'] },
 };
 
+export { SCENES };
 const HUE = { build: 255, grow: 155, brand: 18, tech: 205, ai: 285 };
 
-// Image block for a service page header.
+// Image block for a service page header with high-resolution image and descriptive alt text.
 export function serviceArt(s, index = 0) {
   const a = ART[s.id];
   if (!a) return '';
   const h = ((HUE[s.cat] ?? 255) + (index * 11) % 36) % 360;
-  const id = 'sa-' + s.id;
   return `<figure class="service-art" style="--h:${h}">
-    <svg viewBox="0 0 400 300" role="img" aria-labelledby="${id}-t" preserveAspectRatio="xMidYMid slice">
-      <title id="${id}-t">${esc(a.alt)}</title>
-      <defs><linearGradient id="${id}-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h} 78% 58%)"/><stop offset="1" stop-color="hsl(${(h + 45) % 360} 70% 30%)"/></linearGradient></defs>
-      <rect width="400" height="300" fill="url(#${id}-g)"/><circle cx="360" cy="30" r="90" fill="#fff" fill-opacity=".08"/><circle cx="20" cy="290" r="80" fill="#fff" fill-opacity=".07"/>
-      <g style="color:hsl(${h} 70% 28%)">${SCENES[a.scene]()}</g>
-    </svg>
+    <img class="service-art-img" src="/images/services/${s.id}.svg" alt="${esc(a.alt)}" width="800" height="500" loading="eager" decoding="async">
     <figcaption>${a.chips.map(c => `<span>${esc(c)}</span>`).join('')}</figcaption>
   </figure>`;
 }
 
-// Compact visual illustration banner for service cards.
+// Compact visual illustration banner for service cards with responsive image and alt text.
 export function serviceCardArt(s, index = 0) {
   const a = ART[s.id];
   if (!a) return '';
   const h = ((HUE[s.cat] ?? 255) + (index * 13) % 40) % 360;
-  const id = 'sc-' + s.id;
   return `<div class="svc-thumb" style="--h:${h}">
-    <svg viewBox="0 0 400 240" role="img" aria-label="${esc(a.alt)}" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <linearGradient id="${id}-g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="hsl(${h} 76% 56%)"/>
-          <stop offset="100%" stop-color="hsl(${(h + 45) % 360} 70% 30%)"/>
-        </linearGradient>
-      </defs>
-      <rect width="400" height="240" fill="url(#${id}-g)"/>
-      <circle cx="360" cy="20" r="85" fill="#fff" fill-opacity=".09"/>
-      <circle cx="30" cy="230" r="75" fill="#fff" fill-opacity=".07"/>
-      <g transform="translate(10, -20) scale(0.95)" style="color:hsl(${h} 70% 28%)">
-        ${SCENES[a.scene]()}
-      </g>
-    </svg>
+    <img class="svc-img" src="/images/services/${s.id}.svg" alt="${esc(a.alt)}" width="800" height="500" loading="lazy" decoding="async">
     <div class="svc-thumb-overlay"></div>
     <span class="svc-cat-tag">${esc(a.chips[0])}</span>
   </div>`;
 }
+
 

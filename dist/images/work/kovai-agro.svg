@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" width="960" height="640">
+    <g transform="scale(2)">
+      
+      <svg viewBox="0 0 480 320" role="img" aria-label="Kovai Agro Organics mobile app and storefront mockup" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="ka-bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#062817"/>
+            <stop offset="100%" stop-color="#02140a"/>
+          </linearGradient>
+          <linearGradient id="ka-green" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#34d399"/>
+            <stop offset="100%" stop-color="#059669"/>
+          </linearGradient>
+        </defs>
+        <rect width="480" height="320" fill="url(#ka-bg)"/>
+        <circle cx="120" cy="80" r="110" fill="#10b981" fill-opacity="0.12"/>
+        <circle cx="380" cy="240" r="130" fill="#34d399" fill-opacity="0.08"/>
+
+        <!-- Phone Mockup in Center -->
+        <g transform="translate(160, 20)">
+          <!-- Phone Body -->
+          <rect x="0" y="0" width="160" height="280" rx="26" fill="#0a1d12" stroke="#1f4e34" stroke-width="2"/>
+          <!-- Notch / Speaker -->
+          <rect x="52" y="8" width="56" height="6" rx="3" fill="#1f4e34"/>
+          <!-- Screen Area -->
+          <rect x="8" y="22" width="144" height="246" rx="18" fill="#0d281a"/>
+          <!-- App Header -->
+          <rect x="16" y="32" width="80" height="10" rx="5" fill="#34d399"/>
+          <text x="16" y="52" font-size="8" fill="#9ca3af" font-family="sans-serif">📍 Cheran Ma Nagar, CBE</text>
+          <circle cx="138" cy="40" r="8" fill="#10b981" fill-opacity="0.3"/>
+
+          <!-- Promo Banner Card -->
+          <rect x="16" y="60" width="128" height="52" rx="10" fill="url(#ka-green)"/>
+          <text x="26" y="80" font-size="10" font-weight="bold" fill="#ffffff" font-family="sans-serif">Weekly Harvest</text>
+          <text x="26" y="94" font-size="8" fill="#ecfdf5" font-family="sans-serif">100% Organic Farm Direct</text>
+
+          <!-- Product Grid -->
+          <rect x="16" y="120" width="60" height="56" rx="8" fill="#133624"/>
+          <circle cx="46" cy="140" r="12" fill="#10b981" fill-opacity="0.4"/>
+          <rect x="22" y="160" width="36" height="5" rx="2.5" fill="#ffffff" fill-opacity="0.8"/>
+
+          <rect x="84" y="120" width="60" height="56" rx="8" fill="#133624"/>
+          <circle cx="114" cy="140" r="12" fill="#f59e0b" fill-opacity="0.4"/>
+          <rect x="90" y="160" width="36" height="5" rx="2.5" fill="#ffffff" fill-opacity="0.8"/>
+
+          <!-- Subscription Button -->
+          <rect x="16" y="186" width="128" height="24" rx="8" fill="#10b981"/>
+          <text x="32" y="201" font-size="8.5" font-weight="bold" fill="#ffffff" font-family="sans-serif">Subscribe Basket (₹499)</text>
+
+          <!-- Delivery tracker pill -->
+          <rect x="16" y="218" width="128" height="38" rx="8" fill="#081b10" stroke="#1f4e34" stroke-width="1"/>
+          <circle cx="28" cy="237" r="6" fill="#10b981"/>
+          <text x="40" y="234" font-size="7.5" font-weight="bold" fill="#ffffff" font-family="sans-serif">Out for Morning Delivery</text>
+          <text x="40" y="246" font-size="7" fill="#6ee7b7" font-family="sans-serif">Arriving by 7:30 AM</text>
+        </g>
+
+        <!-- Floating Left Card: Organic Certification -->
+        <g transform="translate(24, 70)">
+          <rect width="120" height="64" rx="10" fill="#061a0f" stroke="#10b981" stroke-width="1.2"/>
+          <circle cx="26" cy="26" r="12" fill="#10b981" fill-opacity="0.2"/>
+          <path d="M26 18 C20 22 20 28 26 34 C32 28 32 22 26 18 Z" fill="#10b981"/>
+          <text x="44" y="24" font-size="9" font-weight="bold" fill="#ffffff" font-family="sans-serif">100% Organic</text>
+          <text x="44" y="36" font-size="7.5" fill="#a7f3d0" font-family="sans-serif">Zero Pesticides</text>
+          <text x="14" y="52" font-size="8" fill="#34d399" font-family="sans-serif">Certified Organic Farm</text>
+        </g>
+
+        <!-- Floating Right Card: Retention Metric -->
+        <g transform="translate(336, 170)">
+          <rect width="124" height="64" rx="10" fill="#061a0f" stroke="#34d399" stroke-width="1.2"/>
+          <circle cx="26" cy="26" r="12" fill="#34d399"/>
+          <path d="M20 26 L24 30 L32 21" fill="none" stroke="#062817" stroke-width="2" stroke-linecap="round"/>
+          <text x="44" y="24" font-size="9" font-weight="bold" fill="#ffffff" font-family="sans-serif">240% Growth</text>
+          <text x="44" y="36" font-size="7.5" fill="#a7f3d0" font-family="sans-serif">Repeat Subscriptions</text>
+          <text x="14" y="52" font-size="8" fill="#34d399" font-family="sans-serif">4.9 ★ Rating in CBE</text>
+        </g>
+      </svg>
+    
+    </g>
+  </svg>

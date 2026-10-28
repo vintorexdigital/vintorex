@@ -38,7 +38,21 @@ function match(path) {
 
 const app = () => $('#app');
 const DEFAULT_DESCRIPTION = $('meta[name=description]')?.getAttribute('content') || '';
+const DEFAULT_KEYWORDS = $('meta[name=keywords]')?.getAttribute('content') || '';
+const DEFAULT_OG_IMAGE = $('meta[property="og:image"]')?.getAttribute('content') || 'https://vintorex.com/images/og-cover.svg';
 let lastPath = null;
+
+function setMeta(selector, attr, value, fallback = '') {
+  let el = $(selector);
+  if (!el && selector.includes('=')) {
+    const [tag, pair] = selector.split('[');
+    const [name, val] = pair.replace(']', '').split('=');
+    el = document.createElement(tag);
+    el.setAttribute(name, val.replace(/['"]/g, ''));
+    document.head.appendChild(el);
+  }
+  el?.setAttribute(attr, value || fallback);
+}
 
 function render() {
   const raw = (location.hash.slice(1) || '/').split('#')[0];
@@ -46,8 +60,24 @@ function render() {
   const [fn, params] = match(path.replace(/\/$/, '') || '/');
   const v = fn(params, new URLSearchParams(qs)) || Pub.notFound();
   if (v.redirect) { location.replace('#' + v.redirect); return; }
-  document.title = `${v.title} · ${BUSINESS.short}`;
-  $('meta[name=description]')?.setAttribute('content', v.description || DEFAULT_DESCRIPTION);
+  const pageTitle = `${v.title} · ${BUSINESS.short}`;
+  document.title = pageTitle;
+  const desc = v.description || DEFAULT_DESCRIPTION;
+  const kw = v.keywords || DEFAULT_KEYWORDS;
+  const img = v.image || DEFAULT_OG_IMAGE;
+  const imgAlt = v.imageAlt || `${v.title} - ${BUSINESS.name}`;
+
+  setMeta('meta[name=description]', 'content', desc);
+  setMeta('meta[name=keywords]', 'content', kw);
+  setMeta('meta[property="og:title"]', 'content', pageTitle);
+  setMeta('meta[property="og:description"]', 'content', desc);
+  setMeta('meta[property="og:image"]', 'content', img);
+  setMeta('meta[property="og:image:alt"]', 'content', imgAlt);
+  setMeta('meta[name="twitter:title"]', 'content', pageTitle);
+  setMeta('meta[name="twitter:description"]', 'content', desc);
+  setMeta('meta[name="twitter:image"]', 'content', img);
+  setMeta('meta[name="twitter:image:alt"]', 'content', imgAlt);
+
   const user = D.currentUser();
   if (v.shell) app().innerHTML = dashShell(v, user);
   else app().innerHTML = v.bare ? `<main id="main">${v.html}</main>` : `${header(user)}<main id="main">${v.html}</main>${footer()}`;

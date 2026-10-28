@@ -330,10 +330,11 @@ export const WORK_PROJECTS = [
 ];
 
 export function renderWorkCard(w) {
+  const altText = `${w.title} - ${w.category} case study: ${w.metrics.join(', ')} by Vintorex Digital Solutions Coimbatore`;
   return `
     <article class="card work-card">
       <div class="work-visual" style="--h:${w.hue}">
-        ${w.drawSvg()}
+        <img class="work-img" src="/images/work/${w.id}.svg" alt="${esc(altText)}" width="960" height="640" loading="lazy" decoding="async">
         <span class="work-overlay-badge">${icon('arrow')} View Case Study</span>
       </div>
       <div class="work-content">

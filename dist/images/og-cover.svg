@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="og-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#19123b"/>
+      <stop offset="50%" stop-color="#0f0c24"/>
+      <stop offset="100%" stop-color="#060410"/>
+    </linearGradient>
+    <linearGradient id="og-brand" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6d4dff"/>
+      <stop offset="100%" stop-color="#ff6b3d"/>
+    </linearGradient>
+    <linearGradient id="og-mesh" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#4b2bd6" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#ff6b3d" stop-opacity="0.2"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="30" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="1200" height="630" fill="url(#og-bg)"/>
+  <circle cx="1000" cy="150" r="320" fill="#6d4dff" fill-opacity="0.18" filter="url(#glow)"/>
+  <circle cx="200" cy="550" r="280" fill="#ff6b3d" fill-opacity="0.14" filter="url(#glow)"/>
+
+  <!-- Subtle grid lines -->
+  <g stroke="#ffffff" stroke-opacity="0.04" stroke-width="1">
+    <line x1="0" y1="105" x2="1200" y2="105"/><line x1="0" y1="210" x2="1200" y2="210"/>
+    <line x1="0" y1="315" x2="1200" y2="315"/><line x1="0" y1="420" x2="1200" y2="420"/><line x1="0" y1="525" x2="1200" y2="525"/>
+    <line x1="150" y1="0" x2="150" y2="630"/><line x1="300" y1="0" x2="300" y2="630"/>
+    <line x1="450" y1="0" x2="450" y2="630"/><line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="750" y1="0" x2="750" y2="630"/><line x1="900" y1="0" x2="900" y2="630"/><line x1="1050" y1="0" x2="1050" y2="630"/>
+  </g>
+
+  <!-- Header Logo & Brand -->
+  <g transform="translate(80, 80)">
+    <rect width="64" height="64" rx="18" fill="#4b2bd6"/>
+    <path d="M16 18 L32 48 L48 18" fill="none" stroke="#ffffff" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="86" y="42" font-size="34" font-weight="800" fill="#ffffff" font-family="'Plus Jakarta Sans', system-ui, sans-serif">Vintorex</text>
+    <text x="86" y="60" font-size="16" font-weight="600" fill="#9ca3af" font-family="'Plus Jakarta Sans', system-ui, sans-serif">Digital Solutions · Coimbatore</text>
+  </g>
+
+  <!-- Hero Headline -->
+  <text x="80" y="240" font-size="56" font-weight="800" fill="#ffffff" font-family="'Plus Jakarta Sans', system-ui, sans-serif" letter-spacing="-1">
+    Turning data into dollars.
+  </text>
+  <text x="80" y="300" font-size="24" font-weight="500" fill="#c4b5fd" font-family="'Plus Jakarta Sans', system-ui, sans-serif">
+    Web Development, E-Commerce, SEO, Ads &amp; AI Automation in Coimbatore
+  </text>
+
+  <!-- Feature Pills -->
+  <g transform="translate(80, 360)">
+    <rect width="210" height="48" rx="24" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.15"/>
+    <circle cx="28" cy="24" r="8" fill="#10b981"/>
+    <text x="48" y="30" font-size="16" font-weight="700" fill="#ffffff" font-family="sans-serif">21+ Fixed Services</text>
+
+    <rect x="230" width="220" height="48" rx="24" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.15"/>
+    <circle cx="258" cy="24" r="8" fill="#f59e0b"/>
+    <text x="278" y="30" font-size="16" font-weight="700" fill="#ffffff" font-family="sans-serif">15–40% Below Metro</text>
+
+    <rect x="470" width="210" height="48" rx="24" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.15"/>
+    <circle cx="498" cy="24" r="8" fill="#6d4dff"/>
+    <text x="518" y="30" font-size="16" font-weight="700" fill="#ffffff" font-family="sans-serif">18% GST Compliant</text>
+  </g>
+
+  <!-- Live Dashboard Mockup Window on Right -->
+  <g transform="translate(730, 160)">
+    <rect width="390" height="380" rx="18" fill="#130e28" stroke="#2d2254" stroke-width="2"/>
+    <rect width="390" height="44" rx="18" fill="#1c163b"/>
+    <circle cx="26" cy="22" r="5" fill="#ef4444"/>
+    <circle cx="42" cy="22" r="5" fill="#f59e0b"/>
+    <circle cx="58" cy="22" r="5" fill="#10b981"/>
+    <rect x="80" y="12" width="200" height="20" rx="10" fill="#0c0919"/>
+    <text x="96" y="26" font-size="10" fill="#9ca3af" font-family="monospace">vintorex.com/dashboard</text>
+
+    <!-- Stat boxes inside mockup -->
+    <rect x="24" y="66" width="104" height="64" rx="10" fill="#1c163b"/>
+    <text x="36" y="88" font-size="10" fill="#9ca3af" font-family="sans-serif">Traffic Growth</text>
+    <text x="36" y="116" font-size="20" font-weight="bold" fill="#10b981" font-family="sans-serif">+182%</text>
+
+    <rect x="142" y="66" width="104" height="64" rx="10" fill="#1c163b"/>
+    <text x="154" y="88" font-size="10" fill="#9ca3af" font-family="sans-serif">Leads / Mo</text>
+    <text x="154" y="116" font-size="20" font-weight="bold" fill="#ffffff" font-family="sans-serif">146</text>
+
+    <rect x="260" y="66" width="104" height="64" rx="10" fill="#1c163b"/>
+    <text x="272" y="88" font-size="10" fill="#9ca3af" font-family="sans-serif">Cost / Lead</text>
+    <text x="272" y="116" font-size="20" font-weight="bold" fill="#fbbf24" font-family="sans-serif">₹84</text>
+
+    <!-- Bar chart -->
+    <g transform="translate(24, 150)">
+      <rect x="0" y="100" width="18" height="50" rx="4" fill="#4b2bd6"/>
+      <rect x="28" y="80" width="18" height="70" rx="4" fill="#4b2bd6"/>
+      <rect x="56" y="85" width="18" height="65" rx="4" fill="#4b2bd6"/>
+      <rect x="84" y="55" width="18" height="95" rx="4" fill="#6d4dff"/>
+      <rect x="112" y="62" width="18" height="88" rx="4" fill="#6d4dff"/>
+      <rect x="140" y="35" width="18" height="115" rx="4" fill="#6d4dff"/>
+      <rect x="168" y="20" width="18" height="130" rx="4" fill="#ff6b3d"/>
+      <rect x="196" y="30" width="18" height="120" rx="4" fill="#ff6b3d"/>
+      <rect x="224" y="10" width="18" height="140" rx="4" fill="#ff6b3d"/>
+      <rect x="252" y="5" width="18" height="145" rx="4" fill="#10b981"/>
+      <rect x="280" y="15" width="18" height="135" rx="4" fill="#10b981"/>
+      <rect x="308" y="0" width="18" height="150" rx="4" fill="#10b981"/>
+      <line x1="0" y1="150" x2="340" y2="150" stroke="#2d2254" stroke-width="1.5"/>
+    </g>
+
+    <!-- Floating partner pill inside mockup -->
+    <rect x="24" y="320" width="340" height="38" rx="8" fill="#1c163b" stroke="#372d66" stroke-width="1"/>
+    <circle cx="44" cy="339" r="6" fill="#10b981"/>
+    <text x="60" y="344" font-size="12" font-weight="bold" fill="#ffffff" font-family="sans-serif">Google Partner &amp; Meta Certified</text>
+    <text x="270" y="344" font-size="12" fill="#10b981" font-family="sans-serif">● Live Sync</text>
+  </g>
+
+  <!-- Footer Location & URL -->
+  <text x="80" y="570" font-size="16" fill="#9ca3af" font-family="sans-serif">📍 38 Bankers Colony Phase 2, Cheran Ma Nagar, Coimbatore 641035</text>
+  <text x="1120" y="570" text-anchor="end" font-size="18" font-weight="700" fill="#6d4dff" font-family="sans-serif">https://vintorex.com</text>
+</svg>

@@ -43,8 +43,11 @@ const ORG = {
 };
 const jsonLd = data => `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`;
 
-function page({ path, title, description, type = 'website', body, schema = [] }) {
+function page({ path, title, description, keywords = '', type = 'website', image = '', imageAlt = '', body, schema = [] }) {
   const url = SITE + path;
+  const ogImg = image || (SITE + '/images/og-cover.svg');
+  const ogImgAlt = imageAlt || `${title} - ${BUSINESS.name}`;
+  const kw = keywords || 'digital marketing blog, web development guides, seo playbooks, coimbatore business growth, ecommerce tips, ai automation guides';
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -52,6 +55,7 @@ function page({ path, title, description, type = 'website', body, schema = [] })
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(description)}">
+  <meta name="keywords" content="${esc(kw)}">
   <link rel="canonical" href="${url}">
   <meta name="theme-color" content="#4b2bd6">
   <meta property="og:type" content="${type}">
@@ -59,7 +63,13 @@ function page({ path, title, description, type = 'website', body, schema = [] })
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:url" content="${url}">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="${esc(ogImg)}">
+  <meta property="og:image:alt" content="${esc(ogImgAlt)}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${esc(title)}">
+  <meta name="twitter:description" content="${esc(description)}">
+  <meta name="twitter:image" content="${esc(ogImg)}">
+  <meta name="twitter:image:alt" content="${esc(ogImgAlt)}">
   <link rel="icon" href="${FAVICON}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -84,10 +94,16 @@ function articlePage(p) {
   const s = svc(p.service);
   const path = postUrl(p);
   const url = SITE + path;
+  const keywords = [s.name, s.cat, ...toc(p).map(([, t]) => t), 'Coimbatore digital marketing', 'Vintorex guide'].join(', ');
+  const image = `${SITE}/images/services/${s.id}.svg`;
+  const imageAlt = `${p.title} - ${s.name} evergreen guide by Vintorex Digital Solutions Coimbatore`;
   return page({
     path, type: 'article',
     title: `${p.title} | ${BUSINESS.short} Blog`,
     description: p.excerpt,
+    keywords,
+    image,
+    imageAlt,
     body: articleHtml(p, svc, { app: '/', url }),
     schema: [
       {
@@ -134,6 +150,9 @@ function indexPage() {
     path: '/blog/',
     title: `Blog — Evergreen guides on websites, SEO, social media & more | ${BUSINESS.short}`,
     description: `${POSTS.length} evergreen guides from ${BUSINESS.name} on websites, e-commerce, apps, SEO, social media, ads, email, branding, content, video, industrial design, cloud, analytics and maintenance.`,
+    keywords: 'digital marketing blog coimbatore, web design guides, seo tutorials, social media tips, google ads playbooks, ecommerce guides coimbatore, ai automation tutorials, vintorex guides',
+    image: `${SITE}/images/og-cover.svg`,
+    imageAlt: 'Vintorex Digital Solutions Evergreen Knowledge Base and Guides',
     body,
     schema: [{
       '@context': 'https://schema.org', '@type': 'Blog', name: `${BUSINESS.short} Blog`, url: SITE + '/blog/', publisher: ORG,
