@@ -32,9 +32,10 @@ export async function init() {
 function refreshCatalog(s) {
   const clone = x => JSON.parse(JSON.stringify(x));
   Object.assign(s.catalog, { services: clone(SERVICES), addons: clone(ADDONS), plans: clone(PLANS) });
-  // Add shipped products the saved catalog lacks; admin edits to existing ones stay.
-  const have = new Set((s.catalog.products || []).map(p => p.id));
-  s.catalog.products = [...(s.catalog.products || []), ...clone(PRODUCTS).filter(p => !have.has(p.id))];
+  // Keep admin price edits. Drop the old svg flag so every download uses its photograph.
+  const kept = (s.catalog.products || []).map(({ img, ...p }) => p);
+  const have = new Set(kept.map(p => p.id));
+  s.catalog.products = [...kept, ...clone(PRODUCTS).filter(p => !have.has(p.id))];
   s.catalogVersion = CATALOG_VERSION;
 }
 export async function resetDemo() { state = await seed(); save(); setCart([]); }

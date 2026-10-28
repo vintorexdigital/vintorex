@@ -5,6 +5,7 @@ import { esc, icon, toast, field, per, date, empty, $, $$ } from './ui.js';
 import { serviceGuides, featuredPosts, postCard } from './blogpages.js';
 import { logoMark } from './chrome.js';
 import { serviceArt, serviceCardArt, ART, CATALOG_KEYWORDS, serviceImagePath } from './service-art.js';
+import { SHOP_ART } from './shop-art.js';
 import { WORK_PROJECTS, renderWorkCard } from './work-art.js';
 export { logoMark };
 
@@ -27,9 +28,10 @@ const PRODUCT_ALT = {
 
 function art(p, cls = '') {
   const h = p.hue;
-  const altText = PRODUCT_ALT[p.id] || `${p.name}, a ${p.kind} download from the Vintorex shop in Coimbatore`;
+  const copy = SHOP_ART[p.id];
+  const altText = copy?.alt || PRODUCT_ALT[p.id] || `${p.name}, a ${p.kind} printable download from the Vintorex shop`;
   return `<div class="art ${cls}" style="--h:${h}">
-    <img class="product-img" src="/images/shop/${p.id}.${p.img || 'jpg'}" alt="${esc(altText)}" width="1200" height="900" loading="lazy" decoding="async">
+    <img class="product-img" src="/images/shop/${p.id}.jpg" alt="${esc(altText)}" width="1200" height="900" loading="lazy" decoding="async">
     <span class="art-kind-tag">${esc(p.kind)}</span>
   </div>`;
 }
@@ -599,7 +601,7 @@ export function shop() {
   return {
     title: 'Shop',
     description: 'Digital downloads, templates, SEO spreadsheets, client agreements, and quick add-on services with instant delivery from Vintorex Digital.',
-    keywords: 'vintorex shop, digital downloads coimbatore, art prints, social media template pack, local seo checklist, content calendar template, marketing kits',
+    keywords: ['vintorex shop', 'digital downloads', 'printable art prints', 'wall art download', ...Object.values(SHOP_ART).map(a => a.keywords), 'social media template pack', 'local seo checklist', 'content calendar template'].join(', '),
     image: 'https://vintorex.com/images/shop/seo-checklist.jpg',
     imageAlt: 'Printed local SEO checklist booklet with tick marks, a magnifying glass, and a map pin',
     html: `<section class="shell section">
