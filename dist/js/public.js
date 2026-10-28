@@ -331,7 +331,7 @@ export function serviceDetail({ id }) {
 
     <section class="shell section split">
       <div><h2>Need something custom?</h2><p class="lead">Tell us what you need and get a tailored quote for ${esc(s.name.toLowerCase())} within one working day.</p>
-      <p><a class="btn ghost" href="${BUSINESS.whatsapp}" target="_blank" rel="noopener">${icon('wa')} Chat on WhatsApp</a></p></div>
+      ${contactCards('compact')}</div>
       ${leadForm({ source: 'Service quote', service: s.id, title: 'Request a custom quote' })}
     </section>`,
     bind: root => {
@@ -623,13 +623,20 @@ export function orderDone({ id }) {
 }
 
 // ---------------- Content pages ----------------
-export function contact() {
+// The four contact cards (call, WhatsApp, email, visit), shared by the
+// contact page and the "Need something custom?" section on service pages.
+export function contactCards(extra = '') {
   const cards = [
     ['phoneCall', 'Call us', BUSINESS.phone, 'tel:+918667209838', 'Speak to a specialist'],
     ['wa', 'WhatsApp', 'Chat with the team', BUSINESS.whatsapp, 'Fastest way to reach us'],
     ['mail', 'Email', BUSINESS.email, 'mailto:' + BUSINESS.email, 'Replies within 2 working hours'],
     ['pin', 'Visit us', 'Coimbatore office', BUSINESS.maps, BUSINESS.address],
   ];
+  return `<div class="contact-cards ${extra}">${cards.map(([ic, t, main, href, sub]) => `<a class="card c-card" href="${href}" ${href.startsWith('http') ? 'target="_blank" rel="noopener"' : ''}>
+        <span class="svc-ic">${icon(ic)}</span><small>${esc(t)}</small><b>${esc(main)}</b><span class="muted">${esc(sub)}</span></a>`).join('')}</div>`;
+}
+
+export function contact() {
   const steps = [
     ['Share your goal', 'Tell us what you want to achieve: more leads, a new website, a store or better rankings.'],
     ['We reply fast', 'A specialist replies within 2 working hours with questions or a first idea.'],
@@ -641,8 +648,7 @@ export function contact() {
       <p class="eyebrow"><span></span>Contact Vintorex Digital</p>
       <h1>Let’s start a conversation.</h1>
       <p class="lead">Whether you need a website, an online store or more customers from Google and social media, tell us about your business and we’ll suggest the next step.</p>
-      <div class="contact-cards">${cards.map(([ic, t, main, href, sub]) => `<a class="card c-card" href="${href}" ${href.startsWith('http') ? 'target="_blank" rel="noopener"' : ''}>
-        <span class="svc-ic">${icon(ic)}</span><small>${esc(t)}</small><b>${esc(main)}</b><span class="muted">${esc(sub)}</span></a>`).join('')}</div>
+      ${contactCards()}
     </div></section>
 
     <section class="shell section enquiry" id="enquiry">

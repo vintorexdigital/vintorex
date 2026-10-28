@@ -880,3 +880,10 @@ input[type=range] { margin-inline: 0; }
 .service-art figcaption span { background: var(--brand-soft); color: var(--brand); font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
 @media (max-width: 1000px) { .detail-head { grid-template-columns: auto minmax(0, 1fr); } .service-art { grid-column: 1 / -1; max-width: 520px; } }
 @media (max-width: 640px) { .detail-head { grid-template-columns: 1fr; } .service-art { max-width: none; } }
+
+/* contact cards inside the "Need something custom?" section */
+.contact-cards.compact { grid-template-columns: 1fr 1fr; margin-top: 24px; gap: 14px; }
+.contact-cards.compact .c-card { padding: 16px; }
+.contact-cards.compact .svc-ic { width: 40px; height: 40px; margin-bottom: 4px; }
+.contact-cards.compact .c-card b { font-size: .95rem; }
+@media (max-width: 480px) { .contact-cards.compact { grid-template-columns: 1fr; } }
