@@ -1,7 +1,7 @@
 # Vintorex Digital Solutions — Web App
 
 Storefront, customer portal and admin CRM for Vintorex Digital Solutions (Coimbatore).
-It is a static single-page app in `dist/` (no build step), so it deploys the same way as the current site (`.openai/hosting.json` serves `dist`).
+It is a static single-page app in `dist/`, so it deploys the same way as the current site (`.openai/hosting.json` serves `dist`). The only build step generates the static blog pages (see **Blog** below).
 
 ## Run locally
 
@@ -28,7 +28,28 @@ Admin → Settings → **Reset demo data** restores the seed data.
 - **Service catalog** (`js/services.js`): for each of the 14 services, the overview, ideal customers, 3 packages, every work item per package, exclusions, delivery process, a percentage cost split per package, and named competitor prices with source links. There are also 31 add-ons, each tagged with the services it applies to. After editing, run the check below, and bump `CATALOG_VERSION` in `js/data.js` so browsers with saved data pick up the new catalog.
 - **Competitor analysis** (`#/compare`): all services against named competitors and market ranges. Each service page also has its own competitor table.
 - **Milestone payments**: one-time projects of ₹10,000 or more can be paid 40% / 40% / 20%. Customers pay later instalments from their dashboard, and admins can record offline payments from Orders.
+- **Blog** (`/blog/`): 28 evergreen guides, two per service, published as static HTML pages so search engines can index them. See below.
 - **Plans and other settings**: `js/data.js`.
+
+## Blog
+
+Guide content lives in `dist/js/blog/`, in one file per category (`build.js`, `grow.js`, `brand.js`, `tech.js`). Articles use a small Markdown subset (see the comment in `js/blog/index.js`). They deliberately avoid prices, years and tool-specific details so they stay accurate.
+
+After adding or editing a guide, regenerate the static pages:
+
+```bash
+npm run build:blog
+```
+
+The command writes `dist/blog/index.html`, one `dist/blog/<slug>/index.html` per guide, `dist/sitemap.xml` and `dist/robots.txt`. Each page has a canonical URL, Open Graph tags and BlogPosting, FAQPage and BreadcrumbList structured data. The build stops with an error if a service has fewer than two guides or a link points at an unknown service. Commit the generated files, since hosting serves `dist/` as-is.
+
+Canonical and sitemap URLs default to `https://vintorex.com`. If the app is served from another domain, rebuild with:
+
+```bash
+SITE_URL=https://your-domain.com npm run build:blog
+```
+
+The app links to these pages (service pages, home page, header and footer), and old `#/blog` links redirect to them. Page markup shared with the app lives in `js/chrome.js` (header and footer) and `js/blog/render.js` (cards and articles).
 
 Catalog check (split columns sum to 100, references resolve):
 

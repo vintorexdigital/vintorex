@@ -1,0 +1,8 @@
+{
+  "name": "vintorex",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:blog": "node scripts/build-blog.mjs"
+  }
+}

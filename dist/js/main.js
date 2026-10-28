@@ -3,12 +3,14 @@ import * as D from './db.js';
 import * as Pub from './public.js';
 import * as Acc from './account.js';
 import * as Adm from './admin.js';
+import * as Blog from './blogpages.js';
 import { BUSINESS } from './data.js';
+import { siteHeader, siteFooter } from './chrome.js';
 import { esc, icon, initials, $, $$ } from './ui.js';
 
 const routes = [
   ['/', Pub.home], ['/services', Pub.services], ['/services/:id', Pub.serviceDetail],
-  ['/pricing', Pub.pricing], ['/compare', Pub.compare], ['/shop', Pub.shop], ['/cart', Pub.cart], ['/checkout', Pub.checkout],
+  ['/pricing', Pub.pricing], ['/compare', Pub.compare], ['/blog', Blog.blogIndex], ['/blog/:slug', Blog.article], ['/shop', Pub.shop], ['/cart', Pub.cart], ['/checkout', Pub.checkout],
   ['/order/:id', Pub.orderDone], ['/invoice/:id', Pub.invoice], ['/contact', Pub.contact], ['/about', Pub.about],
   ['/terms', Pub.terms], ['/login', Pub.login], ['/register', Pub.register],
   ['/account', guard('customer', Acc.view)], ['/account/:tab', guard('customer', Acc.view)],
@@ -35,6 +37,7 @@ function match(path) {
 }
 
 const app = () => $('#app');
+const DEFAULT_DESCRIPTION = $('meta[name=description]')?.getAttribute('content') || '';
 let lastPath = null;
 
 function render() {
@@ -44,6 +47,7 @@ function render() {
   const v = fn(params, new URLSearchParams(qs)) || Pub.notFound();
   if (v.redirect) { location.replace('#' + v.redirect); return; }
   document.title = `${v.title} · ${BUSINESS.short}`;
+  $('meta[name=description]')?.setAttribute('content', v.description || DEFAULT_DESCRIPTION);
   const user = D.currentUser();
   if (v.shell) app().innerHTML = dashShell(v, user);
   else app().innerHTML = v.bare ? `<main id="main">${v.html}</main>` : `${header(user)}<main id="main">${v.html}</main>${footer()}`;
@@ -59,30 +63,11 @@ function cartCount() { return D.getCart().reduce((s, i) => s + (i.qty || 1), 0);
 
 function header(user) {
   const here = (location.hash.slice(1) || '/').split('?')[0];
-  const nav = [['/services', 'Services'], ['/pricing', 'Pricing'], ['/compare', 'Compare'], ['/shop', 'Shop'], ['/about', 'About'], ['/contact', 'Contact']];
-  return `<a class="skip" href="#main">Skip to content</a>
-  <header class="topbar"><div class="shell nav">
-    <a class="logo" href="#/">${Pub.logoMark()}<span>Vintorex<small>Digital Solutions</small></span></a>
-    <nav class="nav-links" id="nav-links" aria-label="Primary">${nav.map(([h, l]) => `<a href="#${h}" class="${here.startsWith(h) ? 'on' : ''}">${l}</a>`).join('')}</nav>
-    <div class="nav-actions">
-      <a class="icon-btn cart-btn" href="#/cart" aria-label="Cart">${icon('cart')}<span class="count" ${cartCount() ? '' : 'hidden'}>${cartCount()}</span></a>
-      ${user ? `<a class="btn sm ghost" href="#/${user.role === 'admin' ? 'admin' : 'account'}">${icon('user')} ${user.role === 'admin' ? 'Admin' : 'Dashboard'}</a>` : `<a class="btn sm ghost hide-sm" href="#/login">Sign in</a>`}
-      <a class="btn sm primary hide-sm" href="#/contact">Get a quote</a>
-      <button class="icon-btn menu-btn" aria-expanded="false" aria-controls="nav-links" aria-label="Menu">${icon('menu')}</button>
-    </div>
-  </div></header>`;
+  const account = user && `<a class="btn sm ghost" href="#/${user.role === 'admin' ? 'admin' : 'account'}">${icon('user')} ${user.role === 'admin' ? 'Admin' : 'Dashboard'}</a>`;
+  return siteHeader({ here, cart: cartCount(), account });
 }
 
-function footer() {
-  return `<footer class="footer"><div class="shell foot-grid">
-    <div><a class="logo" href="#/">${Pub.logoMark()}<span>Vintorex<small>Digital Solutions</small></span></a><p class="muted">${esc(BUSINESS.tagline)} Digital marketing, web and cloud services from Coimbatore.</p>
-      <div class="row gap wrap">${Object.entries(BUSINESS.social).map(([n, u]) => `<a class="chip" href="${u}" target="_blank" rel="noopener">${n}</a>`).join('')}</div></div>
-    <div><h4>Services</h4>${D.catalog().services.slice(0, 7).map(s => `<a href="#/services/${s.id}">${esc(s.name)}</a>`).join('')}</div>
-    <div><h4>Company</h4><a href="#/about">About</a><a href="#/pricing">Pricing</a><a href="#/compare">Competitor analysis</a><a href="#/shop">Shop</a><a href="#/contact">Contact</a><a href="#/terms">Terms & refunds</a></div>
-    <div><h4>Contact</h4><a href="tel:+918667209838">${esc(BUSINESS.phone)}</a><a href="mailto:${BUSINESS.email}">${esc(BUSINESS.email)}</a><a href="${BUSINESS.whatsapp}" target="_blank" rel="noopener">WhatsApp</a><p class="muted">${esc(BUSINESS.address)}</p></div>
-  </div><div class="shell fine">© ${new Date().getFullYear()} ${esc(BUSINESS.name)}. All prices exclude GST.</div></footer>
-  <a class="wa-float" href="${BUSINESS.whatsapp}" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">${icon('wa')}</a>`;
-}
+const footer = () => siteFooter({ services: D.catalog().services });
 
 function dashShell(v, user) {
   const admin = v.shell === 'admin';

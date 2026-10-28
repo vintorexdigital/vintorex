@@ -2,6 +2,9 @@
 import { BUSINESS, CATEGORIES, ANNUAL_MONTHS_PAID, SOURCES, LEAD_SOURCES, COMPETITOR_SOURCES, MILESTONE_MIN } from './data.js';
 import * as D from './db.js';
 import { esc, icon, toast, field, per, date, empty, $, $$ } from './ui.js';
+import { serviceGuides, featuredPosts, postCard } from './blogpages.js';
+import { logoMark } from './chrome.js';
+export { logoMark };
 
 const inr = D.inr;
 const go = path => { location.hash = '#' + path; };
@@ -142,6 +145,11 @@ export function home() {
       </div>
     </section>
 
+    <section class="shell section">
+      <div class="sec-head"><h2>Guides from our blog</h2><a href="/blog/" class="link">All guides ${icon('arrow')}</a></div>
+      <div class="cards3">${featuredPosts().map(postCard).join('')}</div>
+    </section>
+
     <section class="shell section split" id="audit">
       <div>
         <p class="eyebrow"><span></span>Free website & SEO audit</p>
@@ -247,7 +255,7 @@ export function serviceDetail({ id }) {
   if (!s) return notFound();
   const addons = D.addonsFor(s.id);
   const popular = s.tiers.findIndex(t => t.popular);
-  const sections = [['packages', 'Packages'], ['included', 'What’s included'], ['split', 'Price split'], ['addons', 'Add-ons'], ['compare', 'Competitor analysis'], ['process', 'Process']];
+  const sections = [['packages', 'Packages'], ['included', 'What’s included'], ['split', 'Price split'], ['addons', 'Add-ons'], ['compare', 'Competitor analysis'], ['guides', 'Guides'], ['process', 'Process']];
   const [pos, tone] = position(s);
   return {
     title: s.name,
@@ -302,6 +310,11 @@ export function serviceDetail({ id }) {
       ${marketBar(s, (s.tiers.find(t => t.popular) || s.tiers[1]).price)}
       <p class="position">Our most popular package is <span class="badge ${tone}">${pos}</span> ${s.marketNote ? `<small class="muted">(${esc(s.marketNote)})</small>` : ''}</p>
       ${compTable(s)}
+    </section>
+
+    <section class="shell section" id="guides">
+      <div class="sec-head"><div><h2>Guides for ${esc(s.name)}</h2><p class="muted">Evergreen articles from our blog.</p></div><a class="link" href="/blog/#${s.id}">All guides ${icon('arrow')}</a></div>
+      <div class="cards2">${serviceGuides(s.id)}</div>
     </section>
 
     <section class="band" id="process"><div class="shell section">
@@ -756,7 +769,6 @@ export function invoice({ id }) {
   };
 }
 
-export const logoMark = () => `<svg viewBox="0 0 32 32" class="logo-mark" aria-hidden="true"><rect width="32" height="32" rx="9" fill="currentColor"/><path d="m8 9 8 15 8-15" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 let rerender = () => {};
 export const setRerender = fn => { rerender = fn; };
