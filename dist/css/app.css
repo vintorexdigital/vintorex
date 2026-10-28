@@ -641,12 +641,32 @@ section[id] { scroll-margin-top: 120px; }
   .nav-links.open { display: flex; }
   .nav-actions { margin-left: auto; }
 }
-/* office map on the contact page */
-.visit { padding-top: 0; }
-.map-frame { padding: 0; overflow: hidden; aspect-ratio: 16 / 7; min-height: 320px; }
+/* contact page */
+.contact-hero { background: radial-gradient(800px 320px at 90% 0%, #e6defd 0, transparent 60%), radial-gradient(500px 260px at 0% 100%, #ffe6dc 0, transparent 60%); border-bottom: 1px solid var(--line); }
+.contact-hero .section { padding-bottom: 48px; }
+.contact-hero h1 { margin: 12px 0 10px; }
+.contact-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 28px; }
+.c-card { display: grid; gap: 4px; align-content: start; color: var(--ink); text-decoration: none !important; transition: transform .15s, border-color .15s; }
+.c-card:hover { transform: translateY(-3px); border-color: var(--brand); }
+.c-card .svc-ic { margin-bottom: 8px; }
+.c-card small { color: var(--brand); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; font-size: 12px; }
+.c-card b { font-size: 1.02rem; overflow-wrap: anywhere; }
+.c-card .muted { font-size: 13.5px; }
+.enquiry { display: grid; grid-template-columns: 1fr 1.1fr; gap: 48px; align-items: start; }
+.enq-copy h2 { margin-bottom: 8px; }
+.enq-steps { list-style: none; padding: 0; margin: 24px 0; display: grid; gap: 18px; }
+.enq-steps li { display: flex; gap: 14px; }
+.enq-steps li > span { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--brand); color: #fff; font-weight: 800; }
+.enq-steps p { margin: 2px 0 0; color: var(--muted); font-size: 14.5px; }
+.enq-copy .hint { margin-bottom: 18px; }
+.visit-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; align-items: center; }
+.visit-copy h2 { margin: 12px 0 8px; }
+.visit-copy .contact-list { margin: 18px 0; }
+.map-frame { padding: 0; overflow: hidden; aspect-ratio: 4 / 3; min-height: 300px; }
 .map-frame iframe { display: block; width: 100%; height: 100%; border: 0; }
+@media (max-width: 1000px) { .contact-cards { grid-template-columns: 1fr 1fr; } .enquiry, .visit-grid { grid-template-columns: 1fr; gap: 28px; } }
+@media (max-width: 560px) { .contact-cards { grid-template-columns: 1fr; } .map-frame { min-height: 260px; } }
 .footer .foot-grid p.muted { margin: 4px 0 8px; }
-@media (max-width: 640px) { .map-frame { aspect-ratio: 4 / 3; min-height: 260px; } }
 
 /* Fluid sizing shared by the storefront, guides and both portals. */
 #app { min-height: 100svh; }

@@ -617,28 +617,55 @@ export function orderDone({ id }) {
 
 // ---------------- Content pages ----------------
 export function contact() {
+  const cards = [
+    ['phoneCall', 'Call us', BUSINESS.phone, 'tel:+918667209838', 'Speak to a specialist'],
+    ['wa', 'WhatsApp', 'Chat with the team', BUSINESS.whatsapp, 'Fastest way to reach us'],
+    ['mail', 'Email', BUSINESS.email, 'mailto:' + BUSINESS.email, 'Replies within 2 working hours'],
+    ['pin', 'Visit us', 'Coimbatore office', BUSINESS.maps, BUSINESS.address],
+  ];
+  const steps = [
+    ['Share your goal', 'Tell us what you want to achieve: more leads, a new website, a store or better rankings.'],
+    ['We reply fast', 'A specialist replies within 2 working hours with questions or a first idea.'],
+    ['Free, fixed-price proposal', 'You get a clear scope and price. No pressure and no obligation.'],
+  ];
   return {
     title: 'Contact',
-    html: `<section class="shell section split">
-      <div>
-        <h1>Let’s get started on your project</h1>
-        <p class="lead">Call, WhatsApp or send the form — we reply within 2 working hours.</p>
-        <ul class="contact-list">
-          <li>${icon('phoneCall')}<a href="tel:+918667209838">${esc(BUSINESS.phone)}</a></li>
-          <li>${icon('wa')}<a href="${BUSINESS.whatsapp}" target="_blank" rel="noopener">WhatsApp chat</a></li>
-          <li>${icon('mail')}<a href="mailto:${BUSINESS.email}">${esc(BUSINESS.email)}</a></li>
-          <li>${icon('pin')}<a href="${BUSINESS.maps}" target="_blank" rel="noopener">${esc(BUSINESS.address)}</a></li>
-          <li>${icon('star')}<a href="${BUSINESS.google}" target="_blank" rel="noopener">Reviews on Google</a></li>
-        </ul>
+    html: `<section class="contact-hero"><div class="shell section">
+      <p class="eyebrow"><span></span>Contact Vintorex Digital</p>
+      <h1>Let’s start a conversation.</h1>
+      <p class="lead">Whether you need a website, an online store or more customers from Google and social media, tell us about your business and we’ll suggest the next step.</p>
+      <div class="contact-cards">${cards.map(([ic, t, main, href, sub]) => `<a class="card c-card" href="${href}" ${href.startsWith('http') ? 'target="_blank" rel="noopener"' : ''}>
+        <span class="svc-ic">${icon(ic)}</span><small>${esc(t)}</small><b>${esc(main)}</b><span class="muted">${esc(sub)}</span></a>`).join('')}</div>
+    </div></section>
+
+    <section class="shell section enquiry" id="enquiry">
+      <div class="enq-copy">
+        <h2>Tell us about your project</h2>
+        <p class="lead">The more you share, the better our first reply. It takes about a minute.</p>
+        <ol class="enq-steps">${steps.map(([t, d], i) => `<li><span>${i + 1}</span><div><b>${esc(t)}</b><p>${esc(d)}</p></div></li>`).join('')}</ol>
+        <p class="hint">${icon('shield')}Please don’t send passwords, bank details or identity documents through this form. We’ll tell you how to share files securely when needed.</p>
         <div class="row gap wrap">${Object.entries(BUSINESS.social).map(([n, u]) => `<a class="chip" href="${u}" target="_blank" rel="noopener">${esc(n)}</a>`).join('')}</div>
       </div>
-      ${leadForm({ source: 'Website form', title: 'Send us a message' })}
+      ${leadForm({ source: 'Website form', title: 'Send an enquiry' })}
     </section>
-    <section class="shell section visit" id="visit">
-      <div class="sec-head"><div><h2>Visit our office</h2><p class="muted">${esc(BUSINESS.address)}</p></div>
-        <div class="row gap wrap"><a class="btn primary" href="${BUSINESS.maps}" target="_blank" rel="noopener">${icon('pin')} Get directions</a><a class="btn ghost" href="${BUSINESS.google}" target="_blank" rel="noopener">${icon('star')} Reviews on Google</a></div></div>
+
+    <section class="band" id="visit"><div class="shell section visit-grid">
+      <div class="visit-copy">
+        <p class="eyebrow"><span></span>Visit us · Coimbatore office</p>
+        <h2>Come and meet the team</h2>
+        <p class="lead">Prefer a face-to-face chat? Drop by our Coimbatore office. Call or WhatsApp ahead so someone is free to meet you.</p>
+        <ul class="contact-list">
+          <li>${icon('pin')}<span>${esc(BUSINESS.address)}</span></li>
+          <li>${icon('phoneCall')}<a href="tel:+918667209838">${esc(BUSINESS.phone)}</a></li>
+          <li>${icon('mail')}<a href="mailto:${BUSINESS.email}">${esc(BUSINESS.email)}</a></li>
+        </ul>
+        <div class="row gap wrap"><a class="btn primary" href="${BUSINESS.maps}" target="_blank" rel="noopener">${icon('pin')} Directions</a><a class="btn ghost" href="${BUSINESS.google}" target="_blank" rel="noopener">${icon('star')} Google profile &amp; reviews</a></div>
+      </div>
       <div class="map-frame card"><iframe src="${BUSINESS.mapEmbed}" title="Map showing the Vintorex Digital Solutions office in Coimbatore" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
-    </section>`,
+    </div></section>
+
+    <section class="shell section"><div class="card cta-band"><div><h2>Not ready to talk yet?</h2><p class="muted">Browse transparent pricing, or see how we compare with other agencies.</p></div>
+      <div class="row gap wrap"><a class="btn primary" href="#/pricing">See pricing</a><a class="btn ghost" href="#/compare">Competitor analysis</a></div></div></section>`,
     bind: bindLeadForms,
   };
 }
