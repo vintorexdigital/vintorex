@@ -22,6 +22,7 @@ for (const s of SERVICES) {
   const a = ART[s.id];
   if (!a) { errs.push(`${s.id}: missing image block in service-art.js`); continue; }
   if (a.alt.length < 40) errs.push(`${s.id}: alt text too short`);
+  if (!a.keywords || a.keywords.length < 40) errs.push(`${s.id}: meta keywords too short`);
   if (a.chips.length !== 3) errs.push(`${s.id}: needs 3 image chips`);
 }
 for (const a of ADDONS) a.for.forEach(f => { if (!ids.has(f)) errs.push(`add-on ${a.id}: unknown service ${f}`); });

@@ -329,12 +329,19 @@ export const WORK_PROJECTS = [
   },
 ];
 
+const WORK_ALT = {
+  'world-of-idols': 'Brass and bronze devotional idols in a boutique showroom beside a laptop storefront and a parcel with a gold ribbon',
+  'em-solutions': 'Electrical and mechanical components on a workbench beside a monitor showing a 3D product render',
+  'kovai-agro': 'Farm-fresh vegetable crates, milk bottles, and a phone showing a produce subscription app',
+  'spark-dental': 'Modern dental clinic reception with a tablet appointment calendar and a softly lit treatment room',
+};
+
 export function renderWorkCard(w) {
-  const altText = `${w.title} - ${w.category} case study: ${w.metrics.join(', ')} by Vintorex Digital Solutions Coimbatore`;
+  const altText = WORK_ALT[w.id] || `${w.title} project photograph for ${w.category} by Vintorex Digital Solutions`;
   return `
     <article class="card work-card">
       <div class="work-visual" style="--h:${w.hue}">
-        <img class="work-img" src="/images/work/${w.id}.svg" alt="${esc(altText)}" width="960" height="640" loading="lazy" decoding="async">
+        <img class="work-img" src="/images/work/${w.id}.jpg" alt="${esc(altText)}" width="1600" height="900" loading="lazy" decoding="async">
         <span class="work-overlay-badge">${icon('arrow')} View Case Study</span>
       </div>
       <div class="work-content">

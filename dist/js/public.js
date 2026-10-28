@@ -4,7 +4,7 @@ import * as D from './db.js';
 import { esc, icon, toast, field, per, date, empty, $, $$ } from './ui.js';
 import { serviceGuides, featuredPosts, postCard } from './blogpages.js';
 import { logoMark } from './chrome.js';
-import { serviceArt, serviceCardArt } from './service-art.js';
+import { serviceArt, serviceCardArt, ART, CATALOG_KEYWORDS, serviceImagePath } from './service-art.js';
 import { WORK_PROJECTS, renderWorkCard } from './work-art.js';
 export { logoMark };
 
@@ -12,11 +12,24 @@ const inr = D.inr;
 const go = path => { location.hash = '#' + path; };
 const fromPrice = s => Math.min(...s.tiers.map(t => t.price));
 
+const PRODUCT_ALT = {
+  'cosmic-galaxy': 'Cosmic galaxy art print with an indigo nebula, coral star clusters, and cream dust lanes',
+  'celestial-night': 'Dreamy celestial night art print with a soft moon, indigo sky, and coral clouds over distant hills',
+  'enchanted-castle': 'Enchanted castle landscape art print with a misty hilltop castle and warm lit windows',
+  'funky-floral': 'Funky floral fantasy art print of oversized coral, cream, and indigo flowers',
+  'mythical-creatures': 'Mythical creatures art print of a gentle dragon and phoenix among moonlit trees',
+  'underwater': 'Underwater wonderland art print with sunbeams, coral reefs, and soft fish silhouettes',
+  'forest-adventure': 'Whimsical forest adventure art print of a sunlit path through giant trees and fireflies',
+  'social-templates': 'Social media template pack laid out as blank indigo, coral, and cream post cards',
+  'seo-checklist': 'Printed local SEO checklist booklet with tick marks, a magnifying glass, and a map pin',
+  'content-calendar': 'Twelve-month content calendar spread as a grid of empty indigo, coral, and cream cells',
+};
+
 function art(p, cls = '') {
   const h = p.hue;
-  const altText = `${p.name} - ${p.kind} digital template and download by Vintorex Digital Solutions Coimbatore`;
+  const altText = PRODUCT_ALT[p.id] || `${p.name}, a ${p.kind} download from the Vintorex shop in Coimbatore`;
   return `<div class="art ${cls}" style="--h:${h}">
-    <img class="product-img" src="/images/shop/${p.id}.svg" alt="${esc(altText)}" width="600" height="420" loading="lazy" decoding="async">
+    <img class="product-img" src="/images/shop/${p.id}.jpg" alt="${esc(altText)}" width="1200" height="900" loading="lazy" decoding="async">
     <span class="art-kind-tag">${esc(p.kind)}</span>
   </div>`;
 }
@@ -109,9 +122,9 @@ export function home() {
   return {
     title: 'Digital Marketing & Web Development in Coimbatore',
     description: 'Websites, online stores, SEO, social media, ads, branding and AI automation in Coimbatore with 100% published prices set below typical agency rates.',
-    keywords: 'digital marketing company coimbatore, web development coimbatore, seo services coimbatore, ecommerce website development coimbatore, google ads management coimbatore, social media marketing coimbatore, ai automation coimbatore, local seo coimbatore, vintorex digital solutions',
-    image: 'https://vintorex.com/images/og-cover.svg',
-    imageAlt: 'Vintorex Digital Solutions Coimbatore - Web Development, SEO, Ads and AI Automation Services',
+    keywords: CATALOG_KEYWORDS,
+    image: 'https://vintorex.com/images/hero-dashboard.jpg',
+    imageAlt: 'Studio monitor showing a client growth dashboard with rising campaign bars at Vintorex Digital Solutions',
     html: `
     <section class="hero">
       <div class="shell hero-grid">
@@ -132,17 +145,10 @@ export function home() {
           </ul>
         </div>
         <div class="hero-card-wrap">
-          <div class="hero-card card">
+          <div class="hero-photo-card">
             <div class="hero-float float-top"><span class="dot-live"></span><b>Google &amp; Meta Partner</b></div>
             <div class="hero-float float-bottom"><span class="h-spark">${icon('spark')}</span><b>3.4× Average Client ROI</b></div>
-            <div class="hc-head"><span class="dot-live"></span>Client dashboard preview</div>
-            <div class="hc-metrics">
-              <div><small>Organic traffic</small><b>+182%</b></div>
-              <div><small>Leads this month</small><b>146</b></div>
-              <div><small>Cost per lead</small><b>₹84</b></div>
-            </div>
-            <div class="hc-chart">${[22, 30, 28, 41, 38, 52, 61, 58, 72, 80, 77, 92].map(v => `<i style="height:${v}%" title="Growth +${v}%"></i>`).join('')}</div>
-            <div class="hc-row"><span>${icon('check')}Website Growth — delivered</span><span>${icon('repeat')}SEO — 14 keywords on page 1</span></div>
+            <img class="hero-photo" src="/images/hero-dashboard.jpg" alt="Studio monitor showing a client growth dashboard with rising coral and indigo campaign bars" width="1600" height="900" decoding="async">
           </div>
         </div>
       </div>
@@ -243,7 +249,7 @@ export function home() {
             <span class="audit-pill">Free Audit</span>
           </div>
           <div class="audit-preview-body">
-            <img class="audit-scorecard-img" src="/images/audit-scorecard.svg" alt="Free 15-point website and SEO audit health report sample with 98 out of 100 performance score" width="600" height="400" loading="lazy" decoding="async">
+            <img class="audit-scorecard-img" src="/images/audit-scorecard.jpg" alt="Printed website and SEO health report with score rings and green checklist ticks beside a laptop" width="1600" height="900" loading="lazy" decoding="async">
             <ol class="audit-flow" aria-label="How the free audit works">
               <li><span class="af-n">1</span><div><b>Share your details</b><small>Website, business and goals</small></div></li>
               <li><span class="af-n">2</span><div><b>Speed & Web Vitals</b><small>Mobile and desktop scan</small></div></li>
@@ -312,9 +318,9 @@ export function services(params, query) {
   return {
     title,
     description,
-    keywords: 'digital marketing services coimbatore, web design packages, seo monthly packages, social media management pricing, google ads management, ai chatbot services, cloud hosting, brand identity design, vintorex services',
-    image: 'https://vintorex.com/images/og-cover.svg',
-    imageAlt: 'Vintorex Digital Solutions 21 Digital Services Catalog',
+    keywords: cat === 'all' ? CATALOG_KEYWORDS : list.map(s => ART[s.id]?.keywords).filter(Boolean).join(', '),
+    image: cat === 'all' ? 'https://vintorex.com/images/hero-dashboard.jpg' : `https://vintorex.com${serviceImagePath(list[0]?.id || 'web-design')}`,
+    imageAlt: cat === 'all' ? 'Vintorex Digital Solutions service photography for websites, marketing, cloud and AI' : (ART[list[0]?.id]?.alt || title),
     html: `<section class="shell section">
       <div class="page-head"><h1>Our services</h1><p class="lead">Every service has fixed packages, published prices and a market comparison so you know exactly what you pay for.</p></div>
       <nav class="chips" aria-label="Service categories">
@@ -375,9 +381,9 @@ export function serviceDetail({ id }) {
   return {
     title: s.name,
     description: s.summary || s.overview,
-    keywords: `${s.name}, ${catName}, digital marketing, ${s.tiers.map(t => t.name).join(', ')}, Vintorex Coimbatore`,
-    image: `https://vintorex.com/images/services/${s.id}.svg`,
-    imageAlt: `${s.name} - Professional ${catName} service deliverables, process, and packages by Vintorex Digital Solutions Coimbatore`,
+    keywords: ART[s.id]?.keywords || `${s.name}, ${catName}, Vintorex Coimbatore`,
+    image: `https://vintorex.com${serviceImagePath(s.id)}`,
+    imageAlt: ART[s.id]?.alt || `${s.name} by Vintorex Digital Solutions in Coimbatore`,
     html: `<section class="shell section">
       <a href="#/services" class="link back">← All services</a>
       <div class="detail-head">
@@ -482,8 +488,8 @@ export function compare() {
     title: 'Competitor analysis',
     description: `We benchmarked Vintorex pricing against ${named.length} competitors across Coimbatore agencies, national agencies and DIY platforms. 100% transparent rate cards with milestone billing.`,
     keywords: 'digital marketing competitor analysis, coimbatore agency rates comparison, web design pricing benchmark, seo packages price comparison, transparent agency pricing',
-    image: 'https://vintorex.com/images/hero-dashboard.svg',
-    imageAlt: 'Vintorex Digital vs Competitor Pricing Analysis and Benchmarks',
+    image: 'https://vintorex.com/images/hero-dashboard.jpg',
+    imageAlt: 'Studio monitor showing a client growth dashboard used to compare Vintorex pricing',
     html: `<section class="shell section">
       <div class="page-head"><h1>How our prices compare</h1>
         <p class="lead">We checked published prices from ${named.length} named competitors — Coimbatore agencies, national agencies and DIY platforms — plus market-range guides for every service. Each row links to the full breakdown.</p>
@@ -546,8 +552,8 @@ export function pricing() {
     title: 'Pricing',
     description: 'Simple, transparent pricing for all digital services, monthly growth memberships, and project add-ons with milestone payment options.',
     keywords: 'digital marketing pricing coimbatore, web development cost, marketing retainer plans, agency membership, transparent pricing india',
-    image: 'https://vintorex.com/images/hero-dashboard.svg',
-    imageAlt: 'Vintorex Digital Transparent Pricing Plans and Service Rates',
+    image: 'https://vintorex.com/images/hero-dashboard.jpg',
+    imageAlt: 'Studio monitor showing a client growth dashboard beside Vintorex pricing',
     html: `<section class="shell section">
       <div class="page-head center"><h1>Simple, transparent pricing</h1><p class="lead">Pick a membership for ongoing growth, or buy any service on its own. Members get up to 15% off every one-time project.</p>
         <div class="toggle" role="group" aria-label="Billing cycle"><button data-cycle="month" class="on">Monthly</button><button data-cycle="year">Annual <span class="badge green">2 months free</span></button></div>
@@ -593,9 +599,9 @@ export function shop() {
   return {
     title: 'Shop',
     description: 'Digital downloads, templates, SEO spreadsheets, client agreements, and quick add-on services with instant delivery from Vintorex Digital.',
-    keywords: 'digital marketing templates, agency contract templates, seo audit spreadsheet, marketing kits download, digital products india, vintorex shop',
-    image: 'https://vintorex.com/images/shop/seo-checklist.svg',
-    imageAlt: 'Vintorex Digital Shop - Templates, Guides, and Digital Products',
+    keywords: 'vintorex shop, digital downloads coimbatore, art prints, social media template pack, local seo checklist, content calendar template, marketing kits',
+    image: 'https://vintorex.com/images/shop/seo-checklist.jpg',
+    imageAlt: 'Printed local SEO checklist booklet with tick marks, a magnifying glass, and a map pin',
     html: `<section class="shell section">
       <div class="page-head"><h1>Shop</h1><p class="lead">Digital downloads, templates and quick add-on services — instant checkout.</p></div>
       <h2 class="h3">Digital downloads</h2>
@@ -771,8 +777,8 @@ export function contact() {
     title: 'Contact',
     description: 'Get in touch with Vintorex Digital in Coimbatore. Call, WhatsApp, email, or visit our office for a free digital audit and custom project quote.',
     keywords: 'contact vintorex, digital marketing office coimbatore, web design enquiry, coimbatore agency phone number, hire digital agency',
-    image: 'https://vintorex.com/images/about-studio.svg',
-    imageAlt: 'Contact Vintorex Digital Solutions in Coimbatore',
+    image: 'https://vintorex.com/images/about-studio.jpg',
+    imageAlt: 'Vintorex studio desk at dusk with monitors, a laptop, and a plant by the window',
     html: `<section class="contact-hero"><div class="shell section">
       <p class="eyebrow"><span></span>Contact Vintorex Digital</p>
       <h1>Let’s start a conversation.</h1>
@@ -817,8 +823,8 @@ export function about() {
     title: 'About Vintorex Digital',
     description: 'Learn about Vintorex Digital Solutions in Coimbatore, founded by Ranjith Kumar to deliver transparent, data-driven web development, SEO, ads and AI automation.',
     keywords: 'about vintorex digital solutions, ranjith kumar coimbatore, digital marketing team coimbatore, data driven marketing agency tamil nadu, web developers cheran ma nagar coimbatore',
-    image: 'https://vintorex.com/images/about-studio.svg',
-    imageAlt: 'Vintorex Digital Solutions creative studio and team in Coimbatore',
+    image: 'https://vintorex.com/images/about-studio.jpg',
+    imageAlt: 'Vintorex studio desk at dusk with monitors, a laptop, and a plant by the window',
     html: `
     <section class="shell section about-hero">
       <div class="about-hero-grid">
@@ -834,7 +840,7 @@ export function about() {
           </div>
         </div>
         <div class="about-studio-art card">
-          <img class="about-studio-img" src="/images/about-studio.svg" alt="Vintorex Digital Solutions creative studio and technology workstation in Cheran Ma Nagar, Coimbatore" width="920" height="600" loading="lazy" decoding="async">
+          <img class="about-studio-img" src="/images/about-studio.jpg" alt="Vintorex studio desk at dusk with two monitors, a laptop, coffee, and a plant by the window in Coimbatore" width="1600" height="900" loading="lazy" decoding="async">
         </div>
       </div>
     </section>
@@ -929,8 +935,8 @@ export function terms() {
     title: 'Policies',
     description: 'Read Vintorex Digital Solutions service policies, project refund terms, digital download delivery, and privacy commitments.',
     keywords: 'vintorex terms, refund policy, privacy policy, client agreement, agency terms of service',
-    image: 'https://vintorex.com/images/og-cover.svg',
-    imageAlt: 'Vintorex Digital Solutions Policies and Client Agreement',
+    image: 'https://vintorex.com/images/about-studio.jpg',
+    imageAlt: 'Vintorex studio desk at dusk with monitors, a laptop, and a plant by the window',
     html: `<section class="shell section narrow prose">
       <h1>Terms, refunds & privacy</h1>
       <h3>Services</h3><p>Project scope is defined by the package purchased. Additional work is quoted separately. Monthly retainers renew automatically until cancelled from your dashboard.</p>

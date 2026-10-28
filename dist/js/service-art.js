@@ -73,29 +73,139 @@ const SCENES = {
     ${card(40, 184, 320, 76, .6)}<rect x="60" y="204" width="110" height="9" rx="4.5" ${W(.9)}/><rect x="60" y="222" width="260" height="14" rx="7" ${W(.35)}/><rect x="60" y="222" width="190" height="14" rx="7" ${W(.95)}/>`,
 };
 
-// alt = the image's text alternative. chips = three short capability labels.
+// alt = the image's text alternative. keywords = the meta keywords for that service.
+// chips = three short capability labels shown under the photograph.
+export const serviceImagePath = id => `/images/services/${id}.jpg`;
+
+export const CATALOG_KEYWORDS = 'website design coimbatore, web development coimbatore, ecommerce store development, mobile app development, seo services coimbatore, local seo, social media marketing coimbatore, google ads management, meta ads, email marketing, whatsapp marketing, digital branding, logo design, seo content writing, reels and video production, industrial product design, 3d product rendering, cloud hosting, web analytics, website maintenance, ai chatbot, whatsapp assistant, ai voice agent, business process automation, ai content studio, custom ai assistant, ai team training, ai search optimisation, vintorex digital solutions';
+
 export const ART = {
-  'web-design': { scene: 'browser', alt: 'Website design mock-up showing a business home page on a desktop screen next to the same page on a phone', chips: ['Mobile-first', 'SEO-ready', 'Fast pages'] },
-  ecommerce: { scene: 'store', alt: 'Online store mock-up with product cards, a shopping cart and a payment confirmation', chips: ['UPI & cards', 'GST invoices', 'Shipping'] },
-  'mobile-app': { scene: 'phone', alt: 'Smartphone showing a business mobile app with a banner, menu tiles, navigation dots and a notification', chips: ['Android + iOS', 'Push alerts', 'Admin panel'] },
-  seo: { scene: 'search', alt: 'Search results page where a business listing appears at the top with a star, beside a rising ranking chart', chips: ['Local SEO', 'Rankings', 'Content'] },
-  'social-media': { scene: 'feed', alt: 'Social media feed with a video post, a like and share row, and an engagement graph', chips: ['Posts', 'Reels', 'Community'] },
-  advertising: { scene: 'chart', alt: 'Advertising dashboard with a bar chart of campaign results and a rising conversion line', chips: ['Google Ads', 'Meta Ads', 'Tracking'] },
-  'email-marketing': { scene: 'mail', alt: 'Email envelope with message cards and a WhatsApp chat bubble showing automated campaigns', chips: ['Newsletters', 'WhatsApp', 'Automations'] },
-  branding: { scene: 'brand', alt: 'Brand identity board with a logo mark, four colour swatches, a typography sample and stationery shapes', chips: ['Logo', 'Colours', 'Brand book'] },
-  'content-writing': { scene: 'doc', alt: 'Article page with a headline and paragraphs next to a keyword checklist with ticks', chips: ['Keywords', 'Articles', 'Refreshes'] },
-  video: { scene: 'video', alt: 'Vertical video reel with a play button above an editing timeline of clips', chips: ['Reels', 'Captions', 'Brand film'] },
-  'industrial-design': { scene: 'cube', alt: '3D render of an industrial product shown as a shaded block with measurement lines on its sides', chips: ['3D renders', 'Catalogues', 'CAD'] },
-  cloud: { scene: 'cloud', alt: 'Cloud containing two server units with a protective shield and a connection line to a website', chips: ['Hosting', 'Backups', 'Monitoring'] },
-  analytics: { scene: 'chart', alt: 'Analytics dashboard with bars, a trend line and headline figures for traffic and conversions', chips: ['GA4', 'Dashboards', 'Funnels'] },
-  maintenance: { scene: 'shield', alt: 'Website window with a maintenance checklist of ticked tasks and a security shield with a check mark', chips: ['Updates', 'Backups', 'Security'] },
-  'ai-chatbot': { scene: 'chat', alt: 'Chat window where an AI assistant answers a customer question, with a button to reach a person', chips: ['Website + WhatsApp', 'Handover', 'Lead capture'] },
-  'ai-voice': { scene: 'voice', alt: 'Sound waveform of a phone call above a call card and a booking confirmation with a tick', chips: ['Inbound', 'Outbound', 'Summaries'] },
-  'ai-automation': { scene: 'flow', alt: 'Workflow diagram with five connected steps linking a form, an AI step, an approval and a CRM', chips: ['Triggers', 'AI steps', 'Approvals'] },
-  'ai-content': { scene: 'studio', alt: 'Creative studio board with a photo post, an article draft, a video frame and a sparkle', chips: ['Posts', 'Videos', 'Articles'] },
-  'ai-knowledge': { scene: 'docs', alt: 'Stack of documents feeding a search box that returns an answer with source labels', chips: ['Citations', 'Access control', 'Actions'] },
-  'ai-training': { scene: 'workshop', alt: 'Workshop whiteboard with a checklist and a growth chart above a four-step roadmap timeline', chips: ['Workshops', 'Prompts', 'Roadmap'] },
-  'ai-geo': { scene: 'cite', alt: 'AI answer card with a star, source tags and a visibility meter for a business', chips: ['AI answers', 'Entities', 'Citations'] },
+  'web-design': {
+    scene: 'browser',
+    alt: 'Website design studio desk with a colourful homepage on a desktop monitor beside the same layout on a smartphone',
+    keywords: 'website design coimbatore, web development coimbatore, business website design, responsive website, wordpress development, seo friendly website, lead generation website, vintorex',
+    chips: ['Mobile-first', 'SEO-ready', 'Fast pages'],
+  },
+  ecommerce: {
+    scene: 'store',
+    alt: 'Online store packing desk with kraft shipping boxes, a tablet of product photos, and a card payment terminal',
+    keywords: 'ecommerce website development coimbatore, online store development, woocommerce store, online shopping website, gst ecommerce, payment gateway integration, product catalogue website',
+    chips: ['UPI & cards', 'GST invoices', 'Shipping'],
+  },
+  'mobile-app': {
+    scene: 'phone',
+    alt: 'Hands holding a smartphone that shows a business app of coloured tiles, a banner, and navigation dots',
+    keywords: 'mobile app development coimbatore, android app development, ios app development, business mobile app, custom app development, push notifications',
+    chips: ['Android + iOS', 'Push alerts', 'Admin panel'],
+  },
+  seo: {
+    scene: 'search',
+    alt: 'Local SEO desk with a laptop search-results chart, a city map, a gold star pin, and a magnifying glass',
+    keywords: 'seo services coimbatore, local seo coimbatore, search engine optimisation, google business profile, keyword ranking, technical seo, vintorex',
+    chips: ['Local SEO', 'Rankings', 'Content'],
+  },
+  'social-media': {
+    scene: 'feed',
+    alt: 'Content studio where a creator films a vertical phone video beside a laptop showing a photo feed',
+    keywords: 'social media marketing coimbatore, instagram marketing, facebook marketing, social media management, reels content, content calendar',
+    chips: ['Posts', 'Reels', 'Community'],
+  },
+  advertising: {
+    scene: 'chart',
+    alt: 'Advertising strategy room with a wide screen of rising coral and indigo campaign bars',
+    keywords: 'google ads management coimbatore, ppc advertising, meta ads, facebook ads, paid advertising, lead generation ads, conversion tracking',
+    chips: ['Google Ads', 'Meta Ads', 'Tracking'],
+  },
+  'email-marketing': {
+    scene: 'mail',
+    alt: 'Email and WhatsApp marketing desk with a newsletter layout on a laptop, chat bubbles on a phone, and an envelope',
+    keywords: 'email marketing coimbatore, whatsapp marketing, newsletter campaigns, email automation, whatsapp business messaging, drip campaigns',
+    chips: ['Newsletters', 'WhatsApp', 'Automations'],
+  },
+  branding: {
+    scene: 'brand',
+    alt: 'Brand identity flat lay with indigo, coral, cream and charcoal swatches, a chevron mark, and stationery',
+    keywords: 'branding agency coimbatore, logo design coimbatore, brand identity design, visual identity, brand guidelines, stationery design',
+    chips: ['Logo', 'Colours', 'Brand book'],
+  },
+  'content-writing': {
+    scene: 'doc',
+    alt: 'Writer’s desk with an article layout on a laptop beside a notebook checklist of tick marks',
+    keywords: 'seo content writing, blog writing services coimbatore, website copywriting, keyword articles, content marketing, topic clusters',
+    chips: ['Keywords', 'Articles', 'Refreshes'],
+  },
+  video: {
+    scene: 'video',
+    alt: 'Short-form video set with a cinema camera, a phone on a gimbal, studio lights, and an editing timeline',
+    keywords: 'reels production coimbatore, short form video, video production, social media video, brand film, instagram reels editing',
+    chips: ['Reels', 'Captions', 'Brand film'],
+  },
+  'industrial-design': {
+    scene: 'cube',
+    alt: 'Precision metal component on a studio turntable beside a monitor showing its 3D wireframe',
+    keywords: 'industrial product design, 3d product rendering, product catalogue design, cad visualisation, b2b product imagery, technical catalogue',
+    chips: ['3D renders', 'Catalogues', 'CAD'],
+  },
+  cloud: {
+    scene: 'cloud',
+    alt: 'Server room with glowing racks and a laptop showing cloud servers behind a protective shield',
+    keywords: 'cloud hosting coimbatore, cloud services, website hosting, server management, website backups, uptime monitoring, aws hosting',
+    chips: ['Hosting', 'Backups', 'Monitoring'],
+  },
+  analytics: {
+    scene: 'chart',
+    alt: 'Analytics workspace with dual monitors showing bar charts, a trend line, and blank metric cards',
+    keywords: 'web analytics coimbatore, ga4 setup, marketing dashboard, conversion tracking, data insights, looker studio dashboard',
+    chips: ['GA4', 'Dashboards', 'Funnels'],
+  },
+  maintenance: {
+    scene: 'shield',
+    alt: 'Website maintenance desk with a laptop checklist, a padlock, a backup drive, and a security shield',
+    keywords: 'website maintenance coimbatore, website amc, wordpress maintenance, website security, website backups, core updates',
+    chips: ['Updates', 'Backups', 'Security'],
+  },
+  'ai-chatbot': {
+    scene: 'chat',
+    alt: 'Support desk with an AI chat of message bubbles on a laptop and phone, plus a button to reach a person',
+    keywords: 'ai chatbot coimbatore, whatsapp chatbot, customer support chatbot, ai assistant, lead capture chatbot, website chatbot',
+    chips: ['Website + WhatsApp', 'Handover', 'Lead capture'],
+  },
+  'ai-voice': {
+    scene: 'voice',
+    alt: 'Quiet call booth with a headset, a glowing voice waveform, and a booking card marked with a tick',
+    keywords: 'ai voice agent, ai phone agent, inbound call automation, voice bot, appointment booking calls, call summaries',
+    chips: ['Inbound', 'Outbound', 'Summaries'],
+  },
+  'ai-automation': {
+    scene: 'flow',
+    alt: 'Overhead workflow of connected cards linking a form, a spark of light, an approval stamp, and a laptop',
+    keywords: 'business process automation, workflow automation coimbatore, crm automation, ai automation, form to crm workflow, approval workflows',
+    chips: ['Triggers', 'AI steps', 'Approvals'],
+  },
+  'ai-content': {
+    scene: 'studio',
+    alt: 'Creative studio table with printed photos, an article draft on a tablet, a vertical video frame, and a spark of light',
+    keywords: 'ai content studio, ai social media content, ai product images, ai creative production, ai copywriting, brand content',
+    chips: ['Posts', 'Videos', 'Articles'],
+  },
+  'ai-knowledge': {
+    scene: 'docs',
+    alt: 'Stack of documents beside a laptop that shows a search answer with three source tags',
+    keywords: 'custom ai assistant, knowledge base chatbot, document ai, internal ai assistant, cited answers, company knowledge base',
+    chips: ['Citations', 'Access control', 'Actions'],
+  },
+  'ai-training': {
+    scene: 'workshop',
+    alt: 'Team workshop around laptops with a whiteboard roadmap of four steps and a rising chart',
+    keywords: 'ai consulting coimbatore, ai training for teams, ai adoption workshop, prompt training, ai usage policy, staff ai training',
+    chips: ['Workshops', 'Prompts', 'Roadmap'],
+  },
+  'ai-geo': {
+    scene: 'cite',
+    alt: 'Frosted glass AI answer card with a gold star, three source cards, and a glowing visibility meter',
+    keywords: 'ai search optimisation, generative engine optimisation, geo services, ai citations, chatgpt visibility, ai overviews seo, coimbatore',
+    chips: ['AI answers', 'Entities', 'Citations'],
+  },
 };
 
 export { SCENES };
@@ -107,7 +217,7 @@ export function serviceArt(s, index = 0) {
   if (!a) return '';
   const h = ((HUE[s.cat] ?? 255) + (index * 11) % 36) % 360;
   return `<figure class="service-art" style="--h:${h}">
-    <img class="service-art-img" src="/images/services/${s.id}.svg" alt="${esc(a.alt)}" width="800" height="500" loading="eager" decoding="async">
+    <img class="service-art-img" src="${serviceImagePath(s.id)}" alt="${esc(a.alt)}" width="1600" height="900" loading="eager" decoding="async">
     <figcaption>${a.chips.map(c => `<span>${esc(c)}</span>`).join('')}</figcaption>
   </figure>`;
 }
@@ -118,7 +228,7 @@ export function serviceCardArt(s, index = 0) {
   if (!a) return '';
   const h = ((HUE[s.cat] ?? 255) + (index * 13) % 40) % 360;
   return `<div class="svc-thumb" style="--h:${h}">
-    <img class="svc-img" src="/images/services/${s.id}.svg" alt="${esc(a.alt)}" width="800" height="500" loading="lazy" decoding="async">
+    <img class="svc-img" src="${serviceImagePath(s.id)}" alt="${esc(a.alt)}" width="1600" height="900" loading="lazy" decoding="async">
     <div class="svc-thumb-overlay"></div>
     <span class="svc-cat-tag">${esc(a.chips[0])}</span>
   </div>`;

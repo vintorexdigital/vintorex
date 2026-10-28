@@ -12,6 +12,7 @@ import { articleHtml, postCard, postUrl } from '../dist/js/blog/render.js';
 import { siteHeader, siteFooter } from '../dist/js/chrome.js';
 import { SERVICES, CATEGORIES, BUSINESS } from '../dist/js/data.js';
 import { brandHead } from '../dist/js/brand.js';
+import { ART, CATALOG_KEYWORDS, serviceImagePath } from '../dist/js/service-art.js';
 import { esc, icon } from '../dist/js/ui.js';
 
 const SITE = (process.env.SITE_URL || 'https://vintorex.com').replace(/\/$/, '');
@@ -47,6 +48,7 @@ function page({ path, title, description, keywords = '', type = 'website', image
   const url = SITE + path;
   const ogImg = image || (SITE + '/images/vintorex-social.png');
   const ogImgAlt = imageAlt || 'Vintorex brand logo';
+  const photo = /\.jpe?g($|\?)/i.test(ogImg);
   const kw = keywords || 'digital marketing blog, web development guides, seo playbooks, coimbatore business growth, ecommerce tips, ai automation guides';
   return `<!doctype html>
 <html lang="en">
@@ -64,9 +66,9 @@ function page({ path, title, description, keywords = '', type = 'website', image
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:url" content="${url}">
   <meta property="og:image" content="${esc(ogImg)}">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="${photo ? 'image/jpeg' : 'image/png'}">
+  <meta property="og:image:width" content="${photo ? '1600' : '1200'}">
+  <meta property="og:image:height" content="${photo ? '900' : '630'}">
   <meta property="og:image:alt" content="${esc(ogImgAlt)}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${esc(title)}">
@@ -96,9 +98,10 @@ function articlePage(p) {
   const s = svc(p.service);
   const path = postUrl(p);
   const url = SITE + path;
-  const keywords = [s.name, s.cat, ...toc(p).map(([, t]) => t), 'Coimbatore digital marketing', 'Vintorex guide'].join(', ');
-  const image = `${SITE}/images/vintorex-social.png`;
-  const imageAlt = 'Vintorex brand logo';
+  const art = ART[s.id] || {};
+  const keywords = [art.keywords, p.title, 'Coimbatore digital marketing', 'Vintorex guide'].filter(Boolean).join(', ');
+  const image = `${SITE}${serviceImagePath(s.id)}`;
+  const imageAlt = art.alt ? `${art.alt}. Guide: ${p.title}` : p.title;
   return page({
     path, type: 'article',
     title: `${p.title} | ${BUSINESS.short} Blog`,
@@ -110,8 +113,8 @@ function articlePage(p) {
     schema: [
       {
         '@context': 'https://schema.org', '@type': 'BlogPosting',
-        headline: p.title, description: p.excerpt, image: SITE + '/images/vintorex-social.png', url, mainEntityOfPage: url,
-        articleSection: s.name, keywords: [s.name, ...toc(p).map(([, t]) => t)].join(', '),
+        headline: p.title, description: p.excerpt, image, url, mainEntityOfPage: url,
+        articleSection: s.name, keywords: art.keywords || s.name,
         wordCount: [p.body, ...p.takeaways, ...p.faqs.flat()].join(' ').split(/\s+/).length,
         timeRequired: `PT${p.minutes}M`, inLanguage: 'en-IN',
         author: ORG, publisher: ORG,
@@ -152,7 +155,7 @@ function indexPage() {
     path: '/blog/',
     title: `Blog — Evergreen guides on websites, SEO, social media & more | ${BUSINESS.short}`,
     description: `${POSTS.length} evergreen guides from ${BUSINESS.name} on websites, e-commerce, apps, SEO, social media, ads, email, branding, content, video, industrial design, cloud, analytics and maintenance.`,
-    keywords: 'digital marketing blog coimbatore, web design guides, seo tutorials, social media tips, google ads playbooks, ecommerce guides coimbatore, ai automation tutorials, vintorex guides',
+    keywords: `${CATALOG_KEYWORDS}, digital marketing blog coimbatore, vintorex guides`,
     image: `${SITE}/images/vintorex-social.png`,
     imageAlt: 'Vintorex brand logo',
     body,

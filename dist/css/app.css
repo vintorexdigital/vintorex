@@ -150,7 +150,21 @@ section.card + section.card { margin-top: 18px; }
   }
 }
 
-.hero-card-wrap { position: relative; width: 100%; display: flex; justify-content: center; }
+.hero-photo-card {
+  position: relative;
+  width: 100%;
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+}
+.hero-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 22px;
+  background: #111428;
+}
 .hero-card { padding: 22px; width: 100%; position: relative; }
 .hero-float {
   position: absolute;
@@ -313,13 +327,16 @@ section.card + section.card { margin-top: 18px; }
   overflow: hidden;
   background: #111428;
 }
-.svc-thumb svg {
+.svc-thumb svg,
+.svc-thumb .svc-img {
   width: 100%;
   height: 100%;
   display: block;
+  object-fit: cover;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.svc:hover .svc-thumb svg {
+.svc:hover .svc-thumb svg,
+.svc:hover .svc-thumb .svc-img {
   transform: scale(1.06);
 }
 .svc-thumb-overlay {
@@ -465,8 +482,10 @@ section.card + section.card { margin-top: 18px; }
 .product h4 { margin: 0; }
 .product s { color: var(--muted); font-size: 13px; }
 .art { position: relative; aspect-ratio: 10/7; overflow: hidden; background: #13172e; }
-.art svg { width: 100%; height: 100%; display: block; transition: transform 0.35s ease; }
-.product:hover .art svg { transform: scale(1.05); }
+.art svg,
+.art .product-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.35s ease; }
+.product:hover .art svg,
+.product:hover .art .product-img { transform: scale(1.05); }
 .art-kind-tag { position: absolute; left: 10px; top: 10px; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
 
 /* Recent Work Cards with SVG Mockups */
@@ -493,15 +512,19 @@ section.card + section.card { margin-top: 18px; }
   overflow: hidden;
   background: #0a0815;
 }
-.work-visual svg {
+.work-visual > svg,
+.work-visual > .work-img {
   width: 100%;
   height: 100%;
+  object-fit: cover;
   display: block;
   transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.work-card:hover .work-visual svg {
+.work-card:hover .work-visual > svg,
+.work-card:hover .work-visual > .work-img {
   transform: scale(1.04);
 }
+.work-overlay-badge .ic { width: 14px; height: 14px; }
 .work-overlay-badge {
   position: absolute;
   bottom: 12px;
@@ -751,10 +774,12 @@ section.card + section.card { margin-top: 18px; }
   background: #0e0a22;
   box-shadow: 0 16px 36px -10px rgba(15, 18, 34, 0.15);
 }
-.about-studio-art svg {
+.about-studio-art svg,
+.about-studio-art .about-studio-img {
   width: 100%;
   height: auto;
-  aspect-ratio: 46 / 30;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
   display: block;
 }
 .pillar-card {
@@ -1542,7 +1567,8 @@ input[type=range] { margin-inline: 0; }
 /* service page header: text on the left, illustration on the right */
 .detail-head { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(280px, 400px); gap: 20px 28px; align-items: start; }
 .service-art { margin: 0; border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow); background: #fff; border: 1px solid var(--line); }
-.service-art svg { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; }
+.service-art svg,
+.service-art-img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
 .service-art figcaption { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
 .service-art figcaption span { background: var(--brand-soft); color: var(--brand); font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
 @media (max-width: 1000px) { .detail-head { grid-template-columns: auto minmax(0, 1fr); } .service-art { grid-column: 1 / -1; max-width: 520px; } }

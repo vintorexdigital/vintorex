@@ -73,6 +73,10 @@ function render() {
   setMeta('meta[property="og:description"]', 'content', desc);
   setMeta('meta[property="og:image"]', 'content', img);
   setMeta('meta[property="og:image:alt"]', 'content', imgAlt);
+  const photo = /\.jpe?g($|\?)/i.test(img);
+  setMeta('meta[property="og:image:type"]', 'content', photo ? 'image/jpeg' : 'image/png');
+  setMeta('meta[property="og:image:width"]', 'content', photo ? '1600' : '1200');
+  setMeta('meta[property="og:image:height"]', 'content', photo ? '900' : '630');
   setMeta('meta[name="twitter:title"]', 'content', pageTitle);
   setMeta('meta[name="twitter:description"]', 'content', desc);
   setMeta('meta[name="twitter:image"]', 'content', img);
