@@ -10,12 +10,21 @@ import { POSTS as GROW } from './grow.js';
 import { POSTS as BRAND } from './brand.js';
 import { POSTS as TECH } from './tech.js';
 import { POSTS as AI } from './ai.js';
+import { BLOG_META, blogMetaFor } from './meta.js';
 import { esc } from '../ui.js';
 
-export const POSTS = [...BUILD, ...GROW, ...BRAND, ...TECH, ...AI].map(p => ({
-  ...p,
-  minutes: Math.ceil(words(p) / 200),
-}));
+export { BLOG_META, blogMetaFor };
+
+export const POSTS = [...BUILD, ...GROW, ...BRAND, ...TECH, ...AI].map(p => {
+  const meta = blogMetaFor(p.slug);
+  return {
+    ...p,
+    image: meta.image,
+    imageAlt: meta.imageAlt,
+    keywords: meta.keywords,
+    minutes: Math.ceil(words(p) / 200),
+  };
+});
 
 function words(p) {
   const text = [p.body, ...p.takeaways, ...p.faqs.flat()].join(' ');

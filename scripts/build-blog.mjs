@@ -99,9 +99,9 @@ function articlePage(p) {
   const path = postUrl(p);
   const url = SITE + path;
   const art = ART[s.id] || {};
-  const keywords = [art.keywords, p.title, 'Coimbatore digital marketing', 'Vintorex guide'].filter(Boolean).join(', ');
-  const image = `${SITE}${serviceImagePath(s.id)}`;
-  const imageAlt = art.alt ? `${art.alt}. Guide: ${p.title}` : p.title;
+  const keywords = p.keywords || [art.keywords, p.title, 'Coimbatore digital marketing', 'Vintorex guide'].filter(Boolean).join(', ');
+  const image = `${SITE}${p.image || `/images/blog/${p.slug}.jpg`}`;
+  const imageAlt = p.imageAlt || (art.alt ? `${art.alt}. Guide: ${p.title}` : p.title);
   return page({
     path, type: 'article',
     title: `${p.title} | ${BUSINESS.short} Blog`,
@@ -114,7 +114,7 @@ function articlePage(p) {
       {
         '@context': 'https://schema.org', '@type': 'BlogPosting',
         headline: p.title, description: p.excerpt, image, url, mainEntityOfPage: url,
-        articleSection: s.name, keywords: art.keywords || s.name,
+        articleSection: s.name, keywords,
         wordCount: [p.body, ...p.takeaways, ...p.faqs.flat()].join(' ').split(/\s+/).length,
         timeRequired: `PT${p.minutes}M`, inLanguage: 'en-IN',
         author: ORG, publisher: ORG,
