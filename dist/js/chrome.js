@@ -28,7 +28,12 @@ export function siteFooter({ base = '', services = SERVICES } = {}) {
       <div class="row gap wrap">${Object.entries(BUSINESS.social).map(([n, u]) => `<a class="chip" href="${u}" target="_blank" rel="noopener">${n}</a>`).join('')}</div></div>
     <div><h4>Services</h4>${services.slice(0, 7).map(s => `<a href="${to(base, '/services/' + s.id)}">${esc(s.name)}</a>`).join('')}</div>
     <div><h4>Company</h4><a href="${to(base, '/about')}">About</a><a href="${to(base, '/pricing')}">Pricing</a><a href="${to(base, '/compare')}">Competitor analysis</a><a href="/blog/">Blog & guides</a><a href="${to(base, '/shop')}">Shop</a><a href="${to(base, '/contact')}">Contact</a><a href="${to(base, '/terms')}">Terms & refunds</a></div>
-    <div><h4>Contact</h4><a href="tel:+918667209838">${esc(BUSINESS.phone)}</a><a href="mailto:${BUSINESS.email}">${esc(BUSINESS.email)}</a><a href="${BUSINESS.whatsapp}" target="_blank" rel="noopener">WhatsApp</a><p class="muted">${esc(BUSINESS.address)}</p><a href="${BUSINESS.maps}" target="_blank" rel="noopener">Get directions →</a><a href="${BUSINESS.google}" target="_blank" rel="noopener">Reviews on Google →</a></div>
+    <div class="foot-contact"><h4>Get in Touch</h4>
+      <a class="f-pill" href="${BUSINESS.maps}" target="_blank" rel="noopener">${icon('pin')}<span>${esc(BUSINESS.address)}</span></a>
+      <a class="f-pill" href="tel:+918667209838">${icon('phoneCall')}<span>${esc(BUSINESS.phone)}</span></a>
+      <a class="f-pill" href="mailto:${BUSINESS.email}">${icon('mail')}<span>${esc(BUSINESS.email)}</span></a>
+      <a class="f-pill" href="${BUSINESS.whatsapp}" target="_blank" rel="noopener">${icon('wa')}<span>WhatsApp</span></a>
+      <a class="f-pill" href="${BUSINESS.google}" target="_blank" rel="noopener">${icon('star')}<span>Reviews on Google</span></a></div>
   </div><div class="shell fine">© ${esc(BUSINESS.name)}. All prices exclude GST.</div></footer>
   <a class="wa-float" href="${BUSINESS.whatsapp}" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">${icon('wa')}</a>`;
 }

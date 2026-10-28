@@ -837,3 +837,25 @@ textarea { resize: vertical; }
 /* A minimum map height must not force its aspect ratio past the page width. */
 .map-frame.card { width: 100%; max-width: 100%; min-width: 0; padding: 0; }
 input[type=range] { margin-inline: 0; }
+
+/* footer contact: plain links on desktop, centred pill cards on phones */
+.foot-contact .f-pill { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+.foot-contact .f-pill .ic { width: 16px; height: 16px; margin-top: 4px; color: #e0b15a; }
+.foot-contact .f-pill span { overflow-wrap: anywhere; }
+@media (max-width: 640px) {
+  .footer { padding-top: 40px; text-align: center; }
+  .foot-grid { text-align: center; justify-items: center; }
+  .foot-grid .logo { justify-content: center; }
+  .foot-grid .row { justify-content: center; }
+  .foot-grid > div > a:not(.logo):not(.f-pill) { margin-bottom: 10px; }
+  .foot-contact { width: 100%; display: grid; justify-items: center; gap: 10px; }
+  .foot-contact h4 { display: flex; align-items: center; justify-content: center; gap: 14px; width: 100%; margin: 6px 0 4px; font-size: 1.15rem; }
+  .foot-contact h4::before, .foot-contact h4::after { content: ""; flex: 0 1 60px; height: 1px; background: linear-gradient(90deg, transparent, #e0b15a); }
+  .foot-contact h4::after { transform: scaleX(-1); }
+  .foot-contact .f-pill { align-items: center; justify-content: center; text-align: left; gap: 12px; margin: 0; max-width: 100%; padding: 14px 18px; border-radius: 14px; background: #1c2040; color: #e4e6f5 !important; }
+  .foot-contact .f-pill .ic { margin-top: 0; width: 20px; height: 20px; }
+  .foot-contact .f-pill:first-of-type { width: 100%; }
+  .footer .fine { text-align: center; }
+}
+.foot-grid > .foot-contact > a.f-pill { display: flex; }
+@media (max-width: 640px) { .footer { padding-bottom: 88px; } .foot-grid > .foot-contact > a.f-pill { width: min(100%, 340px); } }
