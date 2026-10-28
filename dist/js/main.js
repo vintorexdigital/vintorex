@@ -139,6 +139,14 @@ function bindChrome() {
 
 document.addEventListener('cart', () => $$('.cart-btn .count').forEach(c => { const n = cartCount(); c.textContent = n; c.hidden = !n; }));
 window.addEventListener('hashchange', render);
+// Liquid Glass: let the light on cards and buttons follow the pointer.
+document.addEventListener('pointermove', e => {
+  const el = e.pointerType === 'mouse' && e.target.closest?.('.card, .btn, .chip, .icon-btn');
+  if (!el) return;
+  const r = el.getBoundingClientRect();
+  el.style.setProperty('--mx', `${e.clientX - r.left}px`);
+  el.style.setProperty('--my', `${e.clientY - r.top}px`);
+}, { passive: true });
 window.addEventListener('storage', e => { if (e.key === 'vx_db_v1') location.reload(); });
 
 D.init().then(render).catch(err => {
