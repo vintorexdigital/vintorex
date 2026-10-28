@@ -3,7 +3,7 @@
 import { BUSINESS, SERVICES } from './data.js';
 import { esc, icon } from './ui.js';
 
-export const logoMark = () => `<svg viewBox="0 0 32 32" class="logo-mark" aria-hidden="true"><rect width="32" height="32" rx="9" fill="currentColor"/><path d="m8 9 8 15 8-15" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+export const logoMark = () => `<img src="/images/vintorex-logo.png" class="logo-mark" alt="Vintorex brand logo" width="44" height="44" decoding="async">`;
 
 const NAV = [['/services', 'Services'], ['/pricing', 'Pricing'], ['/compare', 'Compare'], ['blog', 'Blog'], ['/shop', 'Shop'], ['/about', 'About'], ['/contact', 'Contact']];
 const to = (base, path) => path === 'blog' ? '/blog/' : base + '#' + path;

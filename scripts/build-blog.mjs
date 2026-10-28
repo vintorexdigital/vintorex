@@ -11,6 +11,7 @@ import { POSTS, postsFor, toc } from '../dist/js/blog/index.js';
 import { articleHtml, postCard, postUrl } from '../dist/js/blog/render.js';
 import { siteHeader, siteFooter } from '../dist/js/chrome.js';
 import { SERVICES, CATEGORIES, BUSINESS } from '../dist/js/data.js';
+import { brandHead } from '../dist/js/brand.js';
 import { esc, icon } from '../dist/js/ui.js';
 
 const SITE = (process.env.SITE_URL || 'https://vintorex.com').replace(/\/$/, '');
@@ -29,10 +30,9 @@ if (new Set(POSTS.map(p => p.slug)).size !== POSTS.length) problems.push('duplic
 if (problems.length) { console.error('Blog build failed:\n- ' + problems.join('\n- ')); process.exit(1); }
 
 // ---------- page shell ----------
-const FAVICON = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%234b2bd6'/%3E%3Cpath d='m8 9 8 15 8-15' fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E`;
 const ORG = {
   '@type': 'LocalBusiness', '@id': SITE + '/#business',
-  name: BUSINESS.name, url: SITE + '/', email: BUSINESS.email, telephone: BUSINESS.phone,
+  name: BUSINESS.name, alternateName: 'Vintorex', logo: { '@type': 'ImageObject', url: SITE + '/images/vintorex-logo.png', width: 512, height: 512 }, image: SITE + '/images/vintorex-social.png', url: SITE + '/', email: BUSINESS.email, telephone: BUSINESS.phone,
   address: {
     '@type': 'PostalAddress', streetAddress: BUSINESS.postal.street, addressLocality: BUSINESS.postal.city,
     addressRegion: BUSINESS.postal.region, postalCode: BUSINESS.postal.code, addressCountry: BUSINESS.postal.country,
@@ -45,8 +45,8 @@ const jsonLd = data => `<script type="application/ld+json">${JSON.stringify(data
 
 function page({ path, title, description, keywords = '', type = 'website', image = '', imageAlt = '', body, schema = [] }) {
   const url = SITE + path;
-  const ogImg = image || (SITE + '/images/og-cover.svg');
-  const ogImgAlt = imageAlt || `${title} - ${BUSINESS.name}`;
+  const ogImg = image || (SITE + '/images/vintorex-social.png');
+  const ogImgAlt = imageAlt || 'Vintorex brand logo';
   const kw = keywords || 'digital marketing blog, web development guides, seo playbooks, coimbatore business growth, ecommerce tips, ai automation guides';
   return `<!doctype html>
 <html lang="en">
@@ -57,20 +57,22 @@ function page({ path, title, description, keywords = '', type = 'website', image
   <meta name="description" content="${esc(description)}">
   <meta name="keywords" content="${esc(kw)}">
   <link rel="canonical" href="${url}">
-  <meta name="theme-color" content="#4b2bd6">
+  ${brandHead()}
   <meta property="og:type" content="${type}">
-  <meta property="og:site_name" content="${esc(BUSINESS.name)}">
+  <meta property="og:site_name" content="Vintorex">
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:url" content="${url}">
   <meta property="og:image" content="${esc(ogImg)}">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="${esc(ogImgAlt)}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${esc(title)}">
   <meta name="twitter:description" content="${esc(description)}">
   <meta name="twitter:image" content="${esc(ogImg)}">
   <meta name="twitter:image:alt" content="${esc(ogImgAlt)}">
-  <link rel="icon" href="${FAVICON}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -95,8 +97,8 @@ function articlePage(p) {
   const path = postUrl(p);
   const url = SITE + path;
   const keywords = [s.name, s.cat, ...toc(p).map(([, t]) => t), 'Coimbatore digital marketing', 'Vintorex guide'].join(', ');
-  const image = `${SITE}/images/services/${s.id}.svg`;
-  const imageAlt = `${p.title} - ${s.name} evergreen guide by Vintorex Digital Solutions Coimbatore`;
+  const image = `${SITE}/images/vintorex-social.png`;
+  const imageAlt = 'Vintorex brand logo';
   return page({
     path, type: 'article',
     title: `${p.title} | ${BUSINESS.short} Blog`,
@@ -108,7 +110,7 @@ function articlePage(p) {
     schema: [
       {
         '@context': 'https://schema.org', '@type': 'BlogPosting',
-        headline: p.title, description: p.excerpt, url, mainEntityOfPage: url,
+        headline: p.title, description: p.excerpt, image: SITE + '/images/vintorex-social.png', url, mainEntityOfPage: url,
         articleSection: s.name, keywords: [s.name, ...toc(p).map(([, t]) => t)].join(', '),
         wordCount: [p.body, ...p.takeaways, ...p.faqs.flat()].join(' ').split(/\s+/).length,
         timeRequired: `PT${p.minutes}M`, inLanguage: 'en-IN',
@@ -151,8 +153,8 @@ function indexPage() {
     title: `Blog — Evergreen guides on websites, SEO, social media & more | ${BUSINESS.short}`,
     description: `${POSTS.length} evergreen guides from ${BUSINESS.name} on websites, e-commerce, apps, SEO, social media, ads, email, branding, content, video, industrial design, cloud, analytics and maintenance.`,
     keywords: 'digital marketing blog coimbatore, web design guides, seo tutorials, social media tips, google ads playbooks, ecommerce guides coimbatore, ai automation tutorials, vintorex guides',
-    image: `${SITE}/images/og-cover.svg`,
-    imageAlt: 'Vintorex Digital Solutions Evergreen Knowledge Base and Guides',
+    image: `${SITE}/images/vintorex-social.png`,
+    imageAlt: 'Vintorex brand logo',
     body,
     schema: [{
       '@context': 'https://schema.org', '@type': 'Blog', name: `${BUSINESS.short} Blog`, url: SITE + '/blog/', publisher: ORG,
@@ -176,7 +178,7 @@ ${urls.map(u => `  <url><loc>${SITE}${u}</loc></url>`).join('\n')}
 `);
 // The app's home page carries the same business details for local search.
 const appIndex = join(DIST, 'index.html');
-const html = await readFile(appIndex, 'utf8');
+const html = (await readFile(appIndex, 'utf8')).replace(/<!-- brand-meta -->[\s\S]*?<!-- \/brand-meta -->/, `<!-- brand-meta -->\n  ${brandHead()}\n  <!-- /brand-meta -->`).replace(/(<meta (?:property="og:(?:image|url)"|name="twitter:image") content=")[^"]+(">)/g, (match, prefix, suffix) => prefix + SITE + (match.includes('og:url') ? '/' : '/images/vintorex-social.png') + suffix);
 const block = /<!-- business-jsonld -->[\s\S]*?<!-- \/business-jsonld -->/;
 if (!block.test(html)) { console.error('dist/index.html is missing the business-jsonld markers'); process.exit(1); }
 await writeFile(appIndex, html.replace(block, `<!-- business-jsonld -->\n  <link rel="canonical" href="${SITE}/">\n  ${jsonLd({ '@context': 'https://schema.org', ...ORG })}\n  <!-- /business-jsonld -->`));

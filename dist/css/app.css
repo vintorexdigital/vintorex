@@ -1663,3 +1663,8 @@ input[type=range] { margin-inline: 0; }
   .svc-body { padding: 14px; }
 }
 
+
+/* Preserve the supplied brand artwork at every logo placement. */
+.logo-mark { width: 44px; height: 44px; object-fit: contain; }
+.side .logo { gap: 8px; }
+@media (max-width: 380px) { .nav .logo-mark { width: 36px; height: 36px; } }

@@ -64,3 +64,9 @@ Data lives in each browser's `localStorage` and payments are simulated. For prod
 1. Move `js/db.js` behind a real API and database (for example Node + MySQL on Hostinger) with server-side authentication.
 2. Create Razorpay orders and verify payment signatures on the server. Never put the key secret in the browser.
 3. Send lead and order notifications by email or WhatsApp from the server.
+
+## Brand assets
+
+The shared header, footer, dashboards and invoices use `dist/images/vintorex-logo.png`, derived from the supplied transparent artwork preserved in `dist/images/vintorex-logo-original.png`. Browser icons live in `dist/icons/` and `dist/favicon.ico`; `dist/site.webmanifest` defines the Vintorex home-screen name and app icons. The 1200 × 630 sharing image is `dist/images/vintorex-social.png`.
+
+Browser metadata is shared through `dist/js/brand.js`. Run `npm run build:blog` after changing branding so the home page and every static guide receive the same icons and metadata.
