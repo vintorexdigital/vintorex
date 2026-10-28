@@ -29,7 +29,7 @@ function art(p, cls = '') {
   const h = p.hue;
   const altText = PRODUCT_ALT[p.id] || `${p.name}, a ${p.kind} download from the Vintorex shop in Coimbatore`;
   return `<div class="art ${cls}" style="--h:${h}">
-    <img class="product-img" src="/images/shop/${p.id}.jpg" alt="${esc(altText)}" width="1200" height="900" loading="lazy" decoding="async">
+    <img class="product-img" src="/images/shop/${p.id}.${p.img || 'jpg'}" alt="${esc(altText)}" width="1200" height="900" loading="lazy" decoding="async">
     <span class="art-kind-tag">${esc(p.kind)}</span>
   </div>`;
 }

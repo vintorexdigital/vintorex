@@ -27,11 +27,14 @@ export async function init() {
   if (!db()) { state = await seed(); save(); return; }
   if (state.catalogVersion !== CATALOG_VERSION) { refreshCatalog(state); save(); }
 }
-// Replace services, add-ons and plans with the shipped catalog; downloads,
+// Replace services, add-ons and plans with the shipped catalog; new downloads are merged in,
 // coupons and all customer data are kept.
 function refreshCatalog(s) {
   const clone = x => JSON.parse(JSON.stringify(x));
   Object.assign(s.catalog, { services: clone(SERVICES), addons: clone(ADDONS), plans: clone(PLANS) });
+  // Add shipped products the saved catalog lacks; admin edits to existing ones stay.
+  const have = new Set((s.catalog.products || []).map(p => p.id));
+  s.catalog.products = [...(s.catalog.products || []), ...clone(PRODUCTS).filter(p => !have.has(p.id))];
   s.catalogVersion = CATALOG_VERSION;
 }
 export async function resetDemo() { state = await seed(); save(); setCart([]); }
