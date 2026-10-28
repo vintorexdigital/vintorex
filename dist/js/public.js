@@ -121,6 +121,11 @@ export function home() {
       <div class="cards3">${featured.map(serviceCard).join('')}</div>
     </section>
 
+    <section class="shell section">
+      <div class="sec-head"><div><h2>AI & Automation for your business</h2><p class="muted">Chatbots, voice agents, workflows, content and AI search, with human review at every step.</p></div><a href="#/services?cat=ai" class="link">All AI services ${icon('arrow')}</a></div>
+      <div class="cards3">${c.services.filter(s => s.cat === 'ai').slice(0, 6).map(serviceCard).join('')}</div>
+    </section>
+
     <section class="band">
       <div class="shell section">
         <div class="sec-head"><h2>Memberships that pay for themselves</h2><a href="#/pricing" class="link">Compare plans ${icon('arrow')}</a></div>

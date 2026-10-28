@@ -5,7 +5,7 @@ import { SERVICES, ADDONS, COMPETITOR_SOURCES } from './services.js';
 export { SERVICES, ADDONS, COMPETITOR_SOURCES };
 
 // Bump when SERVICES / ADDONS / PLANS change so stored catalogs refresh.
-export const CATALOG_VERSION = 2;
+export const CATALOG_VERSION = 3;
 
 export const BUSINESS = {
   name: 'Vintorex Digital Solutions',
@@ -35,6 +35,7 @@ export const CATEGORIES = [
   { id: 'grow', name: 'Grow', blurb: 'SEO, social and paid ads' },
   { id: 'brand', name: 'Brand & Content', blurb: 'Identity, content and video' },
   { id: 'tech', name: 'Cloud & Data', blurb: 'Hosting, cloud and analytics' },
+  { id: 'ai', name: 'AI & Automation', blurb: 'Chatbots, voice agents and automation' },
 ];
 
 // Membership plans. `includes` are service:tier pairs and `extras` are add-on

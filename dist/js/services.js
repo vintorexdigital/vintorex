@@ -5,6 +5,8 @@
 // split:  [component, starter %, growth %, premium %] — each tier column sums to 100
 // competitors: published prices checked Oct 2026; `src` keys point at COMPETITOR_SOURCES
 
+import { AI_SERVICES, AI_ADDONS, AI_SOURCES } from './ai-services.js';
+
 export const COMPETITOR_SOURCES = {
   visualbirds: ['Visual Birds — Social media marketing packages', 'https://www.visualbirds.com/social-media-marketing-packages/'],
   pgsoft: ['PG Softwares — Digital marketing packages (Coimbatore)', 'https://pgsoftwares.com/digital-marketing-packages.html'],
@@ -647,3 +649,8 @@ export const ADDONS = [
   { id: 'turntable', name: '360° Product Animation', price: 2999, billing: 'once', for: ['industrial-design'], desc: '10-second turntable video of your 3D product.' },
   { id: 'migration', name: 'Cloud Migration (1 site / app)', price: 9999, billing: 'once', for: ['cloud'], desc: 'Zero-downtime move from your current host.' },
 ];
+
+// AI & Automation services and add-ons (see ai-services.js)
+SERVICES.push(...AI_SERVICES);
+ADDONS.push(...AI_ADDONS);
+Object.assign(COMPETITOR_SOURCES, AI_SOURCES);

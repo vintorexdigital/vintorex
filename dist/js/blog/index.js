@@ -9,9 +9,10 @@ import { POSTS as BUILD } from './build.js';
 import { POSTS as GROW } from './grow.js';
 import { POSTS as BRAND } from './brand.js';
 import { POSTS as TECH } from './tech.js';
+import { POSTS as AI } from './ai.js';
 import { esc } from '../ui.js';
 
-export const POSTS = [...BUILD, ...GROW, ...BRAND, ...TECH].map(p => ({
+export const POSTS = [...BUILD, ...GROW, ...BRAND, ...TECH, ...AI].map(p => ({
   ...p,
   minutes: Math.ceil(words(p) / 200),
 }));
@@ -31,7 +32,8 @@ export const slugify = t => t.toLowerCase().replace(/&amp;/g, 'and').replace(/[^
 function inline(t, base) {
   return esc(t)
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\[([^\]]+)\]\((#\/[^)\s]+)\)/g, `<a href="${base}$2">$1</a>`);
+    .replace(/\[([^\]]+)\]\((#\/[^)\s]+)\)/g, `<a href="${base}$2">$1</a>`)
+    .replace(/\[([^\]]+)\]\((\/blog\/[a-z0-9-]+\/)\)/g, '<a href="$2">$1</a>');
 }
 
 export function md(src, base = '') {

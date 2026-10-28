@@ -5,7 +5,7 @@ import { BUSINESS } from '../data.js';
 import { esc, icon, per } from '../ui.js';
 import { POSTS, postsFor, md, toc } from './index.js';
 
-const HUE = { build: 255, grow: 155, brand: 18, tech: 205 };
+const HUE = { build: 255, grow: 155, brand: 18, tech: 205, ai: 285 };
 const inr = n => '₹' + Math.round(n).toLocaleString('en-IN');
 
 export const postUrl = p => `/blog/${p.slug}/`;

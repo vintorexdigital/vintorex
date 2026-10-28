@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:blog": "node scripts/build-blog.mjs"
+    "build:blog": "node scripts/build-blog.mjs",
+    "check": "node scripts/check-content.mjs"
   }
 }
