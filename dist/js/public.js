@@ -4,6 +4,7 @@ import * as D from './db.js';
 import { esc, icon, toast, field, per, date, empty, $, $$ } from './ui.js';
 import { serviceGuides, featuredPosts, postCard } from './blogpages.js';
 import { logoMark } from './chrome.js';
+import { serviceArt } from './service-art.js';
 export { logoMark };
 
 const inr = D.inr;
@@ -271,6 +272,7 @@ export function serviceDetail({ id }) {
         <div><h1>${esc(s.name)}</h1><p class="lead">${esc(s.overview || s.summary)}</p>
         <div class="facts"><span>${icon('repeat')}${s.billing === 'month' ? 'Monthly retainer' : 'One-time project'}</span><span>${icon('star')}${esc(s.delivery)}</span><span>${icon('receipt')}${esc(s.term || '')}</span><span>${icon('tag')}From ${inr(fromPrice(s))}${per(s.billing)}</span></div>
         ${s.note ? `<p class="hint">${icon('ads')}${esc(s.note)}</p>` : ''}</div>
+        ${serviceArt(s, D.catalog().services.indexOf(s))}
       </div>
       <nav class="subnav" aria-label="On this page">${sections.map(([id, l]) => `<button data-jump="${id}">${l}</button>`).join('')}</nav>
       <div id="packages">${marketBar(s, fromPrice(s))}</div>

@@ -1,6 +1,7 @@
 // Validates the service catalog and blog content. Run: npm run check
 import { SERVICES, ADDONS, COMPETITOR_SOURCES, PLANS, CATEGORIES } from '../dist/js/data.js';
 import { POSTS, md, toc } from '../dist/js/blog/index.js';
+import { ART } from '../dist/js/service-art.js';
 
 const errs = [];
 const ids = new Set(SERVICES.map(s => s.id));
@@ -16,6 +17,12 @@ for (const s of SERVICES) {
   s.works.forEach(w => { if (w.length !== 4) errs.push(`${s.id}: works row "${w[0]}" has ${w.length} cells`); });
   s.competitors.forEach(c => c.src.forEach(k => { if (!COMPETITOR_SOURCES[k]) errs.push(`${s.id}: unknown source ${k}`); }));
   for (const k of ['overview', 'idealFor', 'process', 'excludes', 'term', 'delivery', 'market']) if (!s[k]) errs.push(`${s.id}: missing ${k}`);
+}
+for (const s of SERVICES) {
+  const a = ART[s.id];
+  if (!a) { errs.push(`${s.id}: missing image block in service-art.js`); continue; }
+  if (a.alt.length < 40) errs.push(`${s.id}: alt text too short`);
+  if (a.chips.length !== 3) errs.push(`${s.id}: needs 3 image chips`);
 }
 for (const a of ADDONS) a.for.forEach(f => { if (!ids.has(f)) errs.push(`add-on ${a.id}: unknown service ${f}`); });
 if (new Set(ADDONS.map(a => a.id)).size !== ADDONS.length) errs.push('duplicate add-on ids');

@@ -871,3 +871,12 @@ input[type=range] { margin-inline: 0; }
   .foot-grid > .foot-links > a:last-child:nth-child(even) { grid-column: 1 / -1; }
   .foot-grid > div:first-child { display: grid; justify-items: center; gap: 4px; }
 }
+
+/* service page header: text on the left, illustration on the right */
+.detail-head { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(280px, 400px); gap: 20px 28px; align-items: start; }
+.service-art { margin: 0; border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow); background: #fff; border: 1px solid var(--line); }
+.service-art svg { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; }
+.service-art figcaption { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
+.service-art figcaption span { background: var(--brand-soft); color: var(--brand); font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+@media (max-width: 1000px) { .detail-head { grid-template-columns: auto minmax(0, 1fr); } .service-art { grid-column: 1 / -1; max-width: 520px; } }
+@media (max-width: 640px) { .detail-head { grid-template-columns: 1fr; } .service-art { max-width: none; } }
