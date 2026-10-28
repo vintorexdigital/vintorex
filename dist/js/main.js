@@ -6,7 +6,7 @@ import * as Adm from './admin.js';
 import * as Blog from './blogpages.js';
 import { BUSINESS } from './data.js';
 import { siteHeader, siteFooter } from './chrome.js';
-import { esc, icon, initials, $, $$ } from './ui.js';
+import { esc, icon, initials, responsiveTables, $, $$ } from './ui.js';
 
 const routes = [
   ['/', Pub.home], ['/services', Pub.services], ['/services/:id', Pub.serviceDetail],
@@ -51,6 +51,7 @@ function render() {
   const user = D.currentUser();
   if (v.shell) app().innerHTML = dashShell(v, user);
   else app().innerHTML = v.bare ? `<main id="main">${v.html}</main>` : `${header(user)}<main id="main">${v.html}</main>${footer()}`;
+  responsiveTables(app());
   v.bind?.(app());
   bindChrome();
   if (path !== lastPath) { window.scrollTo(0, 0); lastPath = path; }

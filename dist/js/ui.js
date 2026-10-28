@@ -67,6 +67,40 @@ export function toast(msg, kind = 'ok') {
   setTimeout(() => t.remove(), 3200);
 }
 
+// Preserve table headers for assistive technology and repeat their labels in
+// the stacked mobile layout. Real elements keep labels readable and selectable.
+export function responsiveTables(root) {
+  root.querySelectorAll('table.table:not(.mobile-table)').forEach(table => {
+    const headers = [...(table.tHead?.rows[0]?.cells || [])];
+    if (!headers.length) return;
+    table.classList.add('mobile-table');
+    table.setAttribute('role', 'table');
+    table.tHead.setAttribute('role', 'rowgroup');
+    table.tHead.rows[0].setAttribute('role', 'row');
+    headers.forEach(header => { header.scope = 'col'; header.setAttribute('role', 'columnheader'); });
+    [...table.tBodies].forEach(body => {
+      body.setAttribute('role', 'rowgroup');
+      [...body.rows].forEach(row => {
+        row.setAttribute('role', 'row');
+        [...row.cells].forEach((cell, index) => {
+          cell.setAttribute('role', 'cell');
+          const header = headers[index]?.cloneNode(true);
+          header?.querySelectorAll('small').forEach(el => el.remove());
+          const text = header?.textContent.trim() || 'Actions';
+          const label = document.createElement('span');
+          label.className = 'table-label';
+          label.textContent = text;
+          label.setAttribute('aria-hidden', 'true');
+          const value = document.createElement('div');
+          value.className = 'table-value';
+          while (cell.firstChild) value.append(cell.firstChild);
+          cell.append(label, value);
+        });
+      });
+    });
+  });
+}
+
 // Modal returns a promise resolved with FormData (or null when dismissed).
 export function modal({ title, body, submit = 'Save', wide = false, danger = false }) {
   return new Promise(resolve => {
@@ -77,6 +111,7 @@ export function modal({ title, body, submit = 'Save', wide = false, danger = fal
       <div class="modal-body">${body}</div>
       ${submit ? `<footer><button type="button" class="btn ghost" data-close>Cancel</button><button class="btn ${danger ? 'danger' : 'primary'}" value="ok">${esc(submit)}</button></footer>` : ''}
     </form>`;
+    responsiveTables(d);
     document.body.append(d);
     const form = d.querySelector('form');
     let result = null;

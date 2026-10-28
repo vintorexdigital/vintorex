@@ -650,7 +650,7 @@ section[id] { scroll-margin-top: 120px; }
 
 /* Fluid sizing shared by the storefront, guides and both portals. */
 #app { min-height: 100svh; }
-body { overflow-wrap: anywhere; }
+body { overflow-wrap: break-word; }
 :where(.row, .cards2, .cards3, .cards4, .grid2, .hero-grid, .split,
   .checkout-grid, .dash-grid, .foot-grid, .post-grid, .split-grid, .inbox,
   .hc-metrics, .stats, .kpis, .price-edit, .pay-plans) > * { min-width: 0; }
@@ -732,3 +732,88 @@ input, select, textarea { min-width: 0; max-width: 100%; }
   .shell { width: 100%; }
   .dash-content { padding: 0; }
 }
+
+/* Mobile records flow down the page instead of squeezing desktop columns. */
+.table-label { display: none; }
+.table-value { min-width: 0; }
+.who > div { min-width: 0; }
+@media screen and (max-width: 760px) {
+  .mobile-table, .mobile-table tbody { display: block; width: 100%; }
+  .mobile-table { position: relative; border: 0; background: transparent; }
+  .mobile-table thead {
+    position: absolute; width: 1px; height: 1px; padding: 0;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+  .mobile-table tbody { display: grid; gap: 16px; }
+  .mobile-table tbody tr {
+    display: grid; grid-template-columns: minmax(0, 1fr);
+    padding: 12px; border: 1px solid var(--line);
+    border-radius: 12px; background: var(--card);
+  }
+  .mobile-table tbody td,
+  .mobile-table.matrix td:not(:first-child),
+  .mobile-table.comp td:nth-child(n) {
+    display: grid; grid-template-columns: minmax(0, 1fr); gap: 5px;
+    width: auto; min-width: 0; max-width: 100%; padding: 10px 4px;
+    text-align: left; white-space: normal; border-bottom: 1px solid var(--line);
+  }
+  .mobile-table tbody tr td:last-child { border-bottom: 0; }
+  .mobile-table .table-label {
+    display: block; font-size: 12px; font-weight: 700;
+    color: var(--muted); line-height: 1.4;
+  }
+  .mobile-table .table-value {
+    width: 100%; line-height: 1.6; white-space: normal;
+    word-break: normal; overflow-wrap: anywhere;
+  }
+  .mobile-table .who { width: 100%; align-items: flex-start; }
+  .mobile-table .who > div { flex: 1; }
+  .mobile-table .who b, .mobile-table .who small { line-height: 1.6; }
+  .mobile-table :is(input[type=number], select) { width: 100%; max-width: 100%; min-height: 44px; }
+  .mobile-table .table-value > .btn { max-width: 100%; }
+  .mobile-table .pop-col { border-radius: 8px; padding-inline: 10px !important; }
+  .table-wrap { overflow: visible; }
+  .split-table.mobile-table { overflow: visible; }
+  .kanban { grid-template-columns: minmax(0, 1fr); overflow: visible; }
+  .kcol { min-height: 0; }
+  .stagebar, .subnav { flex-wrap: wrap; overflow: visible; }
+  .stagebar button { flex: 1 1 auto; white-space: normal; }
+  .subnav { position: static; }
+  .subnav button { white-space: normal; flex: 1 1 auto; }
+  .tier-line, .comp-line { flex-wrap: wrap; }
+}
+
+/* Let nested content shrink and wrap inside its own layout area. */
+:where(.card, .field, .hint, .who, .person-card, .detail-head, .work,
+  .timeline, .ticks li, .contact-list li, .modal-card header, .modal-card footer,
+  .summary dl div, .inv-tot div, .kv div, .milestones li) > * { min-width: 0; }
+:where(.card, .post-main, .foot-grid, .modal, .toast, .side) {
+  overflow-wrap: anywhere; word-break: normal;
+}
+:where(.btn, .chip, .badge, .eyebrow, .facts span) { max-width: 100%; }
+.badge, .eyebrow, .facts span { white-space: normal; }
+.btn > .ic { flex-shrink: 0; }
+:where(.ticks li, .contact-list li, .hint) > .ic { flex-shrink: 0; }
+:where(.pre, .msg p) { white-space: pre-wrap; overflow-wrap: anywhere; }
+pre { max-width: 100%; white-space: pre-wrap; overflow-wrap: anywhere; }
+input[type=range] { width: 100%; min-width: 0; }
+textarea { resize: vertical; }
+.modal { overflow: hidden; }
+.modal-card { display: flex; flex-direction: column; max-height: calc(100svh - 32px); }
+.modal-card header, .modal-card footer { flex-shrink: 0; }
+.modal-card header h3 { flex: 1; }
+.modal-body { min-height: 0; overflow: auto; overscroll-behavior: contain; }
+@media screen and (max-width: 760px) {
+  .table-wrap { scrollbar-gutter: auto; }
+  .modal-card footer > .btn { flex: 1 1 auto; }
+  .person-card { flex-wrap: wrap; }
+  .cart-line > .row { flex-wrap: wrap; }
+  .summary dd, .inv-tot dd { text-align: right; }
+}
+:where(.sec-head, .dash-head, .cta-band, .card-head, .plan-now) > * { min-width: 0; max-width: 100%; }
+.bars { gap: clamp(4px, 1vw, 10px); }
+.bar { flex: 1 1 0; min-width: 0; text-align: center; }
+.bar-val, .bar small { max-width: 100%; overflow-wrap: anywhere; }
+/* A minimum map height must not force its aspect ratio past the page width. */
+.map-frame.card { width: 100%; max-width: 100%; min-width: 0; padding: 0; }
+input[type=range] { margin-inline: 0; }
