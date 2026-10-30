@@ -42,7 +42,12 @@ PHOTOS = {
     'make-content-easy-for-ai-to-cite': 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1600&h=900&q=85',
 }
 
-ctx = ssl._create_unverified_context()
+# Verify TLS certificates; use certifi's bundle when Python's own store is missing (common on macOS).
+try:
+    import certifi
+    ctx = ssl.create_default_context(cafile=certifi.where())
+except ImportError:
+    ctx = ssl.create_default_context()
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
 
 for slug, url in PHOTOS.items():

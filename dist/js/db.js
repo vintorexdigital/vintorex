@@ -10,9 +10,22 @@ const safe = (fn, fallback) => { try { return fn(); } catch { return fallback; }
 export const uid = (p = '') => p + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-3);
 const daysAgo = (d, h = 10) => { const t = new Date(); t.setDate(t.getDate() - d); t.setHours(h, 0, 0, 0); return t.toISOString(); };
 
-export async function hash(text) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('vx:' + text));
-  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+// Passwords are stored as PBKDF2-SHA256 with a per-user salt ("pbkdf2$iterations$salt$hash").
+// Older accounts keep the plain SHA-256 form until their next successful sign-in upgrades it.
+const PBKDF2_ITER = 150000;
+const hex = buf => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+async function legacyHash(text) {
+  return hex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode('vx:' + text)));
+}
+export async function hash(text, salt = hex(crypto.getRandomValues(new Uint8Array(16))), iter = PBKDF2_ITER) {
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(text), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: new TextEncoder().encode(salt), iterations: iter }, key, 256);
+  return `pbkdf2$${iter}$${salt}$${hex(bits)}`;
+}
+async function verify(text, stored = '') {
+  if (!stored.startsWith('pbkdf2$')) return stored === await legacyHash(text);
+  const [, iter, salt] = stored.split('$');
+  return stored === await hash(text, salt, Number(iter));
 }
 
 let state = null;
@@ -81,7 +94,8 @@ export const currentUser = () => {
 };
 export async function login(email, password) {
   const u = db().users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
-  if (!u || u.pass !== await hash(password)) throw new Error('Email or password is incorrect.');
+  if (!u || !await verify(password, u.pass)) throw new Error('Email or password is incorrect.');
+  if (!u.pass.startsWith('pbkdf2$')) { u.pass = await hash(password); save(); }
   if (u.status === 'Blocked') throw new Error('This account is blocked. Contact support.');
   safe(() => localStorage.setItem(SESSION, u.id));
   return u;
@@ -278,12 +292,12 @@ export const inr = n => '₹' + Math.round(n).toLocaleString('en-IN');
 async function seed() {
   const clone = x => JSON.parse(JSON.stringify(x));
   const users = [
-    { id: 'u_admin', role: 'admin', name: 'Ranjith Kumar', email: 'admin@vintorex.com', phone: BUSINESS.phone, pass: await hash('admin123'), status: 'Active', createdAt: daysAgo(400), tags: [] },
-    { id: 'u_demo', role: 'customer', name: 'Siva Prakash', email: 'demo@vintorex.com', phone: '+91 98430 11223', company: 'Prakash Textiles', pass: await hash('demo123'), plan: 'premium', status: 'Active', createdAt: daysAgo(150), tags: ['Retail'] },
-    { id: 'u_kailash', role: 'customer', name: 'Kailash', email: 'kailash@idolworld.in', phone: '+91 94422 55110', company: 'The World of Idols', pass: await hash('demo123'), plan: 'elite', status: 'Active', createdAt: daysAgo(170), tags: ['E-commerce'] },
-    { id: 'u_yamuna', role: 'customer', name: 'Yamuna', email: 'yamuna@emsolutions.in', phone: '+91 99940 33442', company: 'Electrical & Mechanical Solutions', pass: await hash('demo123'), plan: 'free', status: 'Active', createdAt: daysAgo(120), tags: ['Industrial'] },
-    { id: 'u_arjun', role: 'customer', name: 'Arjun Menon', email: 'arjun@kovaicafe.in', phone: '+91 90030 77881', company: 'Kovai Café', pass: await hash('demo123'), plan: 'premium', status: 'Active', createdAt: daysAgo(75), tags: ['F&B'] },
-    { id: 'u_divya', role: 'customer', name: 'Divya Ramesh', email: 'divya@glowclinic.in', phone: '+91 98940 66120', company: 'Glow Skin Clinic', pass: await hash('demo123'), plan: 'free', status: 'Active', createdAt: daysAgo(30), tags: ['Healthcare'] },
+    { id: 'u_admin', role: 'admin', name: 'Ranjith Kumar', email: 'admin@vintorex.com', phone: BUSINESS.phone, pass: await legacyHash('admin123'), status: 'Active', createdAt: daysAgo(400), tags: [] },
+    { id: 'u_demo', role: 'customer', name: 'Siva Prakash', email: 'demo@vintorex.com', phone: '+91 98430 11223', company: 'Prakash Textiles', pass: await legacyHash('demo123'), plan: 'premium', status: 'Active', createdAt: daysAgo(150), tags: ['Retail'] },
+    { id: 'u_kailash', role: 'customer', name: 'Kailash', email: 'kailash@idolworld.in', phone: '+91 94422 55110', company: 'The World of Idols', pass: await legacyHash('demo123'), plan: 'elite', status: 'Active', createdAt: daysAgo(170), tags: ['E-commerce'] },
+    { id: 'u_yamuna', role: 'customer', name: 'Yamuna', email: 'yamuna@emsolutions.in', phone: '+91 99940 33442', company: 'Electrical & Mechanical Solutions', pass: await legacyHash('demo123'), plan: 'free', status: 'Active', createdAt: daysAgo(120), tags: ['Industrial'] },
+    { id: 'u_arjun', role: 'customer', name: 'Arjun Menon', email: 'arjun@kovaicafe.in', phone: '+91 90030 77881', company: 'Kovai Café', pass: await legacyHash('demo123'), plan: 'premium', status: 'Active', createdAt: daysAgo(75), tags: ['F&B'] },
+    { id: 'u_divya', role: 'customer', name: 'Divya Ramesh', email: 'divya@glowclinic.in', phone: '+91 98940 66120', company: 'Glow Skin Clinic', pass: await legacyHash('demo123'), plan: 'free', status: 'Active', createdAt: daysAgo(30), tags: ['Healthcare'] },
   ];
   const mkOrder = (n, cust, days, items, status, coupon) => {
     const subtotal = items.reduce((s, i) => s + i.unit * (i.qty || 1), 0);

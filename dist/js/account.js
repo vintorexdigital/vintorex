@@ -20,7 +20,8 @@ export const setRerender = fn => { rerender = fn; };
 const mine = (coll, user) => D.db()[coll].filter(x => x.customerId === user.id);
 
 export function view({ tab = '' }, query, user) {
-  const fn = { '': overview, subscription, orders, downloads, invoices, support, profile }[tab];
+  const tabs = { '': overview, subscription, orders, downloads, invoices, support, profile };
+  const fn = Object.hasOwn(tabs, tab) && tabs[tab];
   if (!fn) return { redirect: '/account' };
   const v = fn(user, query);
   return { shell: 'account', tab, ...v };

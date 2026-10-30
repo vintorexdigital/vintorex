@@ -789,8 +789,10 @@ export function paymentSchedule(o) {
 }
 
 export function orderDone({ id }) {
+  const user = D.currentUser();
+  if (!user) return { redirect: '/login' };
   const o = D.db().orders.find(o => o.id === id);
-  if (!o) return notFound();
+  if (!o || (user.role !== 'admin' && o.customerId !== user.id)) return notFound();
   return {
     title: 'Order confirmed',
     html: `<section class="shell section narrow center">
@@ -1077,7 +1079,7 @@ export function invoice({ id }) {
   return {
     title: 'Invoice ' + o.invoice, bare: true,
     html: `<section class="shell section invoice-page">
-      <div class="row between noprint"><a class="link" href="#/${user.role === 'admin' ? 'admin/orders' : 'account/orders'}">← Back</a><button class="btn primary" onclick="print()">Print / Save PDF</button></div>
+      <div class="row between noprint"><a class="link" href="#/${user.role === 'admin' ? 'admin/orders' : 'account/orders'}">← Back</a><button class="btn primary" data-print>Print / Save PDF</button></div>
       <article class="card invoice">
         <header class="row between"><div><div class="logo">${logoMark()}<span>${esc(s.businessName)}</span></div><p class="muted">${esc(s.address)}<br>${esc(s.phone)} · ${esc(s.email)}<br>GSTIN ${esc(s.gstin)}</p></div>
         <div class="right"><h2>Tax invoice</h2><p><b>${esc(o.invoice)}</b><br>${date(o.createdAt)}<br>${o.paid ? '<span class="badge green">Paid</span>' : `<span class="badge amber">Part-paid · ${inr(D.orderBalance(o))} due</span>`} via ${esc(o.method)}</p></div></header>
@@ -1096,6 +1098,7 @@ export function invoice({ id }) {
         <p class="fine">Thank you for your business. This is a computer-generated invoice.</p>
       </article>
     </section>`,
+    bind: root => $('[data-print]', root)?.addEventListener('click', () => print()),
   };
 }
 

@@ -31,7 +31,9 @@ function match(path) {
     const a = pattern.split('/'), b = path.split('/');
     if (a.length !== b.length) continue;
     const params = {};
-    if (a.every((seg, i) => seg.startsWith(':') ? (params[seg.slice(1)] = decodeURIComponent(b[i]), true) : seg === b[i])) return [fn, params];
+    try {
+      if (a.every((seg, i) => seg.startsWith(':') ? (params[seg.slice(1)] = decodeURIComponent(b[i]), true) : seg === b[i])) return [fn, params];
+    } catch { return [Pub.notFound, {}]; } // malformed %-escape in the URL
   }
   return [Pub.notFound, {}];
 }
@@ -92,7 +94,7 @@ function render() {
   const anchor = location.hash.split('#')[2];
   if (anchor) document.getElementById(anchor)?.scrollIntoView();
 }
-[Pub, Acc, Adm].forEach(m => m.setRerender(render));
+[Pub, Acc, Adm].forEach(m => m.setRerender(safeRender));
 
 function cartCount() { return D.getCart().reduce((s, i) => s + (i.qty || 1), 0); }
 
@@ -138,7 +140,7 @@ function bindChrome() {
 }
 
 document.addEventListener('cart', () => $$('.cart-btn .count').forEach(c => { const n = cartCount(); c.textContent = n; c.hidden = !n; }));
-window.addEventListener('hashchange', render);
+window.addEventListener('hashchange', safeRender);
 // Liquid Glass: let the light on cards and buttons follow the pointer.
 document.addEventListener('pointermove', e => {
   const el = e.pointerType === 'mouse' && e.target.closest?.('.card, .btn, .chip, .icon-btn');
@@ -149,7 +151,11 @@ document.addEventListener('pointermove', e => {
 }, { passive: true });
 window.addEventListener('storage', e => { if (e.key === 'vx_db_v1') location.reload(); });
 
-D.init().then(render).catch(err => {
+function showError(err) {
   console.error(err);
-  app().innerHTML = `<div class="shell section"><h1>Something went wrong</h1><p>${esc(err.message)}</p></div>`;
-});
+  app().innerHTML = `<div class="shell section"><h1>Something went wrong</h1><p>${esc(err.message)}</p><p><a class="btn primary" href="#/">Go home</a></p></div>`;
+}
+// A broken view shows the error page instead of leaving the old page half-updated.
+function safeRender() { try { render(); } catch (err) { showError(err); } }
+
+D.init().then(safeRender).catch(showError);

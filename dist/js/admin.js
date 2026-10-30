@@ -27,7 +27,8 @@ const customers = () => D.db().users.filter(u => u.role === 'customer');
 const userById = id => D.db().users.find(u => u.id === id);
 
 export function view({ tab = '', id }, query, user) {
-  const fn = { '': dashboard, leads: id ? leadDetail : leads, pipeline, customers: id ? customerDetail : customerList, orders, subscriptions, catalog, tickets, settings }[tab];
+  const tabs = { '': dashboard, leads: id ? leadDetail : leads, pipeline, customers: id ? customerDetail : customerList, orders, subscriptions, catalog, tickets, settings };
+  const fn = Object.hasOwn(tabs, tab) && tabs[tab];
   if (!fn) return { redirect: '/admin' };
   return { shell: 'admin', tab, ...fn(user, query, id) };
 }
@@ -423,7 +424,7 @@ function catalog(user, query) {
   const tab = query.get('t') || 'services';
   const tabs = [['services', 'Service packages'], ['plans', 'Membership plans'], ['addons', 'Add-ons'], ['products', 'Downloads'], ['coupons', 'Coupons']];
   let body = '';
-  if (tab === 'services') body = c.services.map((s, si) => `<section class="card"><div class="card-head"><div><h3>${esc(s.name)}</h3><small class="muted">Market ${inr(s.market[0])}–${inr(s.market[1])}${per(s.billing)} · ${s.billing === 'month' ? 'Monthly' : 'One-time'}</small></div><a class="link" href="#/services/${s.id}" target="_blank">View page</a></div>
+  if (tab === 'services') body = c.services.map((s, si) => `<section class="card"><div class="card-head"><div><h3>${esc(s.name)}</h3><small class="muted">Market ${inr(s.market[0])}–${inr(s.market[1])}${per(s.billing)} · ${s.billing === 'month' ? 'Monthly' : 'One-time'}</small></div><a class="link" href="#/services/${s.id}" target="_blank" rel="noopener">View page</a></div>
     <div class="price-edit">${s.tiers.map((t, ti) => `<label><span>${esc(t.name)}</span><input type="number" min="0" step="1" value="${t.price}" data-price="services|${si}|${ti}" aria-label="${esc(s.name + ' ' + t.name)} price"><small class="${t.price < s.market[0] ? 'good' : t.price > s.market[1] ? 'overdue' : 'muted'}">${t.price < s.market[0] ? 'Below market' : t.price > s.market[1] ? 'Above market' : 'Within market'}</small></label>`).join('')}</div>
     ${s.competitors.length ? `<details class="comp-peek"><summary>Competitor prices (${s.competitors.length})</summary>${s.competitors.map(x => `<div class="list-row"><span><b>${esc(x.name)}</b> <small class="muted">${esc(x.kind)}</small></span><span>${esc(x.price)}</span></div>`).join('')}</details>` : ''}
     <p class="fine">${s.works.length} work items · price split scales with the price you set.</p></section>`).join('');
@@ -459,7 +460,7 @@ function catalog(user, query) {
 
 // ---------------- Tickets ----------------
 function tickets(user, query) {
-  const st = query.get('s') || 'open';
+  const st = ['open', 'closed', 'all'].includes(query.get('s')) ? query.get('s') : 'open';
   const all = D.db().tickets;
   const list = all.filter(t => st === 'all' || (st === 'open' ? t.status !== 'Closed' : t.status === 'Closed'));
   const open = all.find(t => t.id === query.get('t')) || list[0];
@@ -525,6 +526,7 @@ function download(name, text, type = 'text/csv') {
   a.click(); URL.revokeObjectURL(a.href);
 }
 function csv(name, head, rows) {
-  const cell = v => { const s = String(v ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  // text starting with = + - @ would run as a formula in Excel or Sheets
+  const cell = v => { let s = String(v ?? ''); if (typeof v !== 'number' && /^[=+\-@\t\r]/.test(s)) s = "'" + s; return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
   download(name, [head, ...rows].map(r => r.map(cell).join(',')).join('\n'));
 }
