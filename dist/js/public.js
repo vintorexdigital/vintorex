@@ -983,7 +983,7 @@ export function about() {
       <div class="sec-head"><h2>Leadership</h2></div>
       <div class="card leader-spotlight">
         <div class="leader-avatar">
-          <img class="leader-portrait-img" src="/images/ranjith-kumar.svg" alt="Ranjith Kumar, Proprietor and Lead Digital Marketing Architect at Vintorex Digital Solutions Coimbatore" width="130" height="130" loading="lazy" decoding="async">
+          <img class="leader-portrait-img" src="/images/ranjith-kumar-320.jpg" srcset="/images/ranjith-kumar-320.jpg 320w, /images/ranjith-kumar-640.jpg 640w" sizes="(max-width: 768px) 160px, 176px" alt="Ranjith Kumar, Proprietor and Lead Digital Marketing Architect at Vintorex Digital Solutions Coimbatore" width="320" height="320" loading="lazy" decoding="async">
         </div>
         <div class="leader-info">
           <h3>Ranjith Kumar</h3>

@@ -834,15 +834,18 @@ section.card + section.card { margin-top: 18px; }
 }
 .leader-spotlight {
   display: grid;
-  grid-template-columns: 130px 1fr;
+  grid-template-columns: clamp(130px, 18vw, 176px) 1fr;
   gap: 28px;
   padding: 32px;
   align-items: center;
 }
 .leader-avatar {
-  width: 130px;
-  height: 130px;
-  border-radius: 20px;
+  width: 100%;
+  max-width: 176px;
+  aspect-ratio: 1;
+  height: auto;
+  overflow: hidden;
+  border-radius: 50%;
   background: linear-gradient(135deg, var(--brand), var(--accent));
   color: #fff;
   display: grid;
@@ -1691,7 +1694,6 @@ input[type=range] { margin-inline: 0; }
   .quote-card { padding: 18px; }
   .pillar-card { padding: 18px; }
   .work-content { padding: 16px; }
-  .leader-avatar { width: 90px; height: 90px; font-size: 2.2rem; }
   .svc-body { padding: 14px; }
 }
 
@@ -1898,3 +1900,6 @@ body:not(:has(.dash)) {
 .table-wrap.scroll .table { min-width: 560px; }
 .table-wrap.scroll .table td, .table-wrap.scroll .table th { overflow-wrap: normal; word-break: normal; }
 .table-wrap.scroll .table td:first-child { min-width: 150px; }
+
+.leader-portrait-img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.1); }
+@media (max-width: 768px) { .leader-avatar { width: min(160px, 46vw); } }
