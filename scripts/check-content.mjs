@@ -2,6 +2,9 @@
 import { SERVICES, ADDONS, COMPETITOR_SOURCES, PLANS, CATEGORIES } from '../dist/js/data.js';
 import { POSTS, md, toc } from '../dist/js/blog/index.js';
 import { ART } from '../dist/js/service-art.js';
+import { serviceFaqs, serviceAnswer, siteFaqs } from '../dist/js/seo.js';
+import { existsSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 const errs = [];
 const ids = new Set(SERVICES.map(s => s.id));
@@ -55,6 +58,24 @@ for (const s of SERVICES) {
   const n = POSTS.filter(p => p.service === s.id).length;
   if (n < 2) errs.push(`${s.id}: only ${n} guide(s), needs at least 2`);
 }
+
+// SEO / GEO / AEO: every service has a generated static page, answer text and FAQs,
+// and the published files list all of them. Skipped until `npm run build:blog` has run.
+const dist = p => fileURLToPath(new URL('../dist/' + p, import.meta.url));
+for (const s of SERVICES) {
+  if (serviceAnswer(s).length < 80) errs.push(`${s.id}: answer text too short`);
+  if (serviceFaqs(s).length < 6) errs.push(`${s.id}: needs at least 6 FAQs`);
+  if (s.summary.length > 160) errs.push(`${s.id}: summary over 160 characters (used in snippets)`);
+  const f = dist(`services/${s.id}/index.html`);
+  if (!existsSync(f)) { errs.push(`${s.id}: static page missing, run npm run build:blog`); continue; }
+  const h = readFileSync(f, 'utf8');
+  if ((h.match(/<h1[ >]/g) || []).length !== 1) errs.push(`${s.id}: page needs exactly one h1`);
+  for (const k of ['"@type":"Service"', '"@type":"FAQPage"', 'rel="canonical"', 'name="description"']) if (!h.includes(k)) errs.push(`${s.id}: page missing ${k}`);
+  if (!readFileSync(dist('sitemap.xml'), 'utf8').includes(`/services/${s.id}/`)) errs.push(`${s.id}: not in sitemap.xml`);
+  if (!readFileSync(dist('llms.txt'), 'utf8').includes(`/services/${s.id}/`)) errs.push(`${s.id}: not in llms.txt`);
+}
+if (siteFaqs(SERVICES).length < 8) errs.push('site FAQ list too short');
+for (const f of ['faq/index.html', 'services/index.html', 'llms-full.txt', 'robots.txt']) if (!existsSync(dist(f))) errs.push(`${f} missing, run npm run build:blog`);
 
 if (errs.length) { console.error('Content check failed:\n- ' + errs.join('\n- ')); process.exit(1); }
 console.log(`OK: ${SERVICES.length} services, ${ADDONS.length} add-ons, ${SERVICES.reduce((a, s) => a + s.works.length, 0)} work items, ${POSTS.length} guides.`);

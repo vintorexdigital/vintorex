@@ -30,6 +30,10 @@ export const BUSINESS = {
   },
 };
 
+// Razorpay Key ID is public by design (Checkout needs it in the browser).
+// The key secret lives in .env at the repo root, never in dist/.
+export const RAZORPAY = { keyId: 'rzp_live_mLQsNqFUUebDRV' };
+
 export const CATEGORIES = [
   { id: 'build', name: 'Build', blurb: 'Websites, stores and apps' },
   { id: 'grow', name: 'Grow', blurb: 'SEO, social and paid ads' },

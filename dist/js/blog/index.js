@@ -41,6 +41,8 @@ export const slugify = t => t.toLowerCase().replace(/&amp;/g, 'and').replace(/[^
 function inline(t, base) {
   return esc(t)
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    // On static pages (base '/') service links go to the crawlable service page.
+    .replace(/\[([^\]]+)\]\(#\/services\/([\w-]+)\)/g, (m, t, id) => base === '/' ? `<a href="/services/${id}/">${t}</a>` : `<a href="${base}#/services/${id}">${t}</a>`)
     .replace(/\[([^\]]+)\]\((#\/[^)\s]+)\)/g, `<a href="${base}$2">$1</a>`)
     .replace(/\[([^\]]+)\]\((\/blog\/[a-z0-9-]+\/)\)/g, '<a href="$2">$1</a>');
 }

@@ -1,7 +1,9 @@
 // Public storefront: home, services, pricing, shop, cart, checkout, contact, auth.
 import { BUSINESS, CATEGORIES, ANNUAL_MONTHS_PAID, SOURCES, LEAD_SOURCES, COMPETITOR_SOURCES, MILESTONE_MIN } from './data.js';
 import * as D from './db.js';
-import { esc, icon, toast, field, per, date, empty, $, $$ } from './ui.js';
+import { esc, icon, toast, field, per, date, empty, modal, $, $$ } from './ui.js';
+import { amountDue } from './pricing.js';
+import * as Pay from './pay.js';
 import { serviceGuides, featuredPosts, postCard } from './blogpages.js';
 import { logoMark } from './chrome.js';
 import { serviceArt, serviceCardArt, ART, CATALOG_KEYWORDS, serviceImagePath } from './service-art.js';
@@ -750,12 +752,13 @@ export function checkout() {
             <label class="pay-opt"><input type="radio" name="plan" value="milestone"><span><b>Pay in milestones</b><small>${inr(q.milestones[0].amount)} today, then ${q.milestones.slice(1).map(m => inr(m.amount)).join(' + ')}</small></span></label>
           </div>
           <ol class="milestones small">${q.milestones.map((m, i) => `<li><span><b>${m.pct}%</b> ${esc(m.label)}${i === 0 && q.lines.some(l => !(l.type === 'package' && l.info.billing === 'once')) ? ' <small class="muted">+ other items in full</small>' : ''}</span><b>${inr(m.amount)}</b></li>`).join('')}</ol>` : ''}
-          <h3>Payment method</h3>
+          ${Pay.live() ? `<h3>Payment</h3>
+          <p class="hint">${icon('shield')} Pay securely by UPI, card, net banking or wallet in the Razorpay window.</p>` : `<h3>Payment method</h3>
           <div class="pay-methods">
             ${['UPI', 'Card', 'Net banking', 'Bank transfer'].map((m, i) => `<label class="pay-opt"><input type="radio" name="method" value="${m}" ${i ? '' : 'checked'}><span>${esc(m)}</span></label>`).join('')}
           </div>
-          <p class="hint">${icon('shield')} Demo mode: payment is simulated. Connect a Razorpay key in Admin → Settings before going live.</p>
-          <label class="check"><input type="checkbox" required> I agree to the <a href="#/terms">terms</a> and <a href="#/terms">refund policy</a>.</label>
+          <p class="hint">${icon('shield')} Demo mode: payment is simulated until the Razorpay payment server is connected.</p>`}
+          <label class="check"><input type="checkbox" required> I agree to the <a href="/terms/" target="_blank" rel="noopener">terms</a> and the <a href="/refund-policy/" target="_blank" rel="noopener">cancellation & refund policy</a>.</label>
           <button class="btn primary lg block" id="pay-btn">Pay ${inr(q.total)}</button>
         </form>
         ${summary(q, '')}
@@ -766,16 +769,39 @@ export function checkout() {
       $$('input[name=plan]', form).forEach(r => r.addEventListener('change', () => {
         $('#pay-btn', form).textContent = `Pay ${inr(r.value === 'milestone' ? q.milestones[0].amount : q.total)}`;
       }));
-      form.addEventListener('submit', e => {
+      form.addEventListener('submit', async e => {
         e.preventDefault();
         const f = Object.fromEntries(new FormData(form));
         Object.assign(user, { name: f.name, phone: f.phone, company: f.company, gstin: f.gstin, city: f.city });
-        const btn = $('#pay-btn', form); btn.disabled = true; btn.textContent = 'Processing payment…';
-        setTimeout(() => {
-          const order = D.placeOrder(user, D.getCart(), coupon, f.method, f.plan || 'full');
+        const btn = $('#pay-btn', form), label = btn.textContent, plan = f.plan || 'full';
+        const reset = () => { btn.disabled = false; btn.textContent = label; };
+        btn.disabled = true;
+        if (!Pay.live()) {
+          btn.textContent = 'Processing payment…';
+          setTimeout(() => {
+            const order = D.placeOrder(user, D.getCart(), coupon, f.method, plan);
+            coupon = ''; D.setCart([]);
+            go('/order/' + order.id);
+          }, 900);
+          return;
+        }
+        btn.textContent = 'Opening secure payment…';
+        try {
+          const cart = D.getCart();
+          const order = await Pay.createOrder({ items: cart, coupon, payPlan: plan, memberToken: user.memberToken, account: user.email, customer: { name: f.name, email: f.email, phone: f.phone } });
+          // The server prices from the live catalog; ask before charging a different amount.
+          const shown = amountDue(q, plan);
+          if (order.due !== shown && !await modal({ title: 'Amount updated', body: `<p>The amount due is <b>${inr(order.due)}</b>, not ${inr(shown)}, because prices or discounts have changed.</p>`, submit: `Pay ${inr(order.due)}` })) return reset();
+          const paid = await Pay.pay(order, { name: f.name, email: f.email, phone: f.phone, description: q.lines.length === 1 ? q.lines[0].info.title : `${q.lines.length} items` });
+          if (!paid) return reset();
+          const placed = D.placeOrder(user, cart, coupon, 'Razorpay', plan, { priced: order.quote, paymentId: paid.paymentId, memberToken: paid.memberToken, balanceToken: paid.balanceToken });
           coupon = ''; D.setCart([]);
-          go('/order/' + order.id);
-        }, 900);
+          go('/order/' + placed.id);
+        } catch (err) {
+          reset();
+          if (err.paymentId) modal({ title: 'Payment not confirmed', body: `<p>${esc(err.message)}</p>`, submit: '' });
+          else toast(err.message, 'err');
+        }
       });
     },
   };
@@ -981,21 +1007,10 @@ export function about() {
   };
 }
 
+// Policies are static pages built from js/policies.js; old #/terms links land there.
 export function terms() {
-  return {
-    title: 'Policies',
-    description: 'Read Vintorex Digital Solutions service policies, project refund terms, digital download delivery, and privacy commitments.',
-    keywords: 'vintorex terms, refund policy, privacy policy, client agreement, agency terms of service',
-    image: 'https://vintorex.com/images/about-studio.jpg',
-    imageAlt: 'Vintorex studio desk at dusk with monitors, a laptop, and a plant by the window',
-    html: `<section class="shell section narrow prose">
-      <h1>Terms, refunds & privacy</h1>
-      <h3>Services</h3><p>Project scope is defined by the package purchased. Additional work is quoted separately. Monthly retainers renew automatically until cancelled from your dashboard.</p>
-      <h3>Refunds</h3><p>One-time projects can be refunded in full before work starts, and 50% before the first design is delivered. Monthly plans are non-refundable for the current period. Digital downloads are non-refundable once downloaded.</p>
-      <h3>Delivery</h3><p>Digital downloads are delivered instantly in your dashboard. Service timelines are shown on each package.</p>
-      <h3>Privacy</h3><p>We use your details only to deliver services and contact you about your enquiry. We never sell your data. Our contact page shows an embedded Google Map, which is provided by Google under its own privacy policy.</p>
-    </section>`,
-  };
+  location.replace('/terms/');
+  return { title: 'Terms and Conditions', html: '<section class="shell section"><p class="muted">Opening the terms…</p></section>' };
 }
 
 // ---------------- Auth ----------------

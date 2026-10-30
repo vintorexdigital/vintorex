@@ -1,9 +1,10 @@
 // Admin panel: dashboard, lead CRM + pipeline, customers, orders, subscriptions,
 // catalog & pricing editor, support tickets and settings.
 import * as D from './db.js';
-import { LEAD_STAGES, LEAD_SOURCES, ORDER_STATUSES } from './data.js';
+import { LEAD_STAGES, LEAD_SOURCES, ORDER_STATUSES, RAZORPAY } from './data.js';
 import { esc, icon, toast, field, per, date, dateTime, ago, badge, empty, modal, confirmBox, barChart, initials, $, $$ } from './ui.js';
 import { thread, bindThread } from './account.js';
+import * as Pay from './pay.js';
 
 const inr = D.inr;
 const k = n => n >= 100000 ? '₹' + (n / 100000).toFixed(1) + 'L' : n >= 1000 ? '₹' + Math.round(n / 1000) + 'k' : '₹' + n;
@@ -500,8 +501,11 @@ function settings() {
         ${field('GST rate %', 'gst', { type: 'number', value: s.gst, attrs: 'min="0" max="28"' })}
         <button class="btn primary">Save</button></form>
       <div class="card"><h3>Payments & integrations</h3>
-        <p class="muted">Checkout runs in demo mode. To accept real payments, connect a server that creates Razorpay orders and verifies the payment signature — the key secret must never be placed in this browser app.</p>
-        <ul class="ticks col"><li>${icon('check')}Razorpay / UPI — server endpoint required</li><li>${icon('check')}WhatsApp Business API — for lead alerts</li><li>${icon('check')}Email (SMTP / Brevo) — for order mails</li></ul>
+        <dl class="kv"><div><dt>Razorpay Key ID</dt><dd><code>${esc(RAZORPAY.keyId)}</code> ${RAZORPAY.keyId.startsWith('rzp_live_') ? badge('Live', 'green') : badge('Test', 'amber')}</dd></div>
+          <div><dt>Key secret</dt><dd>In <code>.env</code> for the payment server</dd></div>
+          <div><dt>Payment server</dt><dd>${Pay.live() ? badge('Connected', 'green') : badge('Not running', 'grey')}</dd></div></dl>
+        <p class="muted">${Pay.live() ? 'Checkout takes real Razorpay payments. The server prices each order and verifies every payment signature.' : 'Checkout runs in demo mode. Run the site with <code>npm start</code> to take real Razorpay payments.'}</p>
+        <ul class="ticks col"><li>${icon('check')}Razorpay / UPI — ${Pay.live() ? 'live' : 'needs the payment server'}</li><li>${icon('check')}WhatsApp Business API — for lead alerts</li><li>${icon('check')}Email (SMTP / Brevo) — for order mails</li></ul>
         <h3>Data</h3>
         <div class="row gap wrap"><button class="btn ghost" data-backup>${icon('download')} Backup JSON</button><button class="btn danger-ghost" data-reset>Reset demo data</button></div>
       </div>

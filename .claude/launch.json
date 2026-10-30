@@ -3,8 +3,10 @@
   "configurations": [
     {
       "name": "vintorex",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "5173", "--directory", "dist"],
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "server/index.mjs"
+      ],
       "port": 5173
     }
   ]

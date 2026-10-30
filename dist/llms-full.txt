@@ -1,0 +1,530 @@
+# Vintorex Digital Solutions: services, prices and FAQs
+
+Vintorex Digital Solutions is a digital agency in Coimbatore, Tamil Nadu, India. It sells 21 websites, marketing, branding, cloud and AI services with published prices in INR (excluding 18% GST), each in three packages.
+Address: 38 Bankers Colony Phase 2, Cheran Ma Nagar, Coimbatore 641035. Phone: +91 866 720 9838. Email: vintorexdigital@gmail.com. Prices reviewed October 2026.
+
+## General FAQs
+Q: What does Vintorex Digital Solutions do?
+A: Vintorex Digital Solutions is a digital agency in Coimbatore, Tamil Nadu. It offers 21 services with published prices: build (websites, stores and apps); grow (seo, social and paid ads); brand & content (identity, content and video); cloud & data (hosting, cloud and analytics); ai & automation (chatbots, voice agents and automation).
+
+Q: Where is Vintorex Digital Solutions located?
+A: 38 Bankers Colony Phase 2, Cheran Ma Nagar, Coimbatore 641035, India. Google Maps: https://maps.app.goo.gl/Z5dYBa4UCpSNU6m99
+
+Q: How do I contact Vintorex?
+A: Call +91 866 720 9838, WhatsApp https://wa.me/918667209838, or email vintorexdigital@gmail.com.
+
+Q: How much do Vintorex services cost?
+A: Prices start from ₹999 and are listed in rupees on every service page, excluding 18% GST. Each service has three packages, and monthly services are billed per month.
+
+Q: Does Vintorex charge GST?
+A: Yes. Prices exclude 18% GST, which is added at checkout and shown on a GST invoice that can be used for input tax credit.
+
+Q: Which payment methods are accepted?
+A: UPI (GPay, PhonePe, Paytm), RuPay, Visa and Mastercard cards, and net banking.
+
+Q: Can I pay in instalments?
+A: Yes. One-time projects of ₹10,000 or more can be paid in milestones: 40% advance to start work, 40% mid-project approval, 20% delivery & handover.
+
+Q: Is there a free website and SEO audit?
+A: Yes. Vintorex offers a free 15-point audit covering site speed and Core Web Vitals, local SEO and Google Business Profile, competitor keyword gaps, and social and paid ads quick wins. Request it at https://vintorex.com/#audit.
+
+Q: Does Vintorex offer membership plans?
+A: Yes: Basic (free), Premium Growth (₹19,999 per month), Elite Scale (₹44,999 per month). Paid plans include discounts on one-time services.
+
+Q: Does Vintorex offer AI and automation services?
+A: Yes. The AI & Automation category covers AI Chatbot & WhatsApp Assistant, AI Voice Agent (Calls), Business Process Automation, AI Content & Creative Studio, Custom AI Assistant & Knowledge Base, AI Consulting & Team Training, AI Search Optimisation (GEO).
+
+## Website Design & Development
+URL: https://vintorex.com/services/web-design/
+Website Design & Development from Vintorex Digital Solutions in Coimbatore starts at ₹14,999 for the Starter package and goes up to ₹54,999 for Premium, excluding 18% GST. Typical market prices run ₹15,000 to ₹1,00,000. Delivery: 7–30 days.
+A fast, mobile-first website that explains what you do, ranks on Google and turns visitors into calls, WhatsApp chats and form enquiries. Built on WordPress with an editor you can use yourself, or fully custom-coded on Premium.
+Packages:
+- Starter: ₹14,999. Up to 5 pages, Mobile responsive, Contact & WhatsApp forms, Basic on-page SEO, 15 days support.
+- Growth: ₹27,999. Up to 12 pages + blog, Copy for 5 pages, Lead capture + CRM alerts, PageSpeed 90+, GA4 conversion tracking.
+- Premium: ₹54,999. Unlimited pages, Custom UI/UX in Figma, English + Tamil, Advanced technical SEO, 3 months free maintenance.
+Q: How much does website design & development cost in Coimbatore?
+A: At Vintorex it is Starter ₹14,999, Growth ₹27,999, Premium ₹54,999, all excluding 18% GST. The wider Indian market range is ₹15,000 to ₹1,00,000, depending on scope.
+Q: What is included in each website design & development package?
+A: Starter: Up to 5 pages, Mobile responsive, Contact & WhatsApp forms, Basic on-page SEO, 15 days support. Growth: Up to 12 pages + blog, Copy for 5 pages, Lead capture + CRM alerts, PageSpeed 90+, GA4 conversion tracking. Premium: Unlimited pages, Custom UI/UX in Figma, English + Tamil, Advanced technical SEO, 3 months free maintenance.
+Q: Who is website design & development for?
+A: Shops, clinics, schools and service firms; Manufacturers that need a lead-generating site; Businesses replacing an outdated website.
+Q: How long does website design & development take?
+A: 7–30 days. Term: one-time.
+Q: What is not included?
+A: Domain & hosting (add-on available); Paid plugins or themes beyond the included licence; Product or office photography.
+Q: How does the website design & development process work?
+A: 1. Discovery & sitemap: Goals, pages and competitors agreed on a call. 2. Wireframes & design: Home page design for approval, then inner pages. 3. Development: Responsive build, forms, WhatsApp and maps. 4. Content & SEO: Copy, images, meta tags, sitemap and analytics. 5. Launch & training: Testing on devices, go-live and CMS training.
+Q: Can I pay for website design & development in instalments?
+A: Yes. One-time projects of ₹10,000 or more can be paid in milestones: 40% advance to start work, 40% mid-project approval, 20% delivery & handover.
+Q: How does Vintorex compare with other website design & development options?
+A: Hostinger Website Builder (diy builder): ₹149–₹599/mo. Wix (diy builder): US$17–US$39/mo. Freelancers & small agencies (market range): ₹15,000–₹1,00,000+ one-time. Vintorex publishes every price up front, excluding GST.
+
+## E-commerce Store
+URL: https://vintorex.com/services/ecommerce/
+E-commerce Store from Vintorex Digital Solutions in Coimbatore starts at ₹34,999 for the Starter package and goes up to ₹1,49,999 for Premium, excluding 18% GST. Typical market prices run ₹25,000 to ₹4,00,000. Delivery: 3–8 weeks.
+A complete online store that takes UPI, card and COD payments, books shipping automatically, raises GST invoices and recovers abandoned carts. WooCommerce by default (no platform commission) or Shopify if you prefer.
+Packages:
+- Starter: ₹34,999. Up to 50 products, Razorpay / UPI / COD, Shipping integration, GST invoices, Order emails.
+- Growth: ₹74,999. Up to 500 products, Coupons & offers, Abandoned cart recovery, WhatsApp order alerts, Sales analytics.
+- Premium: ₹1,49,999. Unlimited products, Fully custom design, B2B / multi-vendor pricing, ERP / Tally / CRM integration, Loyalty & subscriptions.
+Q: How much does e-commerce store cost in Coimbatore?
+A: At Vintorex it is Starter ₹34,999, Growth ₹74,999, Premium ₹1,49,999, all excluding 18% GST. The wider Indian market range is ₹25,000 to ₹4,00,000, depending on scope.
+Q: What is included in each e-commerce store package?
+A: Starter: Up to 50 products, Razorpay / UPI / COD, Shipping integration, GST invoices, Order emails. Growth: Up to 500 products, Coupons & offers, Abandoned cart recovery, WhatsApp order alerts, Sales analytics. Premium: Unlimited products, Fully custom design, B2B / multi-vendor pricing, ERP / Tally / CRM integration, Loyalty & subscriptions.
+Q: Who is e-commerce store for?
+A: Retailers and D2C brands going online; Wholesalers adding B2B ordering; Shops moving off marketplaces to their own store.
+Q: How long does e-commerce store take?
+A: 3–8 weeks. Term: one-time.
+Q: What is not included?
+A: Payment gateway and courier charges (paid to the provider); Shopify subscription if you choose Shopify; Product photography (add-on available).
+Q: How does the e-commerce store process work?
+A: 1. Catalogue planning: Categories, variants, shipping zones and taxes. 2. Store design: Home, category, product and checkout designs. 3. Build & integrations: Payments, shipping, invoices and notifications. 4. Product upload: Products, images, prices and stock entered. 5. Test orders & launch: Live test orders, refunds and go-live.
+Q: Can I pay for e-commerce store in instalments?
+A: Yes. One-time projects of ₹10,000 or more can be paid in milestones: 40% advance to start work, 40% mid-project approval, 20% delivery & handover.
+Q: How does Vintorex compare with other e-commerce store options?
+A: Shopify (platform subscription): Basic ₹1,499 · Grow ₹5,599 · Advanced ₹22,680 per month. Template-store agencies (market range): ₹25,000–₹60,000 one-time. Custom-build agencies (market range): ₹1,50,000–₹4,00,000+ one-time. Vintorex publishes every price up front, excluding GST.
+
+## Mobile App Development
+URL: https://vintorex.com/services/mobile-app/
+Mobile App Development from Vintorex Digital Solutions in Coimbatore starts at ₹1,49,999 for the Starter package and goes up to ₹5,99,999 for Premium, excluding 18% GST. Typical market prices run ₹2,00,000 to ₹15,00,000. Delivery: 6–18 weeks.
+Cross-platform Flutter apps with a web admin panel, payments, push notifications and analytics. You get the full source code and store listings in your own accounts.
+Packages:
+- Starter: ₹1,49,999. Android app (Flutter), Up to 8 screens, OTP login & push, Basic admin panel, Play Store publishing.
+- Growth: ₹2,99,999. Android + iOS, Up to 20 screens, Payments integration, Full admin panel, 90 days bug-fix support.
+- Premium: ₹5,99,999. Up to 40 screens, Real-time chat / tracking, Scalable cloud backend, Automated testing, 6 months support.
+Q: How much does mobile app development cost in Coimbatore?
+A: At Vintorex it is Starter ₹1,49,999, Growth ₹2,99,999, Premium ₹5,99,999, all excluding 18% GST. The wider Indian market range is ₹2,00,000 to ₹15,00,000, depending on scope.
+Q: What is included in each mobile app development package?
+A: Starter: Android app (Flutter), Up to 8 screens, OTP login & push, Basic admin panel, Play Store publishing. Growth: Android + iOS, Up to 20 screens, Payments integration, Full admin panel, 90 days bug-fix support. Premium: Up to 40 screens, Real-time chat / tracking, Scalable cloud backend, Automated testing, 6 months support.
+Q: Who is mobile app development for?
+A: Service businesses with repeat customers; Logistics and field teams needing tracking; Startups validating an MVP.
+Q: How long does mobile app development take?
+A: 6–18 weeks. Term: one-time.
+Q: What is not included?
+A: Apple Developer (US$99/yr) and Google Play (US$25 once) accounts; SMS, maps and other third-party API charges; Cloud server costs after launch (Cloud Services plan available).
+Q: How does the mobile app development process work?
+A: 1. Specification: User stories, screens and integrations signed off. 2. UI/UX prototype: Clickable Figma prototype for approval. 3. Development sprints: Two-week sprints with test builds on your phone. 4. QA & UAT: Device testing, bug fixing and your acceptance test. 5. Store launch: Store listings, review submission and go-live.
+Q: Can I pay for mobile app development in instalments?
+A: Yes. One-time projects of ₹10,000 or more can be paid in milestones: 40% advance to start work, 40% mid-project approval, 20% delivery & handover.
+Q: How does Vintorex compare with other mobile app development options?
+A: Indian app agencies — simple apps / MVPs (market range): ₹2,00,000–₹15,00,000. Vintorex publishes every price up front, excluding GST.
+
+## Search Engine Optimisation
+URL: https://vintorex.com/services/seo/
+Search Engine Optimisation from Vintorex Digital Solutions in Coimbatore starts at ₹7,999 per month for the Local package and goes up to ₹29,999 per month for Premium, excluding 18% GST. Typical market prices run ₹8,000 to ₹80,000 per month. Delivery: results in 3–6 months.
+Monthly SEO that combines technical fixes, on-page optimisation, Google Business Profile, content and quality links. Premium also covers AI search (Google AI Overviews and chat assistants). Every month you see rankings, traffic and leads in your dashboard.
+Packages:
+- Local: ₹7,999/month. 10 target keywords, Google Business Profile, On-page fixes on 5 pages, Local citations, Monthly ranking report.
+- Growth: ₹14,999/month. 25 target keywords, Full technical audit + fixes, 4 SEO blog posts / month, 8–10 quality backlinks, GA4 + Search Console.
+- Premium: ₹29,999/month. 60 target keywords, AI search optimisation, 8 SEO blog posts / month, Digital PR backlinks, Dedicated SEO manager.
+Q: How much does search engine optimisation cost in Coimbatore?
+A: At Vintorex it is Local ₹7,999 per month, Growth ₹14,999 per month, Premium ₹29,999 per month, all excluding 18% GST. The wider Indian market range is ₹8,000 to ₹80,000 per month, depending on scope.
+Q: What is included in each search engine optimisation package?
+A: Local: 10 target keywords, Google Business Profile, On-page fixes on 5 pages, Local citations, Monthly ranking report. Growth: 25 target keywords, Full technical audit + fixes, 4 SEO blog posts / month, 8–10 quality backlinks, GA4 + Search Console. Premium: 60 target keywords, AI search optimisation, 8 SEO blog posts / month, Digital PR backlinks, Dedicated SEO manager.
+Q: Who is search engine optimisation for?
+A: Local businesses that want Google Maps leads; Service firms competing for city keywords; E-commerce stores that need organic sales.
+Q: How long does search engine optimisation take?
+A: Results in 3–6 months. Term: 3-month minimum.
+Q: What is not included?
+A: Paid placements on premium news sites; Website redesign or new development; Guaranteed #1 rankings — no honest agency can promise this.
+Q: How does the search engine optimisation process work?
+A: 1. Audit & keyword plan: Technical audit, keyword research and competitor gaps. 2. Fix the foundations: Speed, indexing, schema and on-page fixes. 3. Local & content: Google Business Profile, citations and blog content. 4. Authority: Relevant backlinks and digital PR. 5. Report & refine: Monthly report, call and next month’s plan.
+Q: How does Vintorex compare with other search engine optimisation options?
+A: PG Softwares (Coimbatore) (local agency): ₹10,000 / ₹12,500 / ₹15,000. Rank You Higher (national agency): ₹8,000–₹25,000 · ₹20,000–₹40,000 · ₹40,000–₹80,000 per month. iDigitalise (national agency): ₹45,000 / ₹65,000 / ₹1,10,000 / ₹1,60,000 per month. Vintorex publishes every price up front, excluding GST.
+
+## Social Media Marketing
+URL: https://vintorex.com/services/social-media/
+Social Media Marketing from Vintorex Digital Solutions in Coimbatore starts at ₹8,999 per month for the Starter package and goes up to ₹34,999 per month for Premium, excluding 18% GST. Typical market prices run ₹8,000 to ₹60,000 per month. Delivery: first posts in 5 days.
+Done-for-you social media: monthly strategy, designed posts, reels, captions, scheduling and community management, with approval before anything goes live.
+Packages:
+- Starter: ₹8,999/month. 2 platforms, 12 posts / month, 4 stories, Content calendar, Monthly report.
+- Growth: ₹17,999/month. 3 platforms, 20 posts + 4 reels, 12 stories, Community management, Bi-weekly report.
+- Premium: ₹34,999/month. 4 platforms, 30 posts + 8 reels, Influencer outreach, Monthly shoot direction, Weekly strategy call.
+Q: How much does social media marketing cost in Coimbatore?
+A: At Vintorex it is Starter ₹8,999 per month, Growth ₹17,999 per month, Premium ₹34,999 per month, all excluding 18% GST. The wider Indian market range is ₹8,000 to ₹60,000 per month, depending on scope.
+Q: What is included in each social media marketing package?
+A: Starter: 2 platforms, 12 posts / month, 4 stories, Content calendar, Monthly report. Growth: 3 platforms, 20 posts + 4 reels, 12 stories, Community management, Bi-weekly report. Premium: 4 platforms, 30 posts + 8 reels, Influencer outreach, Monthly shoot direction, Weekly strategy call.
+Q: Who is social media marketing for?
+A: Retail, food and lifestyle brands; Clinics, salons and gyms; B2B firms building trust on LinkedIn.
+Q: How long does social media marketing take?
+A: First posts in 5 days. Term: monthly, cancel anytime.
+Q: What is not included?
+A: Ad spend (paid directly to Meta); Photo/video crew (add-on available); Influencer fees.
+Q: How does the social media marketing process work?
+A: 1. Brand & audience brief: Tone, audience, competitors and goals. 2. Monthly calendar: Topics, formats and dates for approval. 3. Create: Designs, reels and captions made and approved. 4. Publish & engage: Scheduling, replies and boosting. 5. Report: Reach, engagement, followers and leads.
+Q: How does Vintorex compare with other social media marketing options?
+A: Visual Birds (Coimbatore) (local agency): Trial ₹8,499 · Starter ₹14,999 · Regular ₹29,999 · Plus ₹59,999 per month. PG Softwares (Coimbatore) (local agency): SMO ₹10,000 / ₹12,500 / ₹15,000. OneCity Technologies (Coimbatore) (local agency): ₹8,000/mo (organic) to ₹50,000+/mo (paid). Vintorex publishes every price up front, excluding GST.
+
+## Paid Advertising (PPC)
+URL: https://vintorex.com/services/advertising/
+Paid Advertising (PPC) from Vintorex Digital Solutions in Coimbatore starts at ₹9,999 per month for the Starter package and goes up to ₹39,999 per month for Premium, excluding 18% GST. Typical market prices run ₹10,000 to ₹40,000 per month. Delivery: campaigns live in 5 days.
+Campaign strategy, ad creatives, conversion tracking and daily optimisation on Google, Meta and YouTube. It’s a flat monthly fee up to a spend cap, so you know the cost upfront, and every lead is tracked back to its campaign.
+Packages:
+- Starter: ₹9,999/month. 1 platform, Up to ₹50k ad spend, 2 campaigns, Conversion tracking, Monthly report.
+- Growth: ₹19,999/month. Google + Meta, Up to ₹2L ad spend, Retargeting, A/B creative testing, Bi-weekly report.
+- Premium: ₹39,999/month. All platforms, Up to ₹6L ad spend, Unlimited campaigns, Video ad creatives, Weekly call + live dashboard.
+Q: How much does paid advertising (ppc) cost in Coimbatore?
+A: At Vintorex it is Starter ₹9,999 per month, Growth ₹19,999 per month, Premium ₹39,999 per month, all excluding 18% GST. The wider Indian market range is ₹10,000 to ₹40,000 per month, depending on scope.
+Q: What is included in each paid advertising (ppc) package?
+A: Starter: 1 platform, Up to ₹50k ad spend, 2 campaigns, Conversion tracking, Monthly report. Growth: Google + Meta, Up to ₹2L ad spend, Retargeting, A/B creative testing, Bi-weekly report. Premium: All platforms, Up to ₹6L ad spend, Unlimited campaigns, Video ad creatives, Weekly call + live dashboard.
+Q: Who is paid advertising (ppc) for?
+A: Businesses that need leads this month; Stores running sales and launches; Local services targeting nearby customers.
+Q: How long does paid advertising (ppc) take?
+A: Campaigns live in 5 days. Term: monthly, cancel anytime.
+Q: What is not included?
+A: Ad spend (billed by Google / Meta to your card); Spend above the cap is managed at 12% of the extra spend.
+Q: How does the paid advertising (ppc) process work?
+A: 1. Audit & goals: Target cost per lead, audiences and budget split. 2. Tracking: GA4, pixels, call and WhatsApp tracking. 3. Launch: Campaigns, creatives and copy go live. 4. Optimise: Bids, keywords, audiences and creatives tuned. 5. Report: Leads, cost per lead and next steps.
+Q: How does Vintorex compare with other paid advertising (ppc) options?
+A: PG Softwares (Coimbatore) (local agency): ₹10,000 / ₹12,500 / ₹15,000. Indian PPC agencies (market range): 10–20% of ad spend, or ₹20,000–₹40,000/mo for small accounts. Vintorex publishes every price up front, excluding GST.
+
+## Email & WhatsApp Marketing
+URL: https://vintorex.com/services/email-marketing/
+Email & WhatsApp Marketing from Vintorex Digital Solutions in Coimbatore starts at ₹4,999 per month for the Starter package and goes up to ₹19,999 per month for Premium, excluding 18% GST. Typical market prices run ₹5,000 to ₹30,000 per month. Delivery: first campaign in 7 days.
+We plan, design, write and send your email and WhatsApp campaigns, and set up automations that sell on autopilot: welcome series, abandoned cart and birthday offers.
+Packages:
+- Starter: ₹4,999/month. 4 campaigns / month, Up to 5k contacts, Welcome automation, Deliverability setup, Monthly report.
+- Growth: ₹9,999/month. 8 campaigns / month, Up to 25k contacts, 4 WhatsApp broadcasts, Cart & birthday automations, Segmentation.
+- Premium: ₹19,999/month. Unlimited campaigns, Up to 1L contacts, 12 WhatsApp broadcasts, Lifecycle journeys, Full A/B testing.
+Q: How much does email & whatsapp marketing cost in Coimbatore?
+A: At Vintorex it is Starter ₹4,999 per month, Growth ₹9,999 per month, Premium ₹19,999 per month, all excluding 18% GST. The wider Indian market range is ₹5,000 to ₹30,000 per month, depending on scope.
+Q: What is included in each email & whatsapp marketing package?
+A: Starter: 4 campaigns / month, Up to 5k contacts, Welcome automation, Deliverability setup, Monthly report. Growth: 8 campaigns / month, Up to 25k contacts, 4 WhatsApp broadcasts, Cart & birthday automations, Segmentation. Premium: Unlimited campaigns, Up to 1L contacts, 12 WhatsApp broadcasts, Lifecycle journeys, Full A/B testing.
+Q: Who is email & whatsapp marketing for?
+A: E-commerce stores with repeat buyers; Clinics and salons sending reminders; B2B firms nurturing leads.
+Q: How long does email & whatsapp marketing take?
+A: First campaign in 7 days. Term: monthly, cancel anytime.
+Q: What is not included?
+A: Email software fees above the free tier (Zoho Campaigns, Brevo, etc.); WhatsApp per-message charges from Meta.
+Q: How does the email & whatsapp marketing process work?
+A: 1. Audit & setup: Platform, domain authentication and list import. 2. Plan: Monthly campaign calendar and segments. 3. Create: Templates, copy and WhatsApp messages. 4. Automate: Welcome, cart and lifecycle flows. 5. Report: Opens, clicks, revenue and list health.
+Q: How does Vintorex compare with other email & whatsapp marketing options?
+A: Zoho Campaigns (diy software): From about ₹150–₹240/mo. Brevo (diy software): From about ₹1,575/mo (€18, billed in EUR). Mailchimp (diy software): Free up to 500 contacts, paid from about ₹1,000/mo. Vintorex publishes every price up front, excluding GST.
+
+## Digital Branding
+URL: https://vintorex.com/services/branding/
+Digital Branding from Vintorex Digital Solutions in Coimbatore starts at ₹4,999 for the Logo package and goes up to ₹34,999 for Identity, excluding 18% GST. Typical market prices run ₹5,000 to ₹2,00,000. Delivery: 5–20 days.
+From a sharp logo to a full identity system: colours, typography, stationery, social templates and a brand book that keeps every touchpoint consistent.
+Packages:
+- Logo: ₹4,999. 3 logo concepts, 2 revisions, All file formats, Colour palette.
+- Brand Kit: ₹14,999. 5 concepts + variations, Business card & letterhead, 10 social templates, 8-page mini brand guide.
+- Identity: ₹34,999. Strategy workshop, Full visual identity, 30+ page brand book, Packaging / signage (3 items), Brand voice & messaging.
+Q: How much does digital branding cost in Coimbatore?
+A: At Vintorex it is Logo ₹4,999, Brand Kit ₹14,999, Identity ₹34,999, all excluding 18% GST. The wider Indian market range is ₹5,000 to ₹2,00,000, depending on scope.
+Q: What is included in each digital branding package?
+A: Logo: 3 logo concepts, 2 revisions, All file formats, Colour palette. Brand Kit: 5 concepts + variations, Business card & letterhead, 10 social templates, 8-page mini brand guide. Identity: Strategy workshop, Full visual identity, 30+ page brand book, Packaging / signage (3 items), Brand voice & messaging.
+Q: Who is digital branding for?
+A: New businesses launching; Established firms refreshing an old logo; Brands moving into packaging or retail.
+Q: How long does digital branding take?
+A: 5–20 days. Term: one-time.
+Q: What is not included?
+A: Trademark registration fees; Printing.
+Q: How does the digital branding process work?
+A: 1. Brief: Business, audience, competitors and likes/dislikes. 2. Concepts: Logo directions presented with rationale. 3. Refine: Revisions on the chosen direction. 4. System: Colours, type, stationery and templates. 5. Handover: Final files and brand guide.
+Q: How does Vintorex compare with other digital branding options?
+A: IndiaFilings (online service): Logo ₹5,000 + GST. Freelance designers (market range): ₹500–₹10,000 per logo. Branding agencies (market range): ₹25,000–₹2,00,000 per brand package. Vintorex publishes every price up front, excluding GST.
+
+## SEO Content Writing
+URL: https://vintorex.com/services/content-writing/
+SEO Content Writing from Vintorex Digital Solutions in Coimbatore starts at ₹6,999 per month for the Starter package and goes up to ₹27,999 per month for Premium, excluding 18% GST. Typical market prices run ₹8,000 to ₹1,00,000 per month. Delivery: first articles in 7 days.
+Researched, human-edited SEO articles built on keyword briefs and topic clusters. Every piece is checked for plagiarism and AI-detection and optimised before delivery, and we can publish it for you.
+Packages:
+- Starter: ₹6,999/month. 4 articles (1,000 words), Keyword briefs, Meta titles & descriptions, Plagiarism check.
+- Growth: ₹13,999/month. 8 articles (1,200 words), Topic clusters, Internal linking, 2 old-post refreshes.
+- Premium: ₹27,999/month. 16 articles (1,500 words), Expert review, 4 old-post refreshes, Publishing on your CMS.
+Q: How much does seo content writing cost in Coimbatore?
+A: At Vintorex it is Starter ₹6,999 per month, Growth ₹13,999 per month, Premium ₹27,999 per month, all excluding 18% GST. The wider Indian market range is ₹8,000 to ₹1,00,000 per month, depending on scope.
+Q: What is included in each seo content writing package?
+A: Starter: 4 articles (1,000 words), Keyword briefs, Meta titles & descriptions, Plagiarism check. Growth: 8 articles (1,200 words), Topic clusters, Internal linking, 2 old-post refreshes. Premium: 16 articles (1,500 words), Expert review, 4 old-post refreshes, Publishing on your CMS.
+Q: Who is seo content writing for?
+A: Businesses running SEO; Blogs that need consistent publishing; Brands building topical authority.
+Q: How long does seo content writing take?
+A: First articles in 7 days. Term: monthly, cancel anytime.
+Q: What is not included?
+A: Medical, legal or financial content needing certified experts (quoted separately).
+Q: How does the seo content writing process work?
+A: 1. Keyword plan: Topics mapped to keywords and funnel stage. 2. Briefs: Outline, headings and sources per article. 3. Write & edit: Writing, editing and quality checks. 4. Optimise: Meta tags, links and images. 5. Deliver / publish: Google Docs delivery or publishing on your CMS.
+Q: How does Vintorex compare with other seo content writing options?
+A: Freelance SEO writers (market range): ₹2–₹8 per word (≈ ₹2,000–₹8,000 per 1,000-word blog). Content agencies (market range): ₹12,000–₹22,000 per researched 1,800-word article. Vintorex publishes every price up front, excluding GST.
+
+## Reels & Video Production
+URL: https://vintorex.com/services/video/
+Reels & Video Production from Vintorex Digital Solutions in Coimbatore starts at ₹5,999 for the 4 Reels package and goes up to ₹24,999 for Brand Film, excluding 18% GST. Typical market prices run ₹2,000 to ₹60,000. Delivery: 5–14 days.
+Scroll-stopping reels with hook scripting, captions, music and motion graphics, edited from your footage or shot by our crew in Coimbatore. Each video is exported in the right size for every platform.
+Packages:
+- 4 Reels: ₹5,999. 4 edited reels, Hook & script ideas, Captions & music, Basic motion graphics.
+- 8 Reels: ₹10,999. 8 edited reels, Motion graphics, Thumbnail designs, 9:16 + 1:1 formats.
+- Brand Film: ₹24,999. 60–90s brand video, Half-day shoot with crew, Voice-over, 3 ad cut-downs.
+Q: How much does reels & video production cost in Coimbatore?
+A: At Vintorex it is 4 Reels ₹5,999, 8 Reels ₹10,999, Brand Film ₹24,999, all excluding 18% GST. The wider Indian market range is ₹2,000 to ₹60,000, depending on scope.
+Q: What is included in each reels & video production package?
+A: 4 Reels: 4 edited reels, Hook & script ideas, Captions & music, Basic motion graphics. 8 Reels: 8 edited reels, Motion graphics, Thumbnail designs, 9:16 + 1:1 formats. Brand Film: 60–90s brand video, Half-day shoot with crew, Voice-over, 3 ad cut-downs.
+Q: Who is reels & video production for?
+A: Brands growing on Instagram and YouTube Shorts; Product launches and offers; Businesses running video ads.
+Q: How long does reels & video production take?
+A: 5–14 days. Term: one-time.
+Q: What is not included?
+A: Actors, models, location fees or travel outside Coimbatore; Licensed commercial music.
+Q: How does the reels & video production process work?
+A: 1. Brief: Goal, audience, references and footage review. 2. Scripts: Hooks and shot lists for approval. 3. Shoot / collect: Our shoot or your footage. 4. Edit: Cuts, captions, music and graphics. 5. Deliver: Final exports in every format.
+Q: How does Vintorex compare with other reels & video production options?
+A: Freelance reel editors (marketplace listings): ₹400–₹1,200 per reel (editing only). Vintorex publishes every price up front, excluding GST.
+
+## Industrial & Product Design
+URL: https://vintorex.com/services/industrial-design/
+Industrial & Product Design from Vintorex Digital Solutions in Coimbatore starts at ₹2,499 for the 3D Render package and goes up to ₹29,999 for Product Design, excluding 18% GST. Typical market prices run ₹3,000 to ₹80,000. Delivery: 3–20 days.
+Photoreal 3D renders, print-ready catalogues and concept-to-CAD product design for manufacturers and industrial suppliers, made to win distributor and B2B buyer trust.
+Packages:
+- 3D Render: ₹2,499. 1 product, 3 views, Studio lighting, High-res output.
+- Catalogue: ₹9,999. Up to 16-page catalogue, Up to 40 photos edited, Print + digital PDF.
+- Product Design: ₹29,999. 3 concept sketches, 3D CAD model (STEP/STL), 8 renders + exploded views, 360° animation.
+Q: How much does industrial & product design cost in Coimbatore?
+A: At Vintorex it is 3D Render ₹2,499, Catalogue ₹9,999, Product Design ₹29,999, all excluding 18% GST. The wider Indian market range is ₹3,000 to ₹80,000, depending on scope.
+Q: What is included in each industrial & product design package?
+A: 3D Render: 1 product, 3 views, Studio lighting, High-res output. Catalogue: Up to 16-page catalogue, Up to 40 photos edited, Print + digital PDF. Product Design: 3 concept sketches, 3D CAD model (STEP/STL), 8 renders + exploded views, 360° animation.
+Q: Who is industrial & product design for?
+A: Pump, motor and machinery manufacturers; Industrial suppliers and exporters; Product startups.
+Q: How long does industrial & product design take?
+A: 3–20 days. Term: one-time.
+Q: What is not included?
+A: Printing; Prototyping or manufacturing; Engineering certification.
+Q: How does the industrial & product design process work?
+A: 1. Brief: Drawings, photos, specs and references. 2. Model / layout: 3D modelling or catalogue layout. 3. Render / design: Materials, lighting and design. 4. Review: Revisions with your team. 5. Deliver: Print and digital files.
+
+## Cloud Services
+URL: https://vintorex.com/services/cloud/
+Cloud Services from Vintorex Digital Solutions in Coimbatore starts at ₹999 per month for the Managed Hosting package and goes up to ₹14,999 per month for Enterprise Cloud, excluding 18% GST. Typical market prices run ₹300 to ₹25,000 per month. Delivery: setup in 48 hours.
+Managed hosting and cloud infrastructure on AWS, Google Cloud or Azure, set up, secured, monitored and backed up by us. You never have to raise a ticket with a hosting company again.
+Packages:
+- Managed Hosting: ₹999/month. Fast SSD hosting, Free SSL, Daily backups, Uptime monitoring, 5 business mailboxes.
+- Cloud VPS: ₹4,999/month. AWS / GCP / Azure, Auto-scaling, CDN & firewall, 24×7 alerts, Quarterly cost review.
+- Enterprise Cloud: ₹14,999/month. Multi-region setup, CI/CD pipelines, Disaster recovery, 24×7 on-call, Monthly cost optimisation.
+Q: How much does cloud services cost in Coimbatore?
+A: At Vintorex it is Managed Hosting ₹999 per month, Cloud VPS ₹4,999 per month, Enterprise Cloud ₹14,999 per month, all excluding 18% GST. The wider Indian market range is ₹300 to ₹25,000 per month, depending on scope.
+Q: What is included in each cloud services package?
+A: Managed Hosting: Fast SSD hosting, Free SSL, Daily backups, Uptime monitoring, 5 business mailboxes. Cloud VPS: AWS / GCP / Azure, Auto-scaling, CDN & firewall, 24×7 alerts, Quarterly cost review. Enterprise Cloud: Multi-region setup, CI/CD pipelines, Disaster recovery, 24×7 on-call, Monthly cost optimisation.
+Q: Who is cloud services for?
+A: Business websites that must stay online; Growing apps and stores; Teams moving off shared hosting.
+Q: How long does cloud services take?
+A: Setup in 48 hours. Term: monthly, cancel anytime.
+Q: What is not included?
+A: Cloud provider usage on Cloud VPS and Enterprise (billed at actuals); Google Workspace / Microsoft 365 licences.
+Q: How does the cloud services process work?
+A: 1. Assess: Current hosting, traffic and risks. 2. Plan: Architecture and cost estimate. 3. Migrate: Zero-downtime migration and DNS cut-over. 4. Secure: Firewall, SSL, backups and monitoring. 5. Manage: Patching, alerts and monthly report.
+Q: How does Vintorex compare with other cloud services options?
+A: Hostinger shared hosting (self-managed hosting): Intro from ₹69/mo, renewing at ₹289–₹1,599/mo. Vintorex publishes every price up front, excluding GST.
+
+## Data Insights & Analytics
+URL: https://vintorex.com/services/analytics/
+Data Insights & Analytics from Vintorex Digital Solutions in Coimbatore starts at ₹4,999 per month for the Essentials package and goes up to ₹19,999 per month for Premium, excluding 18% GST. Typical market prices run ₹5,000 to ₹40,000 per month. Delivery: tracking live in 7 days.
+Accurate tracking with GA4, Tag Manager, call and WhatsApp tracking, joined into live dashboards with your ads and CRM data. Monthly analysis then shows you where to spend more and what to cut.
+Packages:
+- Essentials: ₹4,999/month. GA4 + GTM setup, Form conversion tracking, Monthly PDF report.
+- Growth: ₹9,999/month. Live Looker Studio dashboard, Call & WhatsApp tracking, Funnel analysis, Bi-weekly insights.
+- Premium: ₹19,999/month. Attribution modelling, CRM revenue reporting, Custom multi-source dashboard, Weekly analyst call.
+Q: How much does data insights & analytics cost in Coimbatore?
+A: At Vintorex it is Essentials ₹4,999 per month, Growth ₹9,999 per month, Premium ₹19,999 per month, all excluding 18% GST. The wider Indian market range is ₹5,000 to ₹40,000 per month, depending on scope.
+Q: What is included in each data insights & analytics package?
+A: Essentials: GA4 + GTM setup, Form conversion tracking, Monthly PDF report. Growth: Live Looker Studio dashboard, Call & WhatsApp tracking, Funnel analysis, Bi-weekly insights. Premium: Attribution modelling, CRM revenue reporting, Custom multi-source dashboard, Weekly analyst call.
+Q: Who is data insights & analytics for?
+A: Businesses spending on ads; Stores that need product-level data; Owners who want one dashboard.
+Q: How long does data insights & analytics take?
+A: Tracking live in 7 days. Term: monthly, cancel anytime.
+Q: What is not included?
+A: Paid connector tools (e.g. Supermetrics) if needed.
+Q: How does the data insights & analytics process work?
+A: 1. Audit: What is tracked today and what is missing. 2. Tracking plan: Events, conversions and naming. 3. Implement: GA4, GTM, pixels and call tracking. 4. Dashboards: Live reports for you and your team. 5. Insights: Regular analysis and recommendations.
+
+## Website Maintenance (AMC)
+URL: https://vintorex.com/services/maintenance/
+Website Maintenance (AMC) from Vintorex Digital Solutions in Coimbatore starts at ₹1,499 per month for the Basic package and goes up to ₹5,999 per month for Business, excluding 18% GST. Typical market prices run ₹2,000 to ₹25,000 per month. Delivery: starts in 24 hours.
+A monthly care plan for your website: updates tested safely, backups, malware scanning, uptime monitoring and content-edit hours, so your site stays fast, secure and current.
+Packages:
+- Basic: ₹1,499/month. Monthly updates, Weekly backups, Uptime monitoring, 1 hr content edits.
+- Pro: ₹2,999/month. Weekly updates, Daily backups, Malware scan + clean-up, 3 hrs content edits, Speed checks.
+- Business: ₹5,999/month. Staging-tested updates, Real-time backups, Unlimited clean-ups, 8 hrs content edits, 4-hour fixes.
+Q: How much does website maintenance (amc) cost in Coimbatore?
+A: At Vintorex it is Basic ₹1,499 per month, Pro ₹2,999 per month, Business ₹5,999 per month, all excluding 18% GST. The wider Indian market range is ₹2,000 to ₹25,000 per month, depending on scope.
+Q: What is included in each website maintenance (amc) package?
+A: Basic: Monthly updates, Weekly backups, Uptime monitoring, 1 hr content edits. Pro: Weekly updates, Daily backups, Malware scan + clean-up, 3 hrs content edits, Speed checks. Business: Staging-tested updates, Real-time backups, Unlimited clean-ups, 8 hrs content edits, 4-hour fixes.
+Q: Who is website maintenance (amc) for?
+A: WordPress and WooCommerce sites; Businesses without an in-house developer; Sites that have been hacked or gone down before.
+Q: How long does website maintenance (amc) take?
+A: Starts in 24 hours. Term: monthly, cancel anytime.
+Q: What is not included?
+A: Premium plugin licences; New features or redesigns (quoted separately); Hosting (Cloud Services plan available).
+Q: How does the website maintenance (amc) process work?
+A: 1. Onboard: Access, backup and health check. 2. Secure: Firewall, scanning and monitoring. 3. Maintain: Scheduled updates and backups. 4. Support: Content edits and fixes on request. 5. Report: Monthly report of what was done.
+Q: How does Vintorex compare with other website maintenance (amc) options?
+A: Codingclave (national agency): ₹5,000 / ₹10,000 / ₹20,000 per month (ex-GST). Indian maintenance market (market range): ₹2,000–₹8,000/mo (basic sites) · ₹8,000–₹25,000/mo (business sites). Vintorex publishes every price up front, excluding GST.
+
+## AI Chatbot & WhatsApp Assistant
+URL: https://vintorex.com/services/ai-chatbot/
+AI Chatbot & WhatsApp Assistant from Vintorex Digital Solutions in Coimbatore starts at ₹24,999 for the Starter package and goes up to ₹1,19,999 for Premium, excluding 18% GST. Typical market prices run ₹35,000 to ₹8,00,000. Delivery: 1–6 weeks.
+An AI assistant for your website and WhatsApp that answers questions using only your approved content, collects enquiries, books appointments and passes anything complicated to a person. It replies at any hour, in English and Tamil, and you see every conversation.
+Packages:
+- Starter: ₹24,999. 1 channel (website or WhatsApp), Answers from up to 30 pages, Lead capture, Email handover to your team, 15 days tuning.
+- Growth: ₹54,999. Website + WhatsApp, Up to 150 documents, CRM / Google Sheets sync, English + Tamil, Analytics dashboard.
+- Premium: ₹1,19,999. 3 channels, Up to 500 documents, Bookings, orders & payment links, Live handover inbox, Guardrail test suite.
+Q: How much does ai chatbot & whatsapp assistant cost in Coimbatore?
+A: At Vintorex it is Starter ₹24,999, Growth ₹54,999, Premium ₹1,19,999, all excluding 18% GST. The wider Indian market range is ₹35,000 to ₹8,00,000, depending on scope.
+Q: What is included in each ai chatbot & whatsapp assistant package?
+A: Starter: 1 channel (website or WhatsApp), Answers from up to 30 pages, Lead capture, Email handover to your team, 15 days tuning. Growth: Website + WhatsApp, Up to 150 documents, CRM / Google Sheets sync, English + Tamil, Analytics dashboard. Premium: 3 channels, Up to 500 documents, Bookings, orders & payment links, Live handover inbox, Guardrail test suite.
+Q: Who is ai chatbot & whatsapp assistant for?
+A: Businesses that get the same questions all day; Clinics, schools, showrooms and service firms that miss after-hours enquiries; Online stores that want faster order and delivery answers.
+Q: How long does ai chatbot & whatsapp assistant take?
+A: 1–6 weeks. Term: one-time build.
+Q: What is not included?
+A: WhatsApp Business API access and Meta per-message fees (paid to the provider); AI model usage, billed at actuals and typically small for FAQ bots; Ongoing care after the free tuning period (monthly add-on available).
+Q: How does the ai chatbot & whatsapp assistant process work?
+A: 1. Scope & content audit: What customers ask, and which answers you approve. 2. Knowledge base: Your content cleaned, structured and loaded. 3. Conversation design: Tone, guardrails, handover rules and lead flows. 4. Test & tune: Real questions tested until answers are reliable. 5. Launch & monitor: Go-live, training and a review of early conversations.
+Q: Can I pay for ai chatbot & whatsapp assistant in instalments?
+A: Yes. One-time projects of ₹10,000 or more can be paid in milestones: 40% advance to start work, 40% mid-project approval, 20% delivery & handover.
+Q: How does Vintorex compare with other ai chatbot & whatsapp assistant options?
+A: WATI (chat platform): About ₹2,699 / ₹6,499 / ₹18,499 per month (Growth / Pro / Business). Interakt (chat platform): About ₹999 (Starter) and ₹2,499 (Growth) per month. Gupshup (messaging platform): Pay per message, plus Meta fees. Indian chatbot developers (market range): ₹35,000–₹8,00,000 one-time. Vintorex publishes every price up front, excluding GST.
+
+## AI Voice Agent (Calls)
+URL: https://vintorex.com/services/ai-voice/
+AI Voice Agent (Calls) from Vintorex Digital Solutions in Coimbatore starts at ₹39,999 for the Starter package and goes up to ₹1,79,999 for Premium, excluding 18% GST. Typical market prices run ₹75,000 to ₹3,50,000. Delivery: 2–10 weeks.
+A voice agent that picks up every call, speaks naturally in English, Tamil or Hindi, answers from your approved information, books appointments and hands urgent calls to your team. It also makes reminder and follow-up calls, with consent and opt-out handled.
+Packages:
+- Starter: ₹39,999. Inbound calls, 1 language, 3 call flows, Lead capture, Call summary to WhatsApp / email, After-hours handling.
+- Growth: ₹89,999. Inbound + outbound, 2 languages, 6 flows, CRM sync, Appointment booking, Reminder calls.
+- Premium: ₹1,79,999. 3 languages, 12 flows, Live transfer to staff, Outbound campaigns with consent handling, Dashboard + weekly review, 300 test calls.
+Q: How much does ai voice agent (calls) cost in Coimbatore?
+A: At Vintorex it is Starter ₹39,999, Growth ₹89,999, Premium ₹1,79,999, all excluding 18% GST. The wider Indian market range is ₹75,000 to ₹3,50,000, depending on scope.
+Q: What is included in each ai voice agent (calls) package?
+A: Starter: Inbound calls, 1 language, 3 call flows, Lead capture, Call summary to WhatsApp / email, After-hours handling. Growth: Inbound + outbound, 2 languages, 6 flows, CRM sync, Appointment booking, Reminder calls. Premium: 3 languages, 12 flows, Live transfer to staff, Outbound campaigns with consent handling, Dashboard + weekly review, 300 test calls.
+Q: Who is ai voice agent (calls) for?
+A: Clinics, salons and service firms that miss calls; Real-estate, education and finance teams that qualify many leads; Businesses that need reminders and follow-ups at scale.
+Q: How long does ai voice agent (calls) take?
+A: 2–10 weeks. Term: one-time build.
+Q: What is not included?
+A: Phone number rental and per-minute call, speech and AI usage (billed at actuals); Telecom registration fees for outbound calling; Ongoing care after the free tuning period (monthly add-on available).
+Q: How does the ai voice agent (calls) process work?
+A: 1. Call audit: Why people call, and what a good call looks like. 2. Flow design: Scripts, questions, escalation and consent rules. 3. Voice & language setup: Voice, accent, pronunciation and phrasing tested. 4. Test calls: Hundreds of realistic calls, including difficult ones. 5. Launch & tune: Go-live with listening reviews and weekly improvements.
+Q: Can I pay for ai voice agent (calls) in instalments?
+A: Yes. One-time projects of ₹10,000 or more can be paid in milestones: 40% advance to start work, 40% mid-project approval, 20% delivery & handover.
+Q: How does Vintorex compare with other ai voice agent (calls) options?
+A: Indian voice-AI platforms (per-minute platforms): About ₹2–₹12 per minute, commonly ₹3–₹6. Custom voice-agent builds (market range): ₹75,000–₹3,50,000+ build cost. Vintorex publishes every price up front, excluding GST.
+
+## Business Process Automation
+URL: https://vintorex.com/services/ai-automation/
+Business Process Automation from Vintorex Digital Solutions in Coimbatore starts at ₹19,999 for the Starter package and goes up to ₹1,09,999 for Premium, excluding 18% GST. Typical market prices run ₹20,000 to ₹3,00,000. Delivery: 1–8 weeks.
+We map your repetitive tasks and build reliable workflows between the tools you already use: forms, WhatsApp, email, spreadsheets, CRM and accounting. AI steps read, sort and draft where it helps, and people approve anything important.
+Packages:
+- Starter: ₹19,999. 3 workflows, Up to 3 apps connected, Lead alerts and follow-ups, Error alerts, 15 days support.
+- Growth: ₹49,999. 10 workflows, AI steps (sort, extract, draft), Quote and invoice generation, Human approval steps, 30 days support.
+- Premium: ₹1,09,999. 25 workflows, Custom API integrations, Dashboards and monitoring, Full SOP documentation, 60 days support.
+Q: How much does business process automation cost in Coimbatore?
+A: At Vintorex it is Starter ₹19,999, Growth ₹49,999, Premium ₹1,09,999, all excluding 18% GST. The wider Indian market range is ₹20,000 to ₹3,00,000, depending on scope.
+Q: What is included in each business process automation package?
+A: Starter: 3 workflows, Up to 3 apps connected, Lead alerts and follow-ups, Error alerts, 15 days support. Growth: 10 workflows, AI steps (sort, extract, draft), Quote and invoice generation, Human approval steps, 30 days support. Premium: 25 workflows, Custom API integrations, Dashboards and monitoring, Full SOP documentation, 60 days support.
+Q: Who is business process automation for?
+A: Teams copying data between apps every day; Sales teams that need instant lead follow-up; Owners who want reports, reminders and invoices to run themselves.
+Q: How long does business process automation take?
+A: 1–8 weeks. Term: one-time build.
+Q: What is not included?
+A: Automation platform subscriptions and AI usage (billed at actuals, in your own account); Paid app licences; Redesigning your business process beyond the agreed workflows.
+Q: How does the business process automation process work?
+A: 1. Process mapping: Where time is lost, and which tasks are worth automating. 2. Design: Triggers, steps, approvals and what happens on failure. 3. Build: Workflows built and connected in your accounts. 4. Test: Real and edge-case data run end to end. 5. Handover: Documentation, training and a monitoring plan.
+Q: Can I pay for business process automation in instalments?
+A: Yes. One-time projects of ₹10,000 or more can be paid in milestones: 40% advance to start work, 40% mid-project approval, 20% delivery & handover.
+Q: How does Vintorex compare with other business process automation options?
+A: Zapier (diy platform): Roughly US$20–US$30 per month for 750 tasks. Make (diy platform): From about US$9 per month. n8n (diy platform): Free to self-host; cloud from about US$20 per month. Vintorex publishes every price up front, excluding GST.
+
+## AI Content & Creative Studio
+URL: https://vintorex.com/services/ai-content/
+AI Content & Creative Studio from Vintorex Digital Solutions in Coimbatore starts at ₹9,999 per month for the Starter package and goes up to ₹39,999 per month for Premium, excluding 18% GST. Typical market prices run ₹12,000 to ₹90,000 per month. Delivery: first batch in 5 days.
+We use AI to draft and produce quickly, then our designers and editors shape, fact-check and brand every piece. You get more consistent content every month, written in your brand voice, with originality and licensing checks included.
+Packages:
+- Starter: ₹9,999/month. 12 branded creatives, 2 short videos, 2 SEO articles, Content calendar, Monthly report.
+- Growth: ₹19,999/month. 24 branded creatives, 4 short videos, 4 SEO articles + 1 newsletter, 6 ad variations, Report + call.
+- Premium: ₹39,999/month. 40 branded creatives, 8 short videos, 8 SEO articles + 2 newsletters, 15 ad variations, 48-hour turnaround.
+Q: How much does ai content & creative studio cost in Coimbatore?
+A: At Vintorex it is Starter ₹9,999 per month, Growth ₹19,999 per month, Premium ₹39,999 per month, all excluding 18% GST. The wider Indian market range is ₹12,000 to ₹90,000 per month, depending on scope.
+Q: What is included in each ai content & creative studio package?
+A: Starter: 12 branded creatives, 2 short videos, 2 SEO articles, Content calendar, Monthly report. Growth: 24 branded creatives, 4 short videos, 4 SEO articles + 1 newsletter, 6 ad variations, Report + call. Premium: 40 branded creatives, 8 short videos, 8 SEO articles + 2 newsletters, 15 ad variations, 48-hour turnaround.
+Q: Who is ai content & creative studio for?
+A: Brands that need a steady stream of social, blog and ad content; Small teams without in-house designers or writers; Stores that need many product visuals.
+Q: How long does ai content & creative studio take?
+A: First batch in 5 days. Term: monthly, cancel anytime.
+Q: What is not included?
+A: Photo or video shoots (add-on available); Paid distribution and ad spend; Premium licensed stock or music beyond the standard library.
+Q: How does the ai content & creative studio process work?
+A: 1. Brand voice setup: Tone, examples and no-go topics captured once. 2. Monthly plan: Topics and formats agreed against your goals. 3. AI-assisted drafting: Fast first drafts and visuals. 4. Human polish: Editing, design, fact-checks and brand review. 5. Publish & learn: Delivery, scheduling and a monthly review.
+Q: How does Vintorex compare with other ai content & creative studio options?
+A: Freelance SEO writers (market range): ₹2–₹8 per word. Freelance reel editors (marketplace listings): ₹400–₹1,200 per reel. Vintorex publishes every price up front, excluding GST.
+
+## Custom AI Assistant & Knowledge Base
+URL: https://vintorex.com/services/ai-knowledge/
+Custom AI Assistant & Knowledge Base from Vintorex Digital Solutions in Coimbatore starts at ₹79,999 for the Starter package and goes up to ₹4,99,999 for Premium, excluding 18% GST. Typical market prices run ₹1,50,000 to ₹35,00,000. Delivery: 3–14 weeks.
+We build a secure assistant that searches your own documents, spreadsheets and systems and answers with citations. Staff find policies, product details and past work in seconds, and the assistant can take simple actions such as creating tickets or updating records.
+Packages:
+- Starter: ₹79,999. Up to 100 documents, Answers with source citations, Web app, Shared login, 30 days support.
+- Growth: ₹1,99,999. Up to 1,000 documents, Google Drive and spreadsheets, Role-based access, 2 actions (tickets, email), WhatsApp access.
+- Premium: ₹4,99,999. Unlimited within agreed sources, CRM, ticketing and database sources, Single sign-on and audit log, Up to 8 actions + API, Runs in your own cloud.
+Q: How much does custom ai assistant & knowledge base cost in Coimbatore?
+A: At Vintorex it is Starter ₹79,999, Growth ₹1,99,999, Premium ₹4,99,999, all excluding 18% GST. The wider Indian market range is ₹1,50,000 to ₹35,00,000, depending on scope.
+Q: What is included in each custom ai assistant & knowledge base package?
+A: Starter: Up to 100 documents, Answers with source citations, Web app, Shared login, 30 days support. Growth: Up to 1,000 documents, Google Drive and spreadsheets, Role-based access, 2 actions (tickets, email), WhatsApp access. Premium: Unlimited within agreed sources, CRM, ticketing and database sources, Single sign-on and audit log, Up to 8 actions + API, Runs in your own cloud.
+Q: Who is custom ai assistant & knowledge base for?
+A: Teams that lose time searching documents and past emails; Manufacturers and distributors with large product catalogues; Firms with onboarding, policy or support knowledge spread across files.
+Q: How long does custom ai assistant & knowledge base take?
+A: 3–14 weeks. Term: one-time build.
+Q: What is not included?
+A: AI model usage and hosting, billed at actuals; Digitising or OCR for scanned paper archives (quoted separately); Ongoing care after the free support period (monthly add-on available).
+Q: How does the custom ai assistant & knowledge base process work?
+A: 1. Use-case workshop: Who asks what, and what a correct answer looks like. 2. Document preparation: Files cleaned, structured and indexed. 3. Assistant build: Search, answers, citations and permissions. 4. Evaluation: Hundreds of test questions scored for accuracy and safety. 5. Handover: Training, admin tools and a content update routine.
+Q: Can I pay for custom ai assistant & knowledge base in instalments?
+A: Yes. One-time projects of ₹10,000 or more can be paid in milestones: 40% advance to start work, 40% mid-project approval, 20% delivery & handover.
+Q: How does Vintorex compare with other custom ai assistant & knowledge base options?
+A: Indian AI agencies — production assistants (market range): Published estimates of about ₹10–₹35 lakh and above. Indian AI chatbot developers (market range): ₹35,000–₹8,00,000 for chatbots. Vintorex publishes every price up front, excluding GST.
+
+## AI Consulting & Team Training
+URL: https://vintorex.com/services/ai-training/
+AI Consulting & Team Training from Vintorex Digital Solutions in Coimbatore starts at ₹34,999 for the Workshop package and goes up to ₹1,49,999 for AI Roadmap, excluding 18% GST. Typical market prices run ₹75,000 to ₹2,50,000. Delivery: 1–3 weeks to schedule.
+Practical sessions built on your own tasks, not generic slides. Your team learns to write good prompts, choose tools, check AI output and protect data, and leaves with a prompt library. The roadmap option adds a short discovery project that ranks AI opportunities by value and effort.
+Packages:
+- Workshop: ₹34,999. 1-day workshop, up to 15 people, Exercises on your own tasks, 20-prompt library, Safe-use rules, 7 days follow-up Q&A.
+- Programme: ₹79,999. 2 days, up to 20 people, Your top 5 use cases, 50-prompt library, AI usage policy template, 30 days follow-up Q&A.
+- AI Roadmap: ₹1,49,999. Discovery sprint + 1-day workshop, Full process map, 90-day adoption roadmap, ROI estimates, 60 days follow-up support.
+Q: How much does ai consulting & team training cost in Coimbatore?
+A: At Vintorex it is Workshop ₹34,999, Programme ₹79,999, AI Roadmap ₹1,49,999, all excluding 18% GST. The wider Indian market range is ₹75,000 to ₹2,50,000, depending on scope.
+Q: What is included in each ai consulting & team training package?
+A: Workshop: 1-day workshop, up to 15 people, Exercises on your own tasks, 20-prompt library, Safe-use rules, 7 days follow-up Q&A. Programme: 2 days, up to 20 people, Your top 5 use cases, 50-prompt library, AI usage policy template, 30 days follow-up Q&A. AI Roadmap: Discovery sprint + 1-day workshop, Full process map, 90-day adoption roadmap, ROI estimates, 60 days follow-up support.
+Q: Who is ai consulting & team training for?
+A: Owners and managers who want a practical start with AI; Teams already using AI tools without any rules or training; Companies deciding where chatbots, automation or custom AI would pay off.
+Q: How long does ai consulting & team training take?
+A: 1–3 weeks to schedule. Term: one-time.
+Q: What is not included?
+A: Travel outside Coimbatore; Venue and refreshments; Subscriptions to AI tools.
+Q: How does the ai consulting & team training process work?
+A: 1. Pre-session survey: What your team does, and which tools they already use. 2. Customisation: Exercises built from your real tasks. 3. Training day(s): Hands-on practice with feedback. 4. Prompt library & policy: Materials your team keeps using. 5. Follow-up: Q&A and a check on what is being used.
+Q: Can I pay for ai consulting & team training in instalments?
+A: Yes. One-time projects of ₹10,000 or more can be paid in milestones: 40% advance to start work, 40% mid-project approval, 20% delivery & handover.
+Q: How does Vintorex compare with other ai consulting & team training options?
+A: Indian AI training providers (market range): ₹75,000–₹1,50,000 for a 1-day batch; ₹1,20,000–₹2,50,000 for 2 days. Vintorex publishes every price up front, excluding GST.
+
+## AI Search Optimisation (GEO)
+URL: https://vintorex.com/services/ai-geo/
+AI Search Optimisation (GEO) from Vintorex Digital Solutions in Coimbatore starts at ₹19,999 per month for the Starter package and goes up to ₹74,999 per month for Premium, excluding 18% GST. Typical market prices run ₹50,000 to ₹3,50,000 per month. Delivery: baseline in 2 weeks.
+More people ask AI assistants and AI search features instead of clicking ten links. We check how those answers describe your business, fix the gaps in your entity data, schema and content, and build the mentions that make assistants confident enough to recommend you. We report what we can measure honestly.
+Packages:
+- Starter: ₹19,999/month. 15 tracked questions, Baseline AI-visibility audit, Entity and listing clean-up, 2 page upgrades a month, Monthly report.
+- Growth: ₹39,999/month. 40 tracked questions, 6 page upgrades + 2 answer articles, Schema on all key pages, Monthly citation building, Report + call.
+- Premium: ₹74,999/month. 100 tracked questions, 15 page upgrades + 6 articles, Full-site schema, Weekly citations + digital PR, Bi-weekly strategy call.
+Q: How much does ai search optimisation (geo) cost in Coimbatore?
+A: At Vintorex it is Starter ₹19,999 per month, Growth ₹39,999 per month, Premium ₹74,999 per month, all excluding 18% GST. The wider Indian market range is ₹50,000 to ₹3,50,000 per month, depending on scope.
+Q: What is included in each ai search optimisation (geo) package?
+A: Starter: 15 tracked questions, Baseline AI-visibility audit, Entity and listing clean-up, 2 page upgrades a month, Monthly report. Growth: 40 tracked questions, 6 page upgrades + 2 answer articles, Schema on all key pages, Monthly citation building, Report + call. Premium: 100 tracked questions, 15 page upgrades + 6 articles, Full-site schema, Weekly citations + digital PR, Bi-weekly strategy call.
+Q: Who is ai search optimisation (geo) for?
+A: Businesses whose customers research with AI assistants; Brands that are missing or misdescribed in AI answers; Companies already doing SEO that want to protect visibility.
+Q: How long does ai search optimisation (geo) take?
+A: Baseline in 2 weeks. Term: 3-month minimum.
+Q: What is not included?
+A: Guaranteed mentions or positions. No one controls how AI assistants answer.; Paid placements on third-party sites; Website redesign or new development.
+Q: How does the ai search optimisation (geo) process work?
+A: 1. Visibility baseline: What assistants say about you today, and about competitors. 2. Fix the foundations: Entity details, schema and crawl access. 3. Answer-first content: Pages and articles that answer real questions clearly. 4. Earn mentions: Relevant citations and references from trusted sites. 5. Measure & repeat: Re-check the same questions each month and adjust.
+Q: How does Vintorex compare with other ai search optimisation (geo) options?
+A: Indian GEO / AEO agencies (agency benchmarks): About ₹75,000–₹3,50,000 per month for mid-market retainers. AI-visibility tracking tools (software): About US$29–US$489 per month. Vintorex publishes every price up front, excluding GST.

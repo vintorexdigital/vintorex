@@ -1,15 +1,15 @@
 # Vintorex Digital Solutions — Web App
 
 Storefront, customer portal and admin CRM for Vintorex Digital Solutions (Coimbatore).
-It is a static single-page app in `dist/`, so it deploys the same way as the current site (`.openai/hosting.json` serves `dist`). The only build step generates the static blog pages (see **Blog** below).
+It is a single-page app in `dist/` that also runs on static hosting (`.openai/hosting.json` serves `dist`), where checkout stays in demo mode. Real Razorpay payments need the small Node server in `server/` (see **Payments** below). The only build step generates the static blog pages (see **Blog** below).
 
 ## Run locally
 
 ```bash
-python3 -m http.server 5173 --directory dist
+npm start
 ```
 
-Open http://localhost:5173. ES modules and `crypto.subtle` need `http://localhost` or HTTPS, not `file://`.
+This runs `server/index.mjs` (Node 18 or newer, no dependencies), which serves `dist/` and the payment API. Open http://localhost:5173. With Razorpay keys in `.env`, checkout takes real payments, so use test keys locally (see **Payments**). ES modules and `crypto.subtle` need `http://localhost` or HTTPS, not `file://`.
 
 Demo accounts (also shown on the sign-in page):
 
@@ -29,6 +29,7 @@ Admin → Settings → **Reset demo data** restores the seed data.
 - **Competitor analysis** (`#/compare`): all services against named competitors and market ranges. Each service page also has its own competitor table.
 - **Milestone payments**: one-time projects of ₹10,000 or more can be paid 40% / 40% / 20%. Customers pay later instalments from their dashboard, and admins can record offline payments from Orders.
 - **Blog** (`/blog/`): 42 evergreen guides, two per service, published as static HTML pages so search engines can index them. See below.
+- **Policies** (`/terms/`, `/privacy-policy/`, `/refund-policy/`, `/shipping-policy/`): static pages built from `js/policies.js` by `npm run build:blog`, linked from the footer and checkout. Payment gateways such as Razorpay check for these pages.
 - **Plans and other settings**: `js/data.js`.
 
 ## Blog
@@ -57,13 +58,48 @@ Content check (split columns sum to 100, links and references resolve, every ser
 npm run check
 ```
 
+## Payments
+
+Checkout uses Razorpay when the site runs on `server/index.mjs`. When the app can't reach the server (static hosting, or `python3 -m http.server`), it falls back to demo mode and simulates payments.
+
+The server reads these from the host's environment or from `.env` at the repo root (see `.env.example`):
+
+| Variable | What it is |
+|---|---|
+| `RAZORPAY_KEY_ID` | Public key id (`rzp_live_…` or `rzp_test_…`). Also shown in `RAZORPAY` in `js/data.js`. |
+| `RAZORPAY_KEY_SECRET` | Key secret. Server only: never put it in `dist/` or commit it. |
+| `PAYMENT_TOKEN_SECRET` | Signs the membership and instalment tokens. Keep the same value when you rotate the Razorpay secret. |
+| `PORT` | Port to listen on (default 5173). |
+
+How a payment works:
+
+1. The browser sends the cart to `POST /api/payments/order`. The server prices it from the shipped catalog in `js/data.js` (shared pricing code in `js/pricing.js`) and creates a Razorpay order. Prices in the browser are never trusted.
+2. Razorpay Checkout opens for that order. Afterwards, `POST /api/payments/verify` checks the payment signature with the key secret before the order is recorded.
+3. Accounts live in each browser, so the server keeps no database. Instead it returns signed tokens. A paid membership gets a token that unlocks the member discount on later orders. A milestone order gets a token that fixes the amounts of the remaining instalments.
+
+Every payment appears in the Razorpay Dashboard with the customer's name, email, phone and items in its notes. Treat the Dashboard as the record of what was paid: orders in the admin panel are only those placed in the admin's own browser.
+
+To test without real money, put `rzp_test_` keys from the Razorpay Dashboard (Test Mode) in `.env`, run `npm start`, and pay with Razorpay's test cards or UPI ID `success@razorpay`.
+
+To go live, deploy the repo (not only `dist/`) to a Node host such as Hostinger Node.js hosting. Start it with `npm start` and set the variables above in the host's environment settings, not in a committed file.
+
+## SEO, GEO and AEO
+
+`npm run build:blog` also publishes crawlable pages and machine-readable files, all generated from the catalog so prices never drift from the app:
+
+- `/services/` (price list) and `/services/<id>/` for each service: answer-first summary, packages, work items, process, competitor prices, guides and FAQs. Structured data: `Service` with `Offer` per package, `FAQPage`, `BreadcrumbList`, `WebPage` with `speakable`.
+- `/faq/`: site-wide answers (what we do, where, prices, GST, payments, instalments, free audit).
+- `/llms.txt` and `/llms-full.txt`: plain-text map and full text of every service, price and FAQ for AI assistants.
+- `robots.txt` names search and AI crawlers explicitly (and keeps `/api/` out), `sitemap.xml` has `lastmod` and priorities, and every page has `robots` directives, `en-IN` hreflang, geo tags and Open Graph tags. The home page has `LocalBusiness`/`ProfessionalService` with an offer catalogue, `WebSite`, and a no-JavaScript fallback with real links.
+
+Copy and structured data live in `js/seo.js`. After re-checking prices or facts, update `REVIEWED` there, then rebuild. `npm run check` fails if a service lacks its page, FAQs, sitemap or `llms.txt` entry.
+
 ## Before going live
 
-Data lives in each browser's `localStorage` and payments are simulated. For production:
+Data lives in each browser's `localStorage`. For production:
 
-1. Move `js/db.js` behind a real API and database (for example Node + MySQL on Hostinger) with server-side authentication.
-2. Create Razorpay orders and verify payment signatures on the server. Never put the key secret in the browser.
-3. Send lead and order notifications by email or WhatsApp from the server.
+1. Move `js/db.js` behind a real API and database (for example Node + MySQL on Hostinger) with server-side authentication. Until then, admin price edits only affect the admin's browser. Customers see, and pay, the prices in `js/data.js`.
+2. Send lead and order notifications by email or WhatsApp from the server.
 
 ## Brand assets
 

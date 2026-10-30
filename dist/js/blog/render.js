@@ -61,7 +61,7 @@ export function articleHtml(p, svc, { app = '/', url = '' } = {}) {
           <nav class="card toc" aria-label="Contents"><h4>On this page</h4>${toc(p).map(([id, t]) => `<a href="#${id}">${esc(t)}</a>`).join('')}<a href="#faqs">FAQs</a></nav>
           ${s ? `<div class="card side-cta"><span class="svc-ic">${icon(s.icon)}</span><h4>${esc(s.name)}</h4><p class="muted">${esc(s.summary)}</p>
             ${s.tiers.map(t => `<div class="tier-line"><span>${esc(t.name)}</span><b>${inr(t.price)}${per(s.billing)}</b></div>`).join('')}
-            <a class="btn primary block" href="${app}#/services/${s.id}">See packages</a></div>` : ''}
+            <a class="btn primary block" href="${app === '/' ? `/services/${s.id}/` : `${app}#/services/${s.id}`}">See packages</a></div>` : ''}
           <div class="card share"><h4>Share this guide</h4><div class="row gap wrap">
             <a class="chip" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(p.title + ' — ')}${share}">${icon('wa')} WhatsApp</a>
             <a class="chip" target="_blank" rel="noopener" href="https://www.linkedin.com/sharing/share-offsite/?url=${share}">LinkedIn</a>

@@ -2,6 +2,7 @@
 import * as D from './db.js';
 import { esc, icon, toast, field, per, date, dateTime, ago, badge, empty, modal, confirmBox, $, $$ } from './ui.js';
 import { paymentSchedule } from './public.js';
+import * as Pay from './pay.js';
 
 const inr = D.inr;
 export const NAV = [
@@ -168,6 +169,7 @@ function bindPayNext(root) {
   $$('[data-paynext]', root).forEach(b => b.addEventListener('click', async () => {
     const o = D.db().orders.find(o => o.id === b.dataset.paynext);
     const next = D.orderPayments(o).find(p => !p.paid);
+    if (Pay.live()) return payInstalment(o, next);
     const f = await modal({ title: `Pay ${next.label.toLowerCase()}`, submit: `Pay ${inr(next.amount)}`, body: `
       <p>${esc(o.invoice)} · ${inr(next.amount)} of ${inr(D.orderBalance(o))} balance.</p>
       ${field('Payment method', 'method', { options: ['UPI', 'Card', 'Net banking', 'Bank transfer'] })}
@@ -176,6 +178,23 @@ function bindPayNext(root) {
     D.payNext(o, f.get('method'));
     toast(`Paid ${inr(next.amount)} — thank you!`); rerender();
   }));
+}
+
+// Live payments: the order's server-signed balance token says what is still due.
+async function payInstalment(o, next) {
+  const user = D.currentUser();
+  if (!o.balanceToken) return toast('This order can’t be paid online. Please contact us to pay the balance.', 'err');
+  try {
+    const order = await Pay.createOrder({ balanceToken: o.balanceToken, account: user.email, customer: { name: user.name, email: user.email, phone: user.phone || '' } });
+    if (order.due !== next.amount && !await modal({ title: 'Amount updated', body: `<p>The instalment due is <b>${inr(order.due)}</b>, not ${inr(next.amount)}.</p>`, submit: `Pay ${inr(order.due)}` })) return;
+    const paid = await Pay.pay(order, { name: user.name, email: user.email, phone: user.phone || '', description: `${o.invoice} · ${next.label}` });
+    if (!paid) return;
+    D.payNext(o, 'Razorpay', null, { paymentId: paid.paymentId, balanceToken: paid.balanceToken });
+    toast(`Paid ${inr(order.due)} — thank you!`); rerender();
+  } catch (err) {
+    if (err.paymentId) modal({ title: 'Payment not confirmed', body: `<p>${esc(err.message)}</p>`, submit: '' });
+    else toast(err.message, 'err');
+  }
 }
 
 function downloads(user) {

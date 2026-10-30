@@ -1,6 +1,8 @@
 // Browser-side data store. Everything lives in localStorage so the app runs on
 // static hosting; swap these functions for API calls when a backend is added.
-import { SERVICES, PLANS, ADDONS, PRODUCTS, COUPONS, BUSINESS, ANNUAL_MONTHS_PAID, MILESTONES, MILESTONE_MIN, CATALOG_VERSION } from './data.js';
+import { SERVICES, PLANS, ADDONS, PRODUCTS, COUPONS, BUSINESS, ANNUAL_MONTHS_PAID, CATALOG_VERSION } from './data.js';
+import { milestoneSchedule, lineInfo as priceLine, priceCart } from './pricing.js';
+export { milestoneSchedule };
 
 const KEY = 'vx_db_v1';
 const SESSION = 'vx_session';
@@ -77,16 +79,6 @@ export function splitFor(s, tierIndex) {
   return rows;
 }
 
-// Milestone amounts for a gross (GST-inclusive) project value.
-export function milestoneSchedule(gross, upfront = 0) {
-  let left = gross;
-  return MILESTONES.map(([label, pct], i) => {
-    const amount = i === MILESTONES.length - 1 ? left : Math.round(gross * pct / 100);
-    left -= amount;
-    return { label, pct, amount: amount + (i === 0 ? upfront : 0) };
-  });
-}
-
 // ---------- auth ----------
 export const currentUser = () => {
   const id = safe(() => localStorage.getItem(SESSION), null);
@@ -134,74 +126,32 @@ export function addToCart(item) {
 }
 
 // Resolve a cart line into display info and a price.
-export function lineInfo(item) {
-  if (item.type === 'package') {
-    const s = service(item.ref); const t = s?.tiers.find(t => t.name === item.tier);
-    if (!s || !t) return null;
-    return { title: `${s.name} — ${t.name}`, unit: t.price, billing: s.billing, kind: 'Service' };
-  }
-  if (item.type === 'addon') {
-    const a = addon(item.ref); if (!a) return null;
-    return { title: a.name, unit: a.price, billing: a.billing, kind: 'Add-on' };
-  }
-  if (item.type === 'product') {
-    const p = product(item.ref); if (!p) return null;
-    return { title: p.name, unit: p.price, billing: 'once', kind: 'Download' };
-  }
-  if (item.type === 'plan') {
-    const p = plan(item.ref); if (!p) return null;
-    const annual = item.cycle === 'year';
-    return { title: `${p.name} plan (${annual ? 'annual' : 'monthly'})`, unit: annual ? p.price * ANNUAL_MONTHS_PAID : p.price, billing: annual ? 'year' : 'month', kind: 'Membership' };
-  }
-  return null;
-}
+export const lineInfo = item => priceLine(item, catalog());
 
 // Totals with member discount on one-time services, optional coupon and GST.
-export function quote(items, user, couponCode) {
-  const lines = items.map(i => ({ ...i, info: lineInfo(i) })).filter(l => l.info);
-  const planInCart = lines.find(l => l.type === 'plan');
-  const memberPlan = plan(planInCart?.ref || user?.plan || 'free');
-  const memberPct = memberPlan?.discount || 0;
-  let subtotal = 0, memberOff = 0;
-  for (const l of lines) {
-    l.total = l.info.unit * l.qty;
-    subtotal += l.total;
-    if (memberPct && l.type === 'package' && l.info.billing === 'once') memberOff += Math.round(l.total * memberPct / 100);
-  }
-  const coupon = couponCode ? catalog().coupons.find(c => c.code === couponCode.trim().toUpperCase() && c.active !== false) : null;
-  const couponOff = coupon ? Math.round((subtotal - memberOff) * coupon.pct / 100) : 0;
-  const taxable = subtotal - memberOff - couponOff;
-  const gstPct = db().settings.gst;
-  const gst = Math.round(taxable * gstPct / 100);
-  const total = taxable + gst;
-  // One-time service packages can be paid in milestones; everything else is paid upfront.
-  const projSub = lines.filter(l => l.type === 'package' && l.info.billing === 'once').reduce((s, l) => s + l.total, 0);
-  let milestones = null;
-  if (projSub >= MILESTONE_MIN) {
-    const projNet = projSub - memberOff - (couponOff ? Math.round(couponOff * (projSub - memberOff) / (subtotal - memberOff)) : 0);
-    const projGross = Math.round(projNet * (1 + gstPct / 100));
-    milestones = milestoneSchedule(projGross, total - projGross);
-  }
-  return { lines, subtotal, memberPct, memberOff, coupon, couponOff, taxable, gstPct, gst, total, milestones };
-}
+export const quote = (items, user, couponCode) => priceCart(items, { catalog: catalog(), gstPct: db().settings.gst, memberPlanId: user?.plan, couponCode });
 
 // ---------- orders & subscriptions ----------
 const nextInvoice = () => { const d = db(); d.counters.invoice += 1; return `VX-${new Date().getFullYear()}-${String(d.counters.invoice).padStart(4, '0')}`; };
 
-export function placeOrder(user, items, couponCode, method, payPlan = 'full') {
+// A paid online order passes the server's quote, the Razorpay payment id and the
+// server-signed tokens for the membership discount and later instalments.
+export function placeOrder(user, items, couponCode, method, payPlan = 'full', { priced, paymentId, memberToken, balanceToken } = {}) {
   const d = db();
-  const q = quote(items, user, couponCode);
+  const q = priced || quote(items, user, couponCode);
   if (!q.lines.length) throw new Error('Your cart is empty.');
   const now = new Date().toISOString();
   const payments = payPlan === 'milestone' && q.milestones
     ? q.milestones.map((m, i) => ({ label: m.label, amount: m.amount, paid: i === 0, paidAt: i === 0 ? now : null, method: i === 0 ? method : null }))
     : [{ label: 'Full payment', amount: q.total, paid: true, paidAt: now, method }];
+  if (paymentId) payments[0].ref = paymentId;
   const order = {
     id: uid('o_'), invoice: nextInvoice(), customerId: user.id, createdAt: now,
     status: 'Pending', paid: payments.every(p => p.paid), method, payments,
     items: q.lines.map(l => ({ type: l.type, ref: l.ref, tier: l.tier, cycle: l.cycle, qty: l.qty, title: l.info.title, unit: l.info.unit, billing: l.info.billing, total: l.total, progress: l.type === 'product' ? 100 : 0 })),
     subtotal: q.subtotal, discount: q.memberOff + q.couponOff, coupon: q.coupon?.code || null, gst: q.gst, total: q.total,
   };
+  if (balanceToken) order.balanceToken = balanceToken;
   if (order.items.every(i => i.type === 'product')) order.status = 'Delivered';
   d.orders.unshift(order);
   for (const i of order.items) {
@@ -209,6 +159,7 @@ export function placeOrder(user, items, couponCode, method, payPlan = 'full') {
       d.subscriptions.filter(s => s.customerId === user.id && s.status === 'Active').forEach(s => { s.status = 'Replaced'; });
       d.subscriptions.unshift({ id: uid('s_'), customerId: user.id, plan: i.ref, cycle: i.cycle || 'month', status: 'Active', startedAt: order.createdAt, renewsAt: addMonths(order.createdAt, i.cycle === 'year' ? 12 : 1), addons: [], orderId: order.id });
       user.plan = i.ref;
+      if (memberToken) user.memberToken = memberToken;
     } else if (i.type === 'package' && i.billing === 'month') {
       d.subscriptions.unshift({ id: uid('s_'), customerId: user.id, service: i.ref, tier: i.tier, cycle: 'month', status: 'Active', startedAt: order.createdAt, renewsAt: addMonths(order.createdAt, 1), addons: [], orderId: order.id });
     } else if (i.type === 'addon' && i.billing === 'month') {
@@ -229,11 +180,12 @@ export const orderPayments = o => o.payments || [{ label: 'Full payment', amount
 export const orderPaid = o => orderPayments(o).filter(p => p.paid).reduce((s, p) => s + p.amount, 0);
 export const orderBalance = o => o.total - orderPaid(o);
 
-export function payNext(order, method, by) {
+export function payNext(order, method, by, { paymentId, balanceToken } = {}) {
   const next = orderPayments(order).find(p => !p.paid);
   if (!next) return null;
   if (!order.payments) order.payments = orderPayments(order);
-  Object.assign(next, { paid: true, paidAt: new Date().toISOString(), method });
+  Object.assign(next, { paid: true, paidAt: new Date().toISOString(), method }, paymentId && { ref: paymentId });
+  if (paymentId) { if (balanceToken) order.balanceToken = balanceToken; else delete order.balanceToken; }
   order.paid = order.payments.every(p => p.paid);
   logActivity(`${order.invoice}: ${next.label} of ${inr(next.amount)} ${by ? 'recorded by ' + by : 'paid'}`);
   save();

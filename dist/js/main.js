@@ -4,6 +4,7 @@ import * as Pub from './public.js';
 import * as Acc from './account.js';
 import * as Adm from './admin.js';
 import * as Blog from './blogpages.js';
+import * as Pay from './pay.js';
 import { BUSINESS } from './data.js';
 import { siteHeader, siteFooter } from './chrome.js';
 import { esc, icon, initials, responsiveTables, $, $$ } from './ui.js';
@@ -158,4 +159,4 @@ function showError(err) {
 // A broken view shows the error page instead of leaving the old page half-updated.
 function safeRender() { try { render(); } catch (err) { showError(err); } }
 
-D.init().then(safeRender).catch(showError);
+Promise.all([D.init(), Pay.load()]).then(safeRender).catch(showError);
