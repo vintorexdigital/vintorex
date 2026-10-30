@@ -43,7 +43,7 @@ const app = () => $('#app');
 const DEFAULT_DESCRIPTION = $('meta[name=description]')?.getAttribute('content') || '';
 const DEFAULT_KEYWORDS = $('meta[name=keywords]')?.getAttribute('content') || '';
 const DEFAULT_OG_IMAGE = $('meta[property="og:image"]')?.getAttribute('content') || 'https://vintorex.com/images/og-cover.svg';
-let lastPath = null;
+let lastPath = null, lastUrl = null;
 
 function setMeta(selector, attr, value, fallback = '') {
   let el = $(selector);
@@ -57,8 +57,20 @@ function setMeta(selector, attr, value, fallback = '') {
   el?.setAttribute(attr, value || fallback);
 }
 
+// A plain anchor such as the skip link's #main is not a route: keep the view and its URL and focus the
+// target. One the view lacks (#audit, #work, or any on first load) opens the home page at it.
+function inPageAnchor(id) {
+  const el = lastUrl && document.getElementById(id);
+  if (!el) { location.replace('#/#' + id); return; }
+  history.replaceState(null, '', lastUrl);
+  el.scrollIntoView();
+  el.focus({ preventScroll: true });
+}
+
 function render() {
-  const raw = (location.hash.slice(1) || '/').split('#')[0];
+  const hash = location.hash.slice(1);
+  if (hash && hash[0] !== '/') { inPageAnchor(hash); return; }
+  const raw = (hash || '/').split('#')[0];
   const [path, qs = ''] = raw.split('?');
   const [fn, params] = match(path.replace(/\/$/, '') || '/');
   const v = fn(params, new URLSearchParams(qs)) || Pub.notFound();
@@ -87,11 +99,12 @@ function render() {
 
   const user = D.currentUser();
   if (v.shell) app().innerHTML = dashShell(v, user);
-  else app().innerHTML = v.bare ? `<main id="main">${v.html}</main>` : `${header(user)}<main id="main">${v.html}</main>${footer()}`;
+  else app().innerHTML = v.bare ? `<main id="main" tabindex="-1">${v.html}</main>` : `${header(user)}<main id="main" tabindex="-1">${v.html}</main>${footer()}`;
   responsiveTables(app());
   v.bind?.(app());
   bindChrome();
   if (path !== lastPath) { window.scrollTo(0, 0); lastPath = path; }
+  lastUrl = location.href;
   const anchor = location.hash.split('#')[2];
   if (anchor) document.getElementById(anchor)?.scrollIntoView();
 }
@@ -127,7 +140,7 @@ function dashShell(v, user) {
         <div class="grow"></div>
         ${admin ? '' : `<a class="icon-btn cart-btn" href="#/cart" aria-label="Cart">${icon('cart')}<span class="count" ${cartCount() ? '' : 'hidden'}>${cartCount()}</span></a>`}
         <div class="who"><span class="avatar">${initials(user.name)}</span><div><b>${esc(user.name)}</b><small class="muted">${esc(user.email)}</small></div></div></header>
-      <main id="main" class="dash-content">${v.html}</main>
+      <main id="main" class="dash-content" tabindex="-1">${v.html}</main>
     </div>
   </div>`;
 }
