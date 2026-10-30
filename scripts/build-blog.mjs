@@ -103,6 +103,7 @@ ${body}
 </main>
 ${siteFooter({ base: '/' })}
 <script src="/js/static.js" defer></script>
+<script type="module" src="/js/chat.js"></script>
 </body>
 </html>
 `;

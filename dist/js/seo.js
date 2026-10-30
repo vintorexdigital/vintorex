@@ -67,7 +67,7 @@ export function siteFaqs(services, site = 'https://vintorex.com') {
     ['Which payment methods are accepted?', 'UPI (GPay, PhonePe, Paytm), RuPay, Visa and Mastercard cards, and net banking.'],
     ['Can I pay in instalments?',
       `Yes. One-time projects of ${inr(MILESTONE_MIN)} or more can be paid in milestones: ${MILESTONES.map(([n, p]) => `${p}% ${lc(n)}`).join(', ')}.`],
-    ['Is there a free website and SEO audit?', `Yes. Vintorex offers a free 15-point audit covering site speed and Core Web Vitals, local SEO and Google Business Profile, competitor keyword gaps, and social and paid ads quick wins. Request it at ${site}/#audit.`],
+    ['Is there a free website and SEO audit?', `Yes. Vintorex offers a free 15-point audit covering site speed and Core Web Vitals, local SEO and Google Business Profile, competitor keyword gaps, and social and paid ads quick wins. Request it at ${site}/#/#audit.`],
     ['Does Vintorex offer membership plans?',
       `Yes: ${PLANS.map(p => `${p.name} (${p.price ? inr(p.price) + ' per month' : 'free'})`).join(', ')}. Paid plans include discounts on one-time services.`],
     ['Does Vintorex offer AI and automation services?',

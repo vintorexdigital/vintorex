@@ -65,6 +65,15 @@ export const PLANS = [
 ];
 export const ANNUAL_MONTHS_PAID = 10; // pay 10, get 12
 
+// FAQs on the pricing page, also answered by the chat assistant (server/knowledge.mjs).
+export const pricingFaqs = gst => [
+  ['Is GST included?', `Prices exclude ${gst}% GST, which is added at checkout and shown on your invoice.`],
+  ['Can I cancel a membership?', 'Yes. Monthly plans can be cancelled anytime from your dashboard and stay active until the end of the billing period.'],
+  ['Is ad spend included in ads management?', 'No. Ad spend is paid directly to Google or Meta. Our fee covers strategy, setup, creatives and optimisation.'],
+  ['How do member discounts work?', 'Premium members get 10% and Elite members 15% off any one-time service package, applied automatically at checkout.'],
+  ['Do you work outside Coimbatore?', 'Yes — we work with clients across India and abroad. Video shoots are on-site in Coimbatore or remote with your footage.'],
+];
+
 // Milestone payment plan offered on one-time projects at or above MILESTONE_MIN (ex-GST).
 export const MILESTONES = [['Advance to start work', 40], ['Mid-project approval', 40], ['Delivery & handover', 20]];
 export const MILESTONE_MIN = 10000;

@@ -6,6 +6,7 @@
     "start": "node server/index.mjs",
     "build:images": "node scripts/generate-images.mjs",
     "build:blog": "node scripts/build-blog.mjs",
+    "build:chat": "node scripts/build-chat.mjs",
     "check": "node scripts/check-content.mjs"
   }
 }

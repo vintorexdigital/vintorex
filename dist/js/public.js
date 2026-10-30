@@ -1,5 +1,5 @@
 // Public storefront: home, services, pricing, shop, cart, checkout, contact, auth.
-import { BUSINESS, CATEGORIES, ANNUAL_MONTHS_PAID, SOURCES, LEAD_SOURCES, COMPETITOR_SOURCES, MILESTONE_MIN } from './data.js';
+import { BUSINESS, CATEGORIES, ANNUAL_MONTHS_PAID, SOURCES, LEAD_SOURCES, COMPETITOR_SOURCES, MILESTONE_MIN, pricingFaqs } from './data.js';
 import * as D from './db.js';
 import { esc, icon, toast, field, per, date, empty, modal, $, $$ } from './ui.js';
 import { amountDue } from './pricing.js';
@@ -139,7 +139,7 @@ export function home() {
           <div class="row gap wrap">
             <a class="btn primary lg" href="#/services">Explore services ${icon('arrow')}</a>
             <a class="btn ghost lg" href="#/pricing">See pricing</a>
-            <a class="btn ghost lg" href="#audit">Free audit</a>
+            <a class="btn ghost lg" href="#/#audit">Free audit</a>
           </div>
           <ul class="ticks">
             <li>${icon('check')}Fixed, published prices</li>
@@ -586,12 +586,7 @@ export function pricing() {
 
     <section class="band"><div class="shell section faq">
       <h2>Frequently asked questions</h2>
-      ${[['Is GST included?', `Prices exclude ${D.db().settings.gst}% GST, which is added at checkout and shown on your invoice.`],
-         ['Can I cancel a membership?', 'Yes. Monthly plans can be cancelled anytime from your dashboard and stay active until the end of the billing period.'],
-         ['Is ad spend included in ads management?', 'No. Ad spend is paid directly to Google or Meta. Our fee covers strategy, setup, creatives and optimisation.'],
-         ['How do member discounts work?', 'Premium members get 10% and Elite members 15% off any one-time service package, applied automatically at checkout.'],
-         ['Do you work outside Coimbatore?', 'Yes — we work with clients across India and abroad. Video shoots are on-site in Coimbatore or remote with your footage.']]
-        .map(([q, a]) => `<details class="card"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}
+      ${pricingFaqs(D.db().settings.gst).map(([q, a]) => `<details class="card"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}
     </div></section>`,
     bind: root => { bindCartButtons(root); bindCycle(root); bindAddonBrowser(root); },
   };

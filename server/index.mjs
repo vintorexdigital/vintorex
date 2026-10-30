@@ -1,32 +1,27 @@
-// Vintorex web server: serves dist/ and the Razorpay payment API. `npm start`.
+// Vintorex web server: serves dist/, the Razorpay payment API and the chat assistant. `npm start`.
 // Keys come from the host's environment, or from .env at the repo root.
 //
 //   GET  /api/payments         { enabled, keyId }; the app stays in demo mode without it
 //   POST /api/payments/order   prices the cart (or the next instalment) and creates a Razorpay order
 //   POST /api/payments/verify  checks the payment signature and returns signed tokens
+//   GET  /api/chat             chat assistant status; POST streams an answer (see chat.mjs)
 //
 // Accounts and orders live in each browser, so the server keeps no database. What it
 // must remember later (a paid membership, the instalments still due) goes back to the
 // browser as a token signed with PAYMENT_TOKEN_SECRET that the browser cannot alter.
+import './env.mjs';
 import { createServer } from 'node:http';
-import { createReadStream, readFileSync } from 'node:fs';
+import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { extname, join, normalize, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SERVICES, ADDONS, PLANS, PRODUCTS, COUPONS, BUSINESS } from '../dist/js/data.js';
 import { priceCart, amountDue } from '../dist/js/pricing.js';
+import { chat, chatStatus, AI_ON } from './chat.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const DIST = join(ROOT, 'dist');
-
-// .env never overrides variables the host already set.
-try {
-  for (const line of readFileSync(join(ROOT, '.env'), 'utf8').split('\n')) {
-    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/);
-    if (m && !(m[1] in process.env)) process.env[m[1]] = m[2].replace(/^(['"])(.*)\1$/, '$2');
-  }
-} catch { /* no .env file */ }
 
 const { RAZORPAY_KEY_ID: KEY_ID, RAZORPAY_KEY_SECRET: KEY_SECRET } = process.env;
 const RAZORPAY_API = process.env.RAZORPAY_API_BASE || 'https://api.razorpay.com/v1';
@@ -143,10 +138,12 @@ function verifyPayment(body) {
   return out;
 }
 
+const clientIp = req => req.headers['x-forwarded-for']?.split(',').pop().trim() || req.socket.remoteAddress;
+
 // At most 30 new orders per visitor every 10 minutes.
 const hits = new Map();
 function rateLimit(req) {
-  const ip = req.headers['x-forwarded-for']?.split(',').pop().trim() || req.socket.remoteAddress;
+  const ip = clientIp(req);
   const now = Date.now(), h = hits.get(ip);
   if (hits.size > 10000) hits.clear();
   if (!h || now - h.start > 10 * 60e3) hits.set(ip, { start: now, n: 1 });
@@ -175,6 +172,18 @@ async function api(req, pathname) {
   if (!PAYMENTS) throw new HttpError(503, 'Online payments are not set up.');
   if (route === 'order') { rateLimit(req); return createOrder(await readJson(req)); }
   return verifyPayment(await readJson(req));
+}
+
+// Answers stream as server-sent events. Closing the tab stops the model mid-answer.
+async function chatRoute(req, res) {
+  if (req.method === 'GET') return send(res, 200, chatStatus());
+  if (req.method !== 'POST') throw new HttpError(405, 'Method not allowed.');
+  const stop = new AbortController();
+  res.on('close', () => stop.abort());
+  const events = chat(await readJson(req), { ip: clientIp(req), signal: stop.signal });
+  res.writeHead(200, { 'Content-Type': 'text/event-stream; charset=utf-8', 'Cache-Control': 'no-store, no-transform', 'X-Accel-Buffering': 'no' });
+  for await (const event of events) res.write(`data: ${JSON.stringify(event)}\n\n`);
+  res.end();
 }
 
 // ---------- static files ----------
@@ -217,14 +226,17 @@ createServer(async (req, res) => {
   res.setHeader('Content-Security-Policy', "frame-ancestors 'none'");
   const { pathname } = new URL(req.url, 'http://localhost');
   try {
+    if (pathname === '/api/chat') return await chatRoute(req, res);
     if (pathname.startsWith('/api/')) return send(res, 200, await api(req, pathname));
     if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Method not allowed.');
     await serveStatic(req, res, pathname);
   } catch (err) {
     if (!err.status) console.error(err);
+    if (res.headersSent) return res.end();
     send(res, err.status || 500, { error: err.status ? err.message : 'Something went wrong. Please try again.' });
   }
 }).listen(PORT, () => {
   const mode = PAYMENTS ? `on, ${KEY_ID.startsWith('rzp_live_') ? 'LIVE' : 'test'} key` : 'off (set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)';
-  console.log(`Vintorex on http://localhost:${PORT} · Razorpay payments ${mode}`);
+  const assistant = AI_ON ? 'on (Cloudflare Workers AI)' : 'search-only (set CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN)';
+  console.log(`Vintorex on http://localhost:${PORT} · Razorpay payments ${mode} · chat assistant ${assistant}`);
 });

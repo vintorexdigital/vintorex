@@ -3,6 +3,8 @@ import { SERVICES, ADDONS, COMPETITOR_SOURCES, PLANS, CATEGORIES } from '../dist
 import { POSTS, md, toc } from '../dist/js/blog/index.js';
 import { ART } from '../dist/js/service-art.js';
 import { serviceFaqs, serviceAnswer, siteFaqs } from '../dist/js/seo.js';
+import { buildChunks } from '../server/knowledge.mjs';
+import { chunkKey } from '../server/chat.mjs';
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
@@ -77,5 +79,19 @@ for (const s of SERVICES) {
 if (siteFaqs(SERVICES).length < 8) errs.push('site FAQ list too short');
 for (const f of ['faq/index.html', 'services/index.html', 'llms-full.txt', 'robots.txt']) if (!existsSync(dist(f))) errs.push(`${f} missing, run npm run build:blog`);
 
+// Chat assistant knowledge: every chunk links to a real page or app route. Chunks
+// changed since the last `npm run build:chat` only cost a few neurons at start-up.
+const APP_ROUTES = new Set(['', 'about', 'contact', 'services', 'pricing', 'compare', 'shop']);
+const chunks = buildChunks();
+for (const c of chunks) {
+  if (!c.title || !c.text.trim()) errs.push(`chat chunk ${c.id}: empty`);
+  const app = c.url.match(/^\/#\/([a-z]*)(?:#[\w-]+)?$/);
+  if (app ? !APP_ROUTES.has(app[1]) : !existsSync(dist(c.url.slice(1) + 'index.html'))) errs.push(`chat chunk ${c.id}: unknown page ${c.url}`);
+}
+let vectors = {};
+try { vectors = JSON.parse(readFileSync(new URL('../server/chat-vectors.json', import.meta.url), 'utf8')).vectors; } catch { /* not built */ }
+const stale = chunks.filter(c => !vectors[chunkKey(c)]).length;
+if (stale) console.warn(`Note: ${stale} chat knowledge chunks changed since the last build. Run npm run build:chat to save their vectors.`);
+
 if (errs.length) { console.error('Content check failed:\n- ' + errs.join('\n- ')); process.exit(1); }
-console.log(`OK: ${SERVICES.length} services, ${ADDONS.length} add-ons, ${SERVICES.reduce((a, s) => a + s.works.length, 0)} work items, ${POSTS.length} guides.`);
+console.log(`OK: ${SERVICES.length} services, ${ADDONS.length} add-ons, ${SERVICES.reduce((a, s) => a + s.works.length, 0)} work items, ${POSTS.length} guides, ${chunks.length} chat knowledge chunks.`);
