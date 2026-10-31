@@ -1021,16 +1021,10 @@ export function login(params, query) {
         <p class="err" hidden></p>
         <button class="btn primary block lg">Sign in</button>
         <p class="center muted">New here? <a href="#/register${query.get('next') ? '?next=' + esc(query.get('next')) : ''}">Create an account</a></p>
-        <div class="demo-box">
-          <b>Demo accounts</b>
-          <button type="button" class="chip" data-demo="admin@vintorex.com|admin123">Admin · admin@vintorex.com / admin123</button>
-          <button type="button" class="chip" data-demo="demo@vintorex.com|demo123">Customer · demo@vintorex.com / demo123</button>
-        </div>
       </form>
     </section>`,
     bind: root => {
       const f = $('#login', root);
-      $$('[data-demo]', root).forEach(b => b.addEventListener('click', () => { const [e, p] = b.dataset.demo.split('|'); f.email.value = e; f.password.value = p; }));
       f.addEventListener('submit', async e => {
         e.preventDefault();
         try {

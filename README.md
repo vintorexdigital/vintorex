@@ -11,13 +11,6 @@ npm start
 
 This runs `server/index.mjs` (Node 18 or newer, no dependencies), which serves `dist/`, the payment API and the chat assistant. Open http://localhost:5173. With Razorpay keys in `.env`, checkout takes real payments, so use test keys locally (see **Payments**). ES modules and `crypto.subtle` need `http://localhost` or HTTPS, not `file://`.
 
-Demo accounts (also shown on the sign-in page):
-
-| Role | Email | Password |
-|---|---|---|
-| Admin | admin@vintorex.com | admin123 |
-| Customer | demo@vintorex.com | demo123 |
-
 Admin → Settings → **Reset demo data** restores the seed data.
 
 ## What's inside

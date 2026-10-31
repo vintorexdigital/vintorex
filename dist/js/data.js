@@ -5,7 +5,7 @@ import { SERVICES, ADDONS, COMPETITOR_SOURCES } from './services.js';
 export { SERVICES, ADDONS, COMPETITOR_SOURCES };
 
 // Bump when SERVICES / ADDONS / PLANS change so stored catalogs refresh.
-export const CATALOG_VERSION = 6;
+export const CATALOG_VERSION = 7;
 
 export const BUSINESS = {
   name: 'Vintorex Digital Solutions',

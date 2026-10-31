@@ -16,6 +16,9 @@ const daysAgo = (d, h = 10) => { const t = new Date(); t.setDate(t.getDate() - d
 // Older accounts keep the plain SHA-256 form until their next successful sign-in upgrades it.
 const PBKDF2_ITER = 150000;
 const hex = buf => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+// Admin password (PBKDF2 hash only; never commit the plain text).
+const ADMIN_PASS = 'pbkdf2$150000$933421b9b953043691dbfc77927938ae$a054744ede21b5b0a217413922ea83cf9add611bdf22eff65c10ade0da2cc34d';
+
 async function legacyHash(text) {
   return hex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode('vx:' + text)));
 }
@@ -51,6 +54,9 @@ function refreshCatalog(s) {
   const kept = (s.catalog.products || []).map(({ img, ...p }) => p);
   const have = new Set(kept.map(p => p.id));
   s.catalog.products = [...kept, ...clone(PRODUCTS).filter(p => !have.has(p.id))];
+  // Retire the published demo admin password in browsers that already stored the old data.
+  const admin = (s.users || []).find(u => u.id === 'u_admin');
+  if (admin) admin.pass = ADMIN_PASS;
   s.catalogVersion = CATALOG_VERSION;
 }
 export async function resetDemo() { state = await seed(); save(); setCart([]); }
@@ -244,7 +250,7 @@ export const inr = n => '₹' + Math.round(n).toLocaleString('en-IN');
 async function seed() {
   const clone = x => JSON.parse(JSON.stringify(x));
   const users = [
-    { id: 'u_admin', role: 'admin', name: 'Ranjith Kumar', email: 'admin@vintorex.com', phone: BUSINESS.phone, pass: await legacyHash('admin123'), status: 'Active', createdAt: daysAgo(400), tags: [] },
+    { id: 'u_admin', role: 'admin', name: 'Ranjith Kumar', email: 'admin@vintorex.com', phone: BUSINESS.phone, pass: ADMIN_PASS, status: 'Active', createdAt: daysAgo(400), tags: [] },
     { id: 'u_demo', role: 'customer', name: 'Siva Prakash', email: 'demo@vintorex.com', phone: '+91 98430 11223', company: 'Prakash Textiles', pass: await legacyHash('demo123'), plan: 'premium', status: 'Active', createdAt: daysAgo(150), tags: ['Retail'] },
     { id: 'u_kailash', role: 'customer', name: 'Kailash', email: 'kailash@idolworld.in', phone: '+91 94422 55110', company: 'The World of Idols', pass: await legacyHash('demo123'), plan: 'elite', status: 'Active', createdAt: daysAgo(170), tags: ['E-commerce'] },
     { id: 'u_yamuna', role: 'customer', name: 'Yamuna', email: 'yamuna@emsolutions.in', phone: '+91 99940 33442', company: 'Electrical & Mechanical Solutions', pass: await legacyHash('demo123'), plan: 'free', status: 'Active', createdAt: daysAgo(120), tags: ['Industrial'] },
