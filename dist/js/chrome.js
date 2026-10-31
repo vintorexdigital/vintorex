@@ -11,16 +11,26 @@ const NAV = [['/services', 'Services'], ['/pricing', 'Pricing'], ['/compare', 'C
 const to = (base, path) => path === 'blog' ? '/blog/' : base && path === '/services' ? '/services/' : base + '#' + path;
 const svcLink = id => `/services/${id}/`;
 
+// An offer strip that scrolls away, then a floating bar that sticks. Below 1100px the links fold
+// into a drop-down menu; Sign in (or the account button) moves into it, and Get a quote too on phones.
 export function siteHeader({ base = '', here = '', cart = 0, account = '' } = {}) {
+  const signIn = account || `<a class="btn sm ghost" href="${to(base, '/login')}">Sign in</a>`;
+  const quote = `<a class="btn sm primary" href="${to(base, '/contact')}">Get a quote</a>`;
   return `<a class="skip" href="#main">Skip to content</a>
-  <header class="topbar"><div class="shell nav">
+  <div class="announce"><div class="shell announce-row">
+    <p><span class="live-dot" aria-hidden="true"></span>Free 15-point website &amp; SEO audit<span class="announce-more"> · fixed-price action plan</span></p>
+    <a class="announce-cta" href="${to(base, '/#audit')}">Request my free audit <span aria-hidden="true">→</span></a>
+  </div></div>
+  <header class="topbar"><div class="nav">
     <a class="logo" href="${to(base, '/')}">${logoMark()}<span>Vintorex<small>Digital Solutions</small></span></a>
-    <nav class="nav-links" id="nav-links" aria-label="Primary">${NAV.map(([h, l]) => `<a href="${to(base, h)}" class="${here.startsWith(h) ? 'on' : ''}">${l}</a>`).join('')}</nav>
+    <nav class="nav-links" id="nav-links" aria-label="Primary">${NAV.map(([h, l]) => `<a href="${to(base, h)}" class="${here.startsWith(h) ? 'on' : ''}">${l}</a>`).join('')}
+      <div class="nav-menu-cta">${signIn}${quote}</div>
+    </nav>
     <div class="nav-actions">
       <a class="icon-btn cart-btn" href="${to(base, '/cart')}" aria-label="Cart">${icon('cart')}<span class="count" ${cart ? '' : 'hidden'}>${cart}</span></a>
-      ${account || `<a class="btn sm ghost hide-sm" href="${to(base, '/login')}">Sign in</a>`}
-      <a class="btn sm primary hide-sm" href="${to(base, '/contact')}">Get a quote</a>
-      <button class="icon-btn menu-btn" aria-expanded="false" aria-controls="nav-links" aria-label="Menu">${icon('menu')}</button>
+      ${signIn}
+      ${quote}
+      <button class="icon-btn menu-btn" aria-expanded="false" aria-controls="nav-links" aria-label="Menu"><span></span><span></span><span></span></button>
     </div>
   </div></header>`;
 }

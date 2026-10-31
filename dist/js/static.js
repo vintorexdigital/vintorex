@@ -2,12 +2,25 @@
 (() => {
   const $ = s => document.querySelector(s);
 
-  // Mobile menu
-  const menu = $('.menu-btn');
+  // Mobile menu: opening it focuses the first link (the menu sits before its button);
+  // a link or Escape closes it.
+  const menu = $('.menu-btn'), links = $('#nav-links');
+  const setMenu = open => { links.classList.toggle('open', open); menu.setAttribute('aria-expanded', open); };
   menu?.addEventListener('click', () => {
-    const open = $('#nav-links').classList.toggle('open');
-    menu.setAttribute('aria-expanded', open);
+    const open = !links.classList.contains('open');
+    setMenu(open);
+    if (open) links.querySelector('a')?.focus();
   });
+  links?.addEventListener('click', e => { if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && links?.classList.contains('open')) { setMenu(false); menu.focus(); }
+  });
+
+  // The floating header firms up once the page scrolls under it
+  const bar = $('.topbar');
+  const markScrolled = () => bar?.classList.toggle('scrolled', scrollY > 20);
+  addEventListener('scroll', markScrolled, { passive: true });
+  markScrolled();
 
   // Cart badge from the app's saved cart
   try {
