@@ -26,6 +26,8 @@ const DIST = join(ROOT, 'dist');
 const { RAZORPAY_KEY_ID: KEY_ID, RAZORPAY_KEY_SECRET: KEY_SECRET } = process.env;
 const RAZORPAY_API = process.env.RAZORPAY_API_BASE || 'https://api.razorpay.com/v1';
 const PORT = Number(process.env.PORT) || 5173;
+// Set HOST=127.0.0.1 in production so only the reverse proxy / tunnel on this machine can connect.
+const HOST = process.env.HOST || '0.0.0.0';
 const PAYMENTS = Boolean(KEY_ID && KEY_SECRET);
 const TOKEN_KEY = process.env.PAYMENT_TOKEN_SECRET || (KEY_SECRET && createHmac('sha256', KEY_SECRET).update('vintorex-token').digest('hex'));
 // Prices come from the shipped catalog, never from the browser.
@@ -235,7 +237,7 @@ createServer(async (req, res) => {
     if (res.headersSent) return res.end();
     send(res, err.status || 500, { error: err.status ? err.message : 'Something went wrong. Please try again.' });
   }
-}).listen(PORT, () => {
+}).listen(PORT, HOST, () => {
   const mode = PAYMENTS ? `on, ${KEY_ID.startsWith('rzp_live_') ? 'LIVE' : 'test'} key` : 'off (set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)';
   const assistant = AI_ON ? 'on (Cloudflare Workers AI)' : 'search-only (set CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN)';
   console.log(`Vintorex on http://localhost:${PORT} · Razorpay payments ${mode} · chat assistant ${assistant}`);
