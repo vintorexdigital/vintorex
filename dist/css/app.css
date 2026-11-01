@@ -296,15 +296,15 @@ section.card + section.card { margin-top: 18px; }
   gap: 10px 12px;
 }
 /* wide: four over three, each lower card centred under a gap */
-@media (min-width: 901px) {
-  .partner-row { grid-auto-columns: minmax(0, 96px); grid-template-rows: repeat(2, 1fr); }
+@media (min-width: 961px) {
+  .partner-row { grid-auto-columns: minmax(0, 104px); grid-template-rows: repeat(2, 1fr); }
   .partner-item { grid-column: span 2; }
   .partner-item:nth-child(odd) { grid-row: 1; }
   .partner-item:nth-child(even) { grid-row: 2; }
   .partner-item:nth-child(2) { grid-column: 2 / span 2; }
 }
 /* tablets: two columns, the right one dropped half a card */
-@media (min-width: 521px) and (max-width: 900px) {
+@media (min-width: 521px) and (max-width: 960px) {
   .partner-row { grid-template-columns: repeat(2, minmax(0, 250px)); grid-auto-rows: 1fr; }
   .partner-item { grid-row: span 2; }
   .partner-item:nth-child(odd) { grid-column: 1; }
