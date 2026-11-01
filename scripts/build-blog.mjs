@@ -90,10 +90,9 @@ function page({ path, title, description, keywords = '', type = 'website', image
   <meta name="twitter:description" content="${esc(description)}">
   <meta name="twitter:image" content="${esc(ogImg)}">
   <meta name="twitter:image:alt" content="${esc(ogImgAlt)}">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preload" href="/fonts/inter-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/css/typography.css">
   ${schema.map(jsonLd).join('\n  ')}
 </head>
 <body>

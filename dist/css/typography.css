@@ -1,0 +1,75 @@
+/* Vintorex typography: one locally hosted family, with native fallbacks. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/inter-latin-variable.woff2') format('woff2');
+}
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  --text-xs: .8125rem;
+  --text-sm: .875rem;
+  --text-base: 1rem;
+  --text-lead: clamp(1.0625rem, 1rem + .25vw, 1.25rem);
+  --heading-1: clamp(2rem, 1.5rem + 2vw, 3.25rem);
+  --heading-2: clamp(1.5rem, 1.25rem + 1vw, 2.25rem);
+  font-family: var(--font-sans);
+  font-optical-sizing: auto;
+  font-kerning: normal;
+}
+body { font-family: var(--font-sans); font-size: var(--text-base); font-weight: 400; line-height: 1.65; letter-spacing: -.011em; }
+button, input, select, textarea { font-family: inherit; letter-spacing: inherit; }
+h1, h2, h3, h4, .h3 { font-weight: 600; text-wrap: balance; overflow-wrap: break-word; }
+h1 { font-size: var(--heading-1); line-height: 1.12; letter-spacing: -.035em; }
+h2 { font-size: var(--heading-2); line-height: 1.2; letter-spacing: -.025em; }
+h3, .h3 { font-size: 1.1875rem; line-height: 1.35; letter-spacing: -.018em; }
+h4 { font-size: 1.0625rem; line-height: 1.4; letter-spacing: -.012em; }
+b, strong { font-weight: 600; }
+p { text-wrap: pretty; }
+.hero h1 { font-size: clamp(2.25rem, 1.5rem + 3vw, 4.75rem); line-height: 1.08; font-weight: 600; letter-spacing: -.04em; max-width: 20ch; }
+.lead { font-size: var(--text-lead); line-height: 1.65; letter-spacing: -.015em; max-width: 60ch; }
+.logo { font-weight: 700; letter-spacing: -.025em; }
+.logo small { font-weight: 500; letter-spacing: .025em; }
+.nav-links > a { font-size: var(--text-sm); font-weight: 500; letter-spacing: 0; }
+.btn, .link, .chip, .toggle button, .subnav button { font-weight: 600; letter-spacing: -.005em; line-height: 1.45; }
+.btn { font-size: .9375rem; }
+.btn.sm, .chip { font-size: var(--text-sm); }
+.btn.lg { font-size: 1rem; }
+.eyebrow { font-size: var(--text-xs); font-weight: 600; letter-spacing: .015em; line-height: 1.5; }
+.announce { font-weight: 600; letter-spacing: .04em; }
+.svc h3, .post-body h3 { font-size: 1.125rem; font-weight: 600; line-height: 1.4; letter-spacing: -.018em; }
+.svc p, .post-body p, .addon p, .work-content p { font-size: .9375rem; line-height: 1.65; }
+.work-content h3 { font-size: 1.25rem; font-weight: 600; line-height: 1.35; }
+.fine, .sources, .field > span, .partner-text small, .quote-who small { font-size: var(--text-xs); line-height: 1.6; }
+.badge, .tag, .svc-cat-tag, .ribbon { font-weight: 600; line-height: 1.5; letter-spacing: .01em; }
+.price { font-weight: 600; letter-spacing: -.035em; line-height: 1.2; font-variant-numeric: lining-nums tabular-nums; }
+.price small { font-size: .9375rem; font-weight: 400; letter-spacing: 0; }
+.kpi b, .stat-card b, .hc-metrics b { font-weight: 600; letter-spacing: -.025em; font-variant-numeric: tabular-nums; }
+.table { font-size: var(--text-sm); line-height: 1.6; }
+.table th { font-size: .75rem; font-weight: 600; letter-spacing: .04em; }
+.table td { font-variant-numeric: tabular-nums; }
+.dash-head h1 { font-size: clamp(1.625rem, 1.375rem + 1vw, 2.125rem); line-height: 1.2; letter-spacing: -.025em; }
+.side a, .side button { font-size: .9375rem; font-weight: 500; }
+input:not([type=checkbox]):not([type=radio]):not([type=range]), select, textarea { font-size: 1rem; line-height: 1.5; }
+.post-head h1, .svc-page .post-head h1 { font-size: var(--heading-1); line-height: 1.15; letter-spacing: -.03em; }
+.prose, .prose-article { max-width: 68ch; font-size: 1.0625rem; line-height: 1.8; }
+.prose-article h2, .post-faq h2 { font-size: clamp(1.375rem, 1.2rem + .6vw, 1.75rem); line-height: 1.3; }
+.prose-article h3 { font-size: 1.1875rem; line-height: 1.4; }
+.takeaways h2, .answer h2 { font-size: 1rem; letter-spacing: -.01em; text-transform: none; }
+.prose-article p { margin-bottom: 1.2em; }
+.crumbs { font-size: var(--text-sm); line-height: 1.6; }
+.footer { line-height: 1.7; }
+.foot-grid h4 { font-size: 1.0625rem; font-weight: 600; }
+.foot-grid > div > a:not(.logo) { font-size: .9375rem; }
+.footer .fine { font-size: var(--text-xs); }
+.vxc-bubble { font-size: .9375rem; line-height: 1.65; }
+.vxc-head h2 { font-weight: 600; }
+.vxc-fine { font-size: .75rem; line-height: 1.5; }
+@media (max-width: 640px) {
+  .nav-links > a { font-size: 1rem; }
+  .hero h1 { max-width: 100%; }
+  .mobile-table .table-label { font-size: var(--text-xs); font-weight: 600; letter-spacing: .01em; }
+  .mobile-table .table-value { font-size: .9375rem; line-height: 1.65; }
+  .prose, .prose-article { font-size: 1rem; line-height: 1.8; }
+}

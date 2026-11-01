@@ -133,3 +133,7 @@ Data lives in each browser's `localStorage`. For production:
 The shared header, footer, dashboards and invoices use `dist/images/vintorex-logo.png`, derived from the supplied transparent artwork preserved in `dist/images/vintorex-logo-original.png`. Browser icons live in `dist/icons/` and `dist/favicon.ico`; `dist/site.webmanifest` defines the Vintorex home-screen name and app icons. The 1200 × 630 sharing image is `dist/images/vintorex-social.png`.
 
 Browser metadata is shared through `dist/js/brand.js`. Run `npm run build:blog` after changing branding so the home page and every static guide receive the same icons and metadata.
+
+## Typography
+
+`dist/css/typography.css` defines the shared Inter type scale, heading weights, reading widths, form text and dashboard styles. It loads after `app.css` on the app and all generated pages. The variable Latin WOFF2 font is hosted in `dist/fonts/`, with its SIL Open Font License in `Inter-OFL.txt`; other scripts and unsupported characters use the native system fallbacks. No external font request is needed. Run `npm run build:blog` after updating page-level stylesheet links.
