@@ -3,6 +3,7 @@ import * as D from './db.js';
 import { esc, icon, toast, field, per, date, dateTime, ago, badge, empty, modal, confirmBox, $, $$ } from './ui.js';
 import { paymentSchedule } from './public.js';
 import * as Pay from './pay.js';
+import { navigate } from './router.js';
 
 const inr = D.inr;
 export const NAV = [
@@ -42,30 +43,30 @@ function overview(user) {
     title: 'Dashboard',
     html: `
     <div class="dash-head"><div><h1>Hello, ${esc(user.name.split(' ')[0])} 👋</h1><p class="muted">${esc(user.company || 'Your account')} · Member since ${date(user.createdAt)}</p></div>
-      <a class="btn primary" href="#/services">${icon('plus')} New project</a></div>
+      <a class="btn primary" href="/services/">${icon('plus')} New project</a></div>
     <div class="kpis">
-      <div class="kpi"><small>Current plan</small><b>${esc(p?.name || 'Basic')}</b><span>${membership ? 'Renews ' + date(membership.renewsAt) : '<a href="#/pricing">Upgrade for discounts</a>'}</span></div>
+      <div class="kpi"><small>Current plan</small><b>${esc(p?.name || 'Basic')}</b><span>${membership ? 'Renews ' + date(membership.renewsAt) : '<a href="/pricing">Upgrade for discounts</a>'}</span></div>
       <div class="kpi"><small>Active projects</small><b>${active.length}</b><span>${orders.length} orders total</span></div>
       <div class="kpi"><small>Monthly services</small><b>${inr(monthly)}</b><span>${subs.length} active subscriptions</span></div>
-      <div class="kpi"><small>Total paid</small><b>${inr(spent)}</b><span>${due ? `<a href="#/account/orders">${inr(due)} milestone balance due</a>` : 'incl. GST · nothing due'}</span></div>
+      <div class="kpi"><small>Total paid</small><b>${inr(spent)}</b><span>${due ? `<a href="/account/orders">${inr(due)} milestone balance due</a>` : 'incl. GST · nothing due'}</span></div>
     </div>
     <div class="dash-grid">
       <section class="card">
-        <div class="card-head"><h3>Project progress</h3><a class="link" href="#/account/orders">All</a></div>
-        ${active.length ? active.flatMap(o => o.items.filter(i => i.type !== 'product' && i.billing === 'once').map(i => progressRow(o, i))).join('') || empty('No active one-time projects.') : empty('No active projects right now.', '<a class="btn sm ghost" href="#/services">Start one</a>')}
+        <div class="card-head"><h3>Project progress</h3><a class="link" href="/account/orders">All</a></div>
+        ${active.length ? active.flatMap(o => o.items.filter(i => i.type !== 'product' && i.billing === 'once').map(i => progressRow(o, i))).join('') || empty('No active one-time projects.') : empty('No active projects right now.', '<a class="btn sm ghost" href="/services/">Start one</a>')}
       </section>
       <section class="card">
-        <div class="card-head"><h3>Your ${esc(p?.name || 'Basic')} benefits</h3><a class="link" href="#/account/subscription">Manage</a></div>
+        <div class="card-head"><h3>Your ${esc(p?.name || 'Basic')} benefits</h3><a class="link" href="/account/subscription">Manage</a></div>
         <ul class="ticks col">${(p?.features || []).map(f => `<li>${icon('check')}${esc(f)}</li>`).join('')}</ul>
-        ${p?.id !== 'elite' ? `<a class="btn ghost block" href="#/pricing">${icon('star')} Upgrade plan</a>` : ''}
+        ${p?.id !== 'elite' ? `<a class="btn ghost block" href="/pricing">${icon('star')} Upgrade plan</a>` : ''}
       </section>
       <section class="card">
-        <div class="card-head"><h3>Open support tickets</h3><a class="link" href="#/account/support">All</a></div>
+        <div class="card-head"><h3>Open support tickets</h3><a class="link" href="/account/support">All</a></div>
         ${tickets.length ? tickets.map(t => `<div class="list-row"><div><b>#${t.number} ${esc(t.subject)}</b><small class="muted">${ago(t.messages.at(-1).at)}</small></div>${badge(t.status)}</div>`).join('') : empty('No open tickets — all good!')}
       </section>
       <section class="card">
         <div class="card-head"><h3>Recommended for you</h3></div>
-        ${recommend(user).map(s => `<a class="list-row link-row" href="#/services/${s.id}"><div><b>${esc(s.name)}</b><small class="muted">${esc(s.summary)}</small></div>${icon('arrow')}</a>`).join('')}
+        ${recommend(user).map(s => `<a class="list-row link-row" href="/services/${s.id}/"><div><b>${esc(s.name)}</b><small class="muted">${esc(s.summary)}</small></div>${icon('arrow')}</a>`).join('')}
       </section>
     </div>`,
   };
@@ -120,11 +121,11 @@ function subscription(user, query) {
     <div class="card table-wrap">${others.length ? `<table class="table"><thead><tr><th>Service</th><th>Price</th><th>Status</th><th>Renews</th><th></th></tr></thead><tbody>
       ${others.map(s => `<tr><td>${esc(D.subscriptionTitle(s))}</td><td>${inr(D.subscriptionMonthly(s))}/mo</td><td>${badge(s.status)}</td><td>${s.status === 'Active' ? date(s.renewsAt) : '—'}</td>
       <td class="right">${s.status === 'Active' ? `<button class="btn sm ghost" data-cancel="${s.id}">Cancel</button>` : ''}</td></tr>`).join('')}
-    </tbody></table>` : empty('No monthly services yet.', '<a class="btn sm ghost" href="#/services?cat=grow">Browse growth services</a>')}</div>`,
+    </tbody></table>` : empty('No monthly services yet.', '<a class="btn sm ghost" href="/services/#grow">Browse growth services</a>')}</div>`,
     bind: root => {
       $$('[data-switch]', root).forEach(b => b.addEventListener('click', () => {
         D.addToCart({ type: 'plan', ref: b.dataset.switch, cycle: membership?.cycle || 'month' });
-        location.hash = '#/cart';
+        navigate('/cart');
       }));
       $$('[data-addon]', root).forEach(b => b.addEventListener('click', () => {
         const id = b.dataset.addon; const i = membership.addons.indexOf(id);
@@ -156,8 +157,8 @@ function orders(user) {
       <div class="card-head"><div><h3>${esc(o.invoice)}</h3><small class="muted">${date(o.createdAt)} · ${esc(o.method)}</small></div><div class="row gap">${badge(o.status)}<b>${inr(o.total)}</b></div></div>
       ${o.items.map(i => i.type === 'product' || i.billing !== 'once' ? `<div class="list-row"><span>${esc(i.title)}</span><small class="muted">${i.type === 'product' ? 'Ready to download' : 'Recurring — see My plan'}</small></div>` : progressRow(o, i)).join('')}
       ${D.orderPayments(o).length > 1 ? `<h4 class="pay-head">Payment schedule <small class="muted">${inr(D.orderPaid(o))} of ${inr(o.total)} paid</small></h4>${paymentSchedule(o)}` : ''}
-      <div class="row gap wrap">${D.orderBalance(o) ? `<button class="btn sm primary" data-paynext="${o.id}">Pay next instalment · ${inr(D.orderPayments(o).find(p => !p.paid).amount)}</button>` : ''}<a class="btn sm ghost" href="#/invoice/${o.id}">${icon('receipt')} Invoice</a><button class="btn sm ghost" data-help="${o.id}">${icon('help')} Get help</button></div>
-    </section>`).join('') : empty('You have no orders yet.', '<a class="btn primary" href="#/services">Browse services</a>')}`,
+      <div class="row gap wrap">${D.orderBalance(o) ? `<button class="btn sm primary" data-paynext="${o.id}">Pay next instalment · ${inr(D.orderPayments(o).find(p => !p.paid).amount)}</button>` : ''}<a class="btn sm ghost" href="/invoice/${o.id}">${icon('receipt')} Invoice</a><button class="btn sm ghost" data-help="${o.id}">${icon('help')} Get help</button></div>
+    </section>`).join('') : empty('You have no orders yet.', '<a class="btn primary" href="/services/">Browse services</a>')}`,
     bind: root => {
       $$('[data-help]', root).forEach(b => b.addEventListener('click', () => newTicket(user, b.dataset.help)));
       bindPayNext(root);
@@ -203,7 +204,7 @@ function downloads(user) {
     title: 'Downloads',
     html: `<div class="dash-head"><h1>Downloads</h1></div>
     ${items.length ? `<div class="cards3">${items.map(i => `<article class="card addon"><div><h4>${esc(i.title)}</h4><p class="muted">Purchased ${date(i.order.createdAt)} · ${esc(i.order.invoice)}</p></div>
-      <div class="addon-foot"><span class="badge green">Licensed</span><button class="btn sm primary" data-dl="${esc(i.ref)}">${icon('download')} Download</button></div></article>`).join('')}</div>` : empty('Purchased digital products appear here.', '<a class="btn ghost" href="#/shop">Visit shop</a>')}`,
+      <div class="addon-foot"><span class="badge green">Licensed</span><button class="btn sm primary" data-dl="${esc(i.ref)}">${icon('download')} Download</button></div></article>`).join('')}</div>` : empty('Purchased digital products appear here.', '<a class="btn ghost" href="/shop">Visit shop</a>')}`,
     bind: root => $$('[data-dl]', root).forEach(b => b.addEventListener('click', () => {
       const p = D.product(b.dataset.dl);
       const blob = new Blob([`${p.name}\nLicensed to ${user.name} (${user.email})\nVintorex Digital Solutions\n\nThis demo file stands in for the purchased download.`], { type: 'text/plain' });
@@ -220,7 +221,7 @@ function invoices(user) {
     html: `<div class="dash-head"><h1>Invoices</h1></div>
     <div class="card table-wrap">${list.length ? `<table class="table"><thead><tr><th>Invoice</th><th>Date</th><th>Items</th><th>GST</th><th>Total</th><th>Balance</th><th>Status</th><th></th></tr></thead><tbody>
       ${list.map(o => { const bal = D.orderBalance(o); return `<tr><td><b>${esc(o.invoice)}</b></td><td>${date(o.createdAt)}</td><td>${o.items.length}</td><td>${inr(o.gst)}</td><td><b>${inr(o.total)}</b></td><td>${bal ? inr(bal) : '—'}</td><td>${badge(bal ? 'Part-paid' : 'Paid', bal ? 'amber' : 'green')}</td>
-        <td class="right">${bal ? `<button class="btn sm primary" data-paynext="${o.id}">Pay</button> ` : ''}<a class="btn sm ghost" href="#/invoice/${o.id}">View</a></td></tr>`; }).join('')}
+        <td class="right">${bal ? `<button class="btn sm primary" data-paynext="${o.id}">Pay</button> ` : ''}<a class="btn sm ghost" href="/invoice/${o.id}">View</a></td></tr>`; }).join('')}
     </tbody></table>` : empty('No invoices yet.')}</div>`,
     bind: bindPayNext,
   };
@@ -235,7 +236,7 @@ async function newTicket(user, orderId = '') {
   if (!f) return;
   D.openTicket(user, f.get('subject'), f.get('body'), f.get('order'));
   toast('Ticket submitted — we usually reply within a few hours');
-  location.hash = '#/account/support';
+  navigate('/account/support');
   rerender();
 }
 
@@ -246,7 +247,7 @@ function support(user, query) {
     title: 'Support',
     html: `<div class="dash-head"><h1>Support</h1><button class="btn primary" data-new>${icon('plus')} New ticket</button></div>
     ${list.length ? `<div class="inbox">
-      <nav class="card inbox-list">${list.map(t => `<a href="#/account/support?t=${t.id}" class="${t === open ? 'on' : ''}"><b>#${t.number} ${esc(t.subject)}</b><span class="row between"><small class="muted">${ago(t.messages.at(-1).at)}</small>${badge(t.status)}</span></a>`).join('')}</nav>
+      <nav class="card inbox-list">${list.map(t => `<a href="/account/support?t=${t.id}" class="${t === open ? 'on' : ''}"><b>#${t.number} ${esc(t.subject)}</b><span class="row between"><small class="muted">${ago(t.messages.at(-1).at)}</small>${badge(t.status)}</span></a>`).join('')}</nav>
       ${thread(open, user)}
     </div>` : empty('No tickets yet. Need help? Open one and we’ll respond quickly.')}`,
     bind: root => {

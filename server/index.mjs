@@ -12,16 +12,19 @@
 import './env.mjs';
 import { createServer } from 'node:http';
 import { createReadStream } from 'node:fs';
-import { stat } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { extname, join, normalize, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SERVICES, ADDONS, PLANS, PRODUCTS, COUPONS, BUSINESS } from '../dist/js/data.js';
 import { priceCart, amountDue } from '../dist/js/pricing.js';
+import { matchRoute, trimPath, isPrivate, canonicalPath, pageMeta } from '../dist/js/routes.js';
 import { chat, chatStatus, AI_ON } from './chat.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const DIST = join(ROOT, 'dist');
+const SITE = (process.env.SITE_URL || 'https://vintorex.com').replace(/\/$/, '');
+const SERVICE_IDS = new Set(SERVICES.map(s => s.id));
 
 const { RAZORPAY_KEY_ID: KEY_ID, RAZORPAY_KEY_SECRET: KEY_SECRET } = process.env;
 const RAZORPAY_API = process.env.RAZORPAY_API_BASE || 'https://api.razorpay.com/v1';
@@ -198,7 +201,51 @@ const TYPES = {
   '.ico': 'image/x-icon', '.woff2': 'font/woff2', '.pdf': 'application/pdf',
 };
 
-async function serveStatic(req, res, pathname) {
+const escAttr = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
+// The shell's head describes the home page. For another page give it that page's own address, title and description,
+// so shared links and crawlers that do not run scripts get the right ones, and keep private and missing pages out of
+// search. The app does the same when it moves between pages (main.js). `path` is null for an address that is no page.
+function shellFor(html, path) {
+  const set = (re, value) => { html = html.replace(re, (m, before, after) => before + escAttr(value) + after); };
+  if (path === null || isPrivate(path)) set(/(<meta name="robots" content=")[^"]*(")/, 'noindex, nofollow');
+  if (path === null || path === '/') return html;
+  const canonical = SITE + canonicalPath(path);
+  set(/(<link rel="canonical" href=")[^"]*(")/, canonical);
+  set(/(<link rel="alternate" hreflang="[^"]*" href=")[^"]*(")/g, canonical);
+  set(/(<meta property="og:url" content=")[^"]*(")/, canonical);
+  const meta = pageMeta(path, SERVICES);
+  if (meta) {
+    const title = `${meta.title} · ${BUSINESS.short}`;
+    set(/(<title>)[^<]*(<\/title>)/, title);
+    set(/(<meta property="og:title" content=")[^"]*(")/, title);
+    set(/(<meta name="twitter:title" content=")[^"]*(")/, title);
+    set(/(<meta property="og:description" content=")[^"]*(")/, meta.description);
+    set(/(<meta name="twitter:description" content=")[^"]*(")/, meta.description);
+    // The app falls back to the shared description (main.js), so keep it beside this page's own.
+    html = html.replace(/<meta name="description" content="([^"]*)">/, (m, shared) => `<meta name="description" content="${escAttr(meta.description)}" data-default="${shared}">`);
+  }
+  return html;
+}
+
+// Pages of the app (routes.js) are answered with the app shell, so any of them can be opened, shared or reloaded at its own
+// address. An address that is no page gets the shell too, with a 404 status and noindex, and the app shows its "not found"
+// page. Requests for files such as scripts and images still get a plain 404.
+async function serveApp(req, res, pathname, search) {
+  const path = trimPath(pathname);
+  const route = matchRoute(path);
+  if (route && path !== pathname) { res.writeHead(301, { Location: path + search }); return res.end(); }
+  const known = Boolean(route) && (route.pattern !== '/services/:id/packages' || SERVICE_IDS.has(route.params.id));
+  if (!known && !(req.headers.accept || '').includes('text/html')) throw new HttpError(404, 'Not found.');
+  const html = Buffer.from(shellFor(await readFile(join(DIST, 'index.html'), 'utf8'), known ? path : null));
+  res.writeHead(known ? 200 : 404, {
+    'Content-Type': 'text/html; charset=utf-8', 'Content-Length': html.length, 'Cache-Control': 'no-cache',
+    ...(!known || isPrivate(path) ? { 'X-Robots-Tag': 'noindex, nofollow' } : {}),
+  });
+  res.end(req.method === 'HEAD' ? undefined : html);
+}
+
+async function serveStatic(req, res, pathname, search) {
   let rel;
   try { rel = decodeURIComponent(pathname); } catch { throw new HttpError(400, 'Bad request.'); }
   // Nothing outside dist/ and no dotfiles.
@@ -207,11 +254,11 @@ async function serveStatic(req, res, pathname) {
   if (file !== DIST && !file.startsWith(DIST + sep)) throw new HttpError(404, 'Not found.');
   let info = await stat(file).catch(() => null);
   if (info?.isDirectory()) {
-    if (!pathname.endsWith('/')) { res.writeHead(301, { Location: pathname + '/' }); return res.end(); }
+    if (!pathname.endsWith('/')) { res.writeHead(301, { Location: pathname + '/' + search }); return res.end(); }
     file = join(file, 'index.html');
     info = await stat(file).catch(() => null);
   }
-  if (!info?.isFile()) throw new HttpError(404, 'Not found.');
+  if (!info?.isFile()) return serveApp(req, res, pathname, search);
   const type = TYPES[extname(file).toLowerCase()] || 'application/octet-stream';
   res.writeHead(200, { 'Content-Type': type, 'Content-Length': info.size, 'Cache-Control': type.startsWith('image/') || type.startsWith('font/') ? 'public, max-age=86400' : 'no-cache' });
   if (req.method === 'HEAD') return res.end();
@@ -228,12 +275,12 @@ createServer(async (req, res) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('Content-Security-Policy', "frame-ancestors 'none'");
-  const { pathname } = new URL(req.url, 'http://localhost');
+  const { pathname, search } = new URL(req.url, 'http://localhost');
   try {
     if (pathname === '/api/chat') return await chatRoute(req, res);
     if (pathname.startsWith('/api/')) return send(res, 200, await api(req, pathname));
     if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Method not allowed.');
-    await serveStatic(req, res, pathname);
+    await serveStatic(req, res, pathname, search);
   } catch (err) {
     if (!err.status) console.error(err);
     if (res.headersSent) return res.end();

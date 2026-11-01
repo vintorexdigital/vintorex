@@ -43,7 +43,7 @@ export async function pay(order, { name, email, phone, description }) {
   const response = await new Promise(resolve => {
     const rzp = new window.Razorpay({
       key: order.keyId, order_id: order.orderId, amount: order.amount, currency: order.currency,
-      name: BUSINESS.name, description, image: new URL('images/vintorex-logo.png', location.href).href,
+      name: BUSINESS.name, description, image: new URL('/images/vintorex-logo.png', location.origin).href,
       prefill: { name, email, contact: phone },
       theme: { color: '#4b2bd6' },
       handler: resolve,

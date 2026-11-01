@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { POSTS, postsFor, toc } from '../dist/js/blog/index.js';
 import { articleHtml, postCard, postUrl } from '../dist/js/blog/render.js';
 import { siteHeader, siteFooter } from '../dist/js/chrome.js';
+import { ROBOTS_INDEX } from '../dist/js/routes.js';
 import { SERVICES, CATEGORIES, BUSINESS } from '../dist/js/data.js';
 import { brandHead } from '../dist/js/brand.js';
 import { ART, CATALOG_KEYWORDS, serviceImagePath } from '../dist/js/service-art.js';
@@ -47,7 +48,7 @@ const ORG = {
 const jsonLd = data => `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`;
 
 // Indexing directives, language/region and local signals shared by every page.
-const seoHead = url => `<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+const seoHead = url => `<meta name="robots" content="${ROBOTS_INDEX}">
   <link rel="alternate" hreflang="en-IN" href="${url}">
   <link rel="alternate" hreflang="x-default" href="${url}">
   <meta property="og:locale" content="en_IN">
@@ -96,11 +97,11 @@ function page({ path, title, description, keywords = '', type = 'website', image
   ${schema.map(jsonLd).join('\n  ')}
 </head>
 <body>
-${siteHeader({ base: '/', here })}
+${siteHeader({ here })}
 <main id="main">
 ${body}
 </main>
-${siteFooter({ base: '/' })}
+${siteFooter()}
 <script src="/js/static.js" defer></script>
 <script type="module" src="/js/chat.js"></script>
 </body>
@@ -124,7 +125,7 @@ function articlePage(p) {
     keywords,
     image,
     imageAlt,
-    body: articleHtml(p, svc, { app: '/', url }),
+    body: articleHtml(p, svc, { url }),
     schema: [
       {
         '@context': 'https://schema.org', '@type': 'BlogPosting',
@@ -166,7 +167,7 @@ function indexPage() {
     <section class="shell section">
       <nav class="chips" aria-label="Categories">${CATEGORIES.map(c => `<a class="chip" href="#${c.id}">${esc(c.name)}</a>`).join('')}</nav>
       ${CATEGORIES.map(c => `<h2 class="cat-head" id="${c.id}">${esc(c.name)} <small class="muted">${esc(c.blurb)}</small></h2>
-        ${SERVICES.filter(s => s.cat === c.id).map(s => `<div class="blog-group" id="${s.id}"><div class="sec-head"><h3 class="h3"><span class="svc-ic sm">${icon(s.icon)}</span>${esc(s.name)}</h3><a class="link" href="/#/services/${s.id}">View service ${icon('arrow')}</a></div>
+        ${SERVICES.filter(s => s.cat === c.id).map(s => `<div class="blog-group" id="${s.id}"><div class="sec-head"><h3 class="h3"><span class="svc-ic sm">${icon(s.icon)}</span>${esc(s.name)}</h3><a class="link" href="/services/${s.id}/">View service ${icon('arrow')}</a></div>
           <div class="cards2">${postsFor(s.id).map(p => postCard(p, s, `data-search="${search(p)}"`)).join('')}</div></div>`).join('')}`).join('')}
     </section>`;
   return page({
@@ -246,8 +247,9 @@ for (const s of SERVICES) await out(`services/${s.id}/index.html`, servicePage(s
 await out('faq/index.html', faqPage());
 
 // ---------- sitemap, robots and llms.txt ----------
-const urls = ['/', '/services/', ...SERVICES.map(s => servicePath(s.id)), '/faq/', '/blog/', ...POSTS.map(postUrl), ...POLICIES.map(p => p.path)];
-const priority = u => u === '/' ? '1.0' : u === '/services/' || u.startsWith('/services/') ? '0.9' : u === '/faq/' || u === '/blog/' ? '0.8' : u.startsWith('/blog/') ? '0.7' : '0.3';
+const APP_PAGES = ['/pricing', '/compare', '/shop', '/about', '/contact'];
+const urls = ['/', '/services/', ...SERVICES.map(s => servicePath(s.id)), ...APP_PAGES, '/faq/', '/blog/', ...POSTS.map(postUrl), ...POLICIES.map(p => p.path)];
+const priority = u => u === '/' ? '1.0' : u === '/services/' || u.startsWith('/services/') ? '0.9' : u === '/faq/' || u === '/blog/' || APP_PAGES.includes(u) ? '0.8' : u.startsWith('/blog/') ? '0.7' : '0.3';
 await out('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map(u => `  <url><loc>${SITE}${u}</loc><lastmod>${REVIEWED.iso}</lastmod><priority>${priority(u)}</priority></url>`).join('\n')}
@@ -290,15 +292,18 @@ const block = /<!-- business-jsonld -->[\s\S]*?<!-- \/business-jsonld -->/;
 if (!block.test(html)) { console.error('dist/index.html is missing the business-jsonld markers'); process.exit(1); }
 await writeFile(appIndex, html.replace(block, `<!-- business-jsonld -->\n  <link rel="canonical" href="${SITE}/">\n  ${seoHead(SITE + '/')}\n  ${HOME_SCHEMA.map(jsonLd).join('\n  ')}\n  <!-- /business-jsonld -->`));
 
-// Explicitly welcome search and AI crawlers; keep the payment API out of indexes.
+// Explicitly welcome search and AI crawlers; keep the payment API and the private pages of the app (sign-in, cart,
+// checkout, orders, dashboards) out of crawls. Those pages also say noindex themselves (server/index.mjs).
+const PRIVATE = ['/api/', '/login', '/register', '/cart', '/checkout', '/order/', '/invoice/', '/account', '/admin'];
+const disallow = PRIVATE.map(p => `Disallow: ${p}`).join('\n');
 const BOTS = ['Googlebot', 'Bingbot', 'GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-User', 'Claude-SearchBot', 'anthropic-ai', 'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot', 'Applebot-Extended', 'CCBot', 'Bytespider', 'Amazonbot', 'meta-externalagent', 'DuckAssistBot', 'cohere-ai'];
 await out('robots.txt', `# Vintorex Digital Solutions: public pages are open to search engines and AI assistants.
 # Site map for AI assistants: ${SITE}/llms.txt
 
 User-agent: *
-Disallow: /api/
+${disallow}
 
-${BOTS.map(b => `User-agent: ${b}\nAllow: /\nDisallow: /api/\n`).join('\n')}
+${BOTS.map(b => `User-agent: ${b}\nAllow: /\n${disallow}\n`).join('\n')}
 Sitemap: ${SITE}/sitemap.xml
 `);
 

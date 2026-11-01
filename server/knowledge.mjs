@@ -66,7 +66,7 @@ function company() {
     'For a custom scope, send an enquiry on the contact page to get a free, fixed-price proposal.',
   );
   return [
-    { id: 'company', title: 'About Vintorex Digital Solutions', url: '/#/about', text: join(
+    { id: 'company', title: 'About Vintorex Digital Solutions', url: '/about', text: join(
       `${BUSINESS.name} (Vintorex) is a digital marketing, web development and AI agency in Coimbatore, Tamil Nadu, India. Tagline: “${BUSINESS.tagline}”`,
       'It was founded in 2024 at Bankers Colony, Cheran Ma Nagar, Coimbatore. The proprietor and lead digital marketing architect is Ranjith Kumar.',
       `It offers ${SERVICES.length} services in ${CATEGORIES.length} categories: ${cats}. Every package has a published price, set 15–40% below metro agency rates.`,
@@ -74,7 +74,7 @@ function company() {
       'Journey: 2024 founded in Coimbatore for Tamil Nadu manufacturers and retailers; 2025 grew to 21 integrated services; 2026 added AI chatbots, voice agents, CRM automation and AI search optimisation.',
       'Vintorex works with clients across India and abroad, not only in Coimbatore.',
     ) },
-    { id: 'contact', title: 'Contact Vintorex', url: '/#/contact', text: join(
+    { id: 'contact', title: 'Contact Vintorex', url: '/contact', text: join(
       `Phone: ${BUSINESS.phone} (call to speak to a specialist).`,
       `WhatsApp: ${BUSINESS.whatsapp} (the fastest way to reach the team).`,
       `Email: ${BUSINESS.email} (replies within 2 working hours).`,
@@ -84,26 +84,26 @@ function company() {
       'To start a project, send an enquiry on the contact page: share the goal, a specialist replies within 2 working hours, then you get a free, fixed-price proposal with no obligation.',
       'Please don’t send passwords, bank details or identity documents through the form.',
     ) },
-    { id: 'ordering', title: 'How to order and pay', url: '/#/services', text: ordering },
-    { id: 'audit', title: 'Free website and SEO audit', url: '/#/#audit', text: join(
+    { id: 'ordering', title: 'How to order and pay', url: '/services/', text: ordering },
+    { id: 'audit', title: 'Free website and SEO audit', url: '/#audit', text: join(
       'Vintorex offers a free 15-point audit of website speed, Google ranking, social presence and ad setup, with a fixed-price action plan.',
       'It covers: speed and Core Web Vitals (mobile and desktop); local SEO and Google Business Profile; competitor keyword gaps and high-intent opportunities; social media and paid ads quick wins.',
       'How it works: 1. Share your website, business and goals. 2. Speed and Web Vitals scan. 3. Local SEO check. 4. Competitor and ads review. 5. Your report: a health score and a fixed-price action plan.',
       'Request it with the “Request my free audit” form in the Free audit section of the home page.',
     ) },
-    { id: 'work', title: 'Client projects', url: '/#/#work', text: join(
+    { id: 'work', title: 'Client projects', url: '/#work', text: join(
       'Recent client projects by Vintorex:',
       ...WORK_PROJECTS.map(w => `- ${w.title} (${w.category}): ${w.summary} Highlights: ${w.metrics.join(', ')}.`),
     ) },
     { id: 'pages', title: 'Pages on vintorex.com', url: '/', text: join(
       'Where to find things on vintorex.com:',
       '- Services and prices: /services/ (each service has its own page under /services/)',
-      '- Pricing, memberships and add-ons: /#/pricing',
-      '- Competitor price analysis: /#/compare',
-      '- Shop for digital downloads: /#/shop',
+      '- Pricing, memberships and add-ons: /pricing',
+      '- Competitor price analysis: /compare',
+      '- Shop for digital downloads: /shop',
       '- Guides and blog: /blog/ · FAQ: /faq/',
-      '- Free audit: /#/#audit · Contact and quotes: /#/contact · About: /#/about',
-      '- Sign in: /#/login · Create an account: /#/register · Customer dashboard: /#/account · Cart: /#/cart',
+      '- Free audit: /#audit · Contact and quotes: /contact · About: /about',
+      '- Sign in: /login · Create an account: /register · Customer dashboard: /account · Cart: /cart',
       `- Policies: ${POLICIES.map(p => `${p.label} ${p.path}`).join(', ')}`,
     ) },
   ];
@@ -112,10 +112,10 @@ function company() {
 // ---------- FAQs and memberships ----------
 function faqs() {
   const site = siteFaqs(SERVICES, SITE).map(([q, a], i) => ({ id: `faq:${i + 1}`, title: `FAQ: ${q}`, url: '/faq/', text: `Q: ${q}\nA: ${a}` }));
-  const pricing = pricingFaqs(BUSINESS.gst).map(([q, a], i) => ({ id: `pricing-faq:${i + 1}`, title: `Pricing FAQ: ${q}`, url: '/#/pricing', text: `Q: ${q}\nA: ${a}` }));
+  const pricing = pricingFaqs(BUSINESS.gst).map(([q, a], i) => ({ id: `pricing-faq:${i + 1}`, title: `Pricing FAQ: ${q}`, url: '/pricing', text: `Q: ${q}\nA: ${a}` }));
   const plan = p => `- ${p.name}: ${p.price ? `${inr(p.price)}/month` : 'free'}${p.popular ? ' (most popular)' : ''}. ${p.tagline}. Includes: ${p.features.join('; ')}.`;
   const plans = {
-    id: 'plans', title: 'Membership plans', url: '/#/pricing', text: join(
+    id: 'plans', title: 'Membership plans', url: '/pricing', text: join(
       `Membership plans (prices exclude ${BUSINESS.gst}% GST):`,
       ...PLANS.map(plan),
       `Annual billing: pay for ${ANNUAL_MONTHS_PAID} months and get 12 (${12 - ANNUAL_MONTHS_PAID} months free).`,
@@ -167,7 +167,7 @@ function service(s) {
 
 function addons() {
   const any = ADDONS.filter(a => !a.for.length);
-  return chunks('addons', 'Add-ons for any plan or service', '/#/pricing#addons', join(
+  return chunks('addons', 'Add-ons for any plan or service', '/pricing#addons', join(
     'These add-ons work with any plan or service (prices exclude GST):',
     ...any.map(a => `- ${a.name}: ${inr(a.price)}${per(a)}. ${a.desc}`),
     `There are ${ADDONS.length} add-ons in total; each service page lists the ones that apply to it, and the pricing and shop pages list them all.`,
@@ -177,7 +177,7 @@ function addons() {
 // ---------- shop ----------
 function shop() {
   const kinds = [...new Set(PRODUCTS.map(p => p.kind))];
-  return kinds.flatMap(kind => chunks(`shop:${kind.toLowerCase().replace(/\W+/g, '-')}`, `Shop: ${kind.toLowerCase()} downloads`, '/#/shop',
+  return kinds.flatMap(kind => chunks(`shop:${kind.toLowerCase().replace(/\W+/g, '-')}`, `Shop: ${kind.toLowerCase()} downloads`, '/shop',
     PRODUCTS.filter(p => p.kind === kind).map(p => `- ${p.name}: ${inr(p.price)} (MRP ${inr(p.mrp)})`).join('\n'),
     {}, `${kind} digital downloads in the Vintorex shop. Instant download after payment from the customer dashboard; nothing is shipped:`));
 }

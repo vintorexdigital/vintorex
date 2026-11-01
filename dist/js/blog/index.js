@@ -4,7 +4,7 @@
 //
 // Body format (a small Markdown subset rendered by md()):
 //   ## Heading / ### Subheading, "- " bullets, "1. " numbered lists,
-//   "> " callout, **bold**, [link text](#/internal/route)
+//   "> " callout, **bold**, [link text](/internal/path)
 import { POSTS as BUILD } from './build.js';
 import { POSTS as GROW } from './grow.js';
 import { POSTS as BRAND } from './brand.js';
@@ -36,23 +36,21 @@ export const postsFor = serviceId => POSTS.filter(p => p.service === serviceId);
 
 export const slugify = t => t.toLowerCase().replace(/&amp;/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-// Escape first, then allow bold and internal (#/…) links only. `base` is
-// prefixed to app links, e.g. '/' on static pages so they reach the app.
-function inline(t, base) {
+// Escape first, then allow bold and links to pages of this site only, such as (/contact). A link to a
+// service goes to its crawlable service page.
+function inline(t) {
   return esc(t)
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    // On static pages (base '/') service links go to the crawlable service page.
-    .replace(/\[([^\]]+)\]\(#\/services\/([\w-]+)\)/g, (m, t, id) => base === '/' ? `<a href="/services/${id}/">${t}</a>` : `<a href="${base}#/services/${id}">${t}</a>`)
-    .replace(/\[([^\]]+)\]\((#\/[^)\s]+)\)/g, `<a href="${base}$2">$1</a>`)
-    .replace(/\[([^\]]+)\]\((\/blog\/[a-z0-9-]+\/)\)/g, '<a href="$2">$1</a>');
+    .replace(/\[([^\]]+)\]\(\/services\/([\w-]+)\)/g, '<a href="/services/$2/">$1</a>')
+    .replace(/\[([^\]]+)\]\((\/(?!\/)[^)\s]*)\)/g, '<a href="$2">$1</a>');
 }
 
-export function md(src, base = '') {
+export function md(src) {
   return src.trim().split(/\n\s*\n/).map(block => {
     const lines = block.trim().split('\n').map(l => l.trim());
     const first = lines[0];
-    const rest = lines.length > 1 ? md(lines.slice(1).join('\n'), base) : '';
-    const il = t => inline(t, base);
+    const rest = lines.length > 1 ? md(lines.slice(1).join('\n')) : '';
+    const il = inline;
     if (first.startsWith('### ')) return `<h3>${il(first.slice(4))}</h3>${rest}`;
     if (first.startsWith('## ')) { const t = first.slice(3); return `<h2 id="${slugify(t)}">${il(t)}</h2>${rest}`; }
     if (lines.every(l => l.startsWith('- '))) return `<ul>${lines.map(l => `<li>${il(l.slice(2))}</li>`).join('')}</ul>`;

@@ -61,7 +61,7 @@ Unmanaged hosting gives you the server, and the rest is your job. Managed hostin
 
 Moving hosting can be done without downtime when planned well: copy the site, test it on the new server, then switch the domain.
 
-Our [Cloud Services](#/services/cloud) range from managed hosting to multi-region cloud, and include [migration](#/services/cloud) from your current host.
+Our [Cloud Services](/services/cloud) range from managed hosting to multi-region cloud, and include [migration](/services/cloud) from your current host.
 `,
     faqs: [
       ['Does hosting location affect SEO?', 'Indirectly. Hosting close to your visitors, or using a content delivery network, improves speed, and speed affects user experience and search performance.'],
@@ -134,7 +134,7 @@ Schedule regular test restores to a staging environment. Confirm the site works,
 4. How you will communicate with customers during an outage.
 5. A review afterwards to prevent it happening again.
 
-Our [Cloud Services](#/services/cloud) include automated, off-site backups, with hourly backups and disaster recovery on Enterprise. [Website Maintenance](#/services/maintenance) plans include backup monitoring for WordPress sites.
+Our [Cloud Services](/services/cloud) include automated, off-site backups, with hourly backups and disaster recovery on Enterprise. [Website Maintenance](/services/maintenance) plans include backup monitoring for WordPress sites.
 `,
     faqs: [
       ['Aren’t my host’s backups enough?', 'They are a good start, but they are often kept on the same infrastructure and for a limited time. An independent, off-site copy you control is safer.'],
@@ -192,7 +192,7 @@ Tell visitors what you track in your privacy policy, collect consent where requi
 
 With reliable tracking you can answer the questions that matter: which channels bring customers, what each customer costs to acquire, and where the next rupee should go.
 
-Our [Data Insights & Analytics](#/services/analytics) packages set up and maintain tracking across your website, ads and messaging. It is also included in our [Paid Advertising](#/services/advertising) packages.
+Our [Data Insights & Analytics](/services/analytics) packages set up and maintain tracking across your website, ads and messaging. It is also included in our [Paid Advertising](/services/advertising) packages.
 `,
     faqs: [
       ['Why don’t my analytics numbers match my ad platform?', 'Each tool counts and attributes differently, for example in timing, cookie consent and the conversion window. Expect differences, and focus on trends and on your own sales data.'],
@@ -264,7 +264,7 @@ The most useful dashboards bring together website analytics, ad platforms, email
 
 Check headline numbers weekly and do a deeper review monthly. End each review with clear decisions, such as move budget, fix a page, test a new idea, and check the effect of those decisions in the next review.
 
-Our [Data Insights & Analytics](#/services/analytics) Growth and Premium packages include live dashboards that combine your website, ads and CRM data, with regular insight calls.
+Our [Data Insights & Analytics](/services/analytics) Growth and Premium packages include live dashboards that combine your website, ads and CRM data, with regular insight calls.
 `,
     faqs: [
       ['How often should a dashboard update?', 'Daily updates are plenty for most businesses. Decisions are usually made weekly or monthly, so real-time data is rarely necessary.'],
@@ -330,7 +330,7 @@ A simple maintenance log speeds up troubleshooting, shows the value of the work,
 
 If updates break things, you don’t have time for routine checks, or your site handles payments and customer data, a professional maintenance plan is usually cheaper than fixing problems after they happen.
 
-Our [Website Maintenance](#/services/maintenance) plans cover these tasks with monthly reports. Pair them with [Cloud Services](#/services/cloud) for managed hosting.
+Our [Website Maintenance](/services/maintenance) plans cover these tasks with monthly reports. Pair them with [Cloud Services](/services/cloud) for managed hosting.
 `,
     faqs: [
       ['Should updates be applied automatically?', 'Minor security updates are often safe to automate. Larger updates are better tested on a staging copy first, because they can occasionally conflict with themes or plugins.'],
@@ -400,7 +400,7 @@ Keep automated, off-site backups with several versions. If the worst happens, a 
 5. Request a review from search engines if your site was flagged.
 6. Monitor closely in the following weeks.
 
-Our [Website Maintenance](#/services/maintenance) Pro and Business plans include malware scanning, clean-ups and monitored backups. Our [Cloud Services](#/services/cloud) add firewalls and server-level protection.
+Our [Website Maintenance](/services/maintenance) Pro and Business plans include malware scanning, clean-ups and monitored backups. Our [Cloud Services](/services/cloud) add firewalls and server-level protection.
 `,
     faqs: [
       ['Is WordPress insecure?', 'The core software is actively maintained and secure when kept updated. Most problems come from outdated plugins and themes, weak passwords and poor hosting, all of which are preventable.'],

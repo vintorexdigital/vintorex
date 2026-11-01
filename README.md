@@ -19,7 +19,7 @@ Admin → Settings → **Reset demo data** restores the seed data.
 - **Customer dashboard** (`js/account.js`): plan upgrade, pause and cancel, monthly add-ons, project progress, downloads, invoices, support tickets, profile.
 - **Admin / CRM** (`js/admin.js`): KPIs (revenue, MRR, win rate), lead list with scoring, filters and CSV export, drag-and-drop pipeline, lead notes and follow-ups, lead → customer conversion, customers, orders (status and progress), subscriptions, price editor for services, plans, add-ons, downloads and coupons, support inbox, business and GST settings.
 - **Service catalog** (`js/services.js` and `js/ai-services.js` for the AI & Automation category): for each of the 21 services, the overview, ideal customers, 3 packages, every work item per package, exclusions, delivery process, a percentage cost split per package, and named competitor prices with source links. There are also 46 add-ons, each tagged with the services it applies to. After editing, run the check below, and bump `CATALOG_VERSION` in `js/data.js` so browsers with saved data pick up the new catalog.
-- **Competitor analysis** (`#/compare`): all services against named competitors and market ranges. Each service page also has its own competitor table.
+- **Competitor analysis** (`/compare`): all services against named competitors and market ranges. Each service page also has its own competitor table.
 - **Milestone payments**: one-time projects of ₹10,000 or more can be paid 40% / 40% / 20%. Customers pay later instalments from their dashboard, and admins can record offline payments from Orders.
 - **Blog** (`/blog/`): 42 evergreen guides, two per service, published as static HTML pages so search engines can index them. See below.
 - **Policies** (`/terms/`, `/privacy-policy/`, `/refund-policy/`, `/shipping-policy/`): static pages built from `js/policies.js` by `npm run build:blog`, linked from the footer and checkout. Payment gateways such as Razorpay check for these pages.
@@ -44,7 +44,7 @@ Canonical and sitemap URLs default to `https://vintorex.com`. If the app is serv
 SITE_URL=https://your-domain.com npm run build:blog
 ```
 
-The app links to these pages (service pages, home page, header and footer), and old `#/blog` links redirect to them. Page markup shared with the app lives in `js/chrome.js` (header and footer) and `js/blog/render.js` (cards and articles).
+The app links to these pages (service pages, home page, header and footer). Page markup shared with the app lives in `js/chrome.js` (header and footer) and `js/blog/render.js` (cards and articles).
 
 Content check (split columns sum to 100, links and references resolve, every service has two guides):
 
@@ -110,6 +110,16 @@ After editing services, prices, guides or policies, run `npm run build:blog`, th
 
 Questions and the matching site content are sent to Cloudflare Workers AI to write each answer, so consider mentioning the assistant in the privacy policy.
 
+## URLs
+
+Every page has a real address, so pages can be shared, bookmarked and indexed: `/contact`, `/pricing`, `/shop`, `/cart`, `/login`, `/account/orders`, `/admin/leads/<id>`. Pages written in HTML (`/services/`, `/services/<id>/`, `/blog/…`, `/faq/`, the policies) are static files; the interactive package picker for a service lives at `/services/<id>/packages`.
+
+- `js/routes.js` lists the app's pages once. The server uses it to answer each with the app shell (`index.html`), and the browser's router (`js/router.js`, `js/main.js`) uses it to match them. Add a page by adding its pattern there and its view in `js/main.js`.
+- Clicks on links to app pages change the view without a reload (History API); everything else loads normally. Use `navigate('/path')` from `js/router.js` in code, never `location.hash`.
+- The server sets each page's canonical address, title, description and Open Graph tags in the raw HTML, answers unknown addresses with a real 404, and marks sign-in, cart, checkout, orders and dashboards `noindex` (also in `robots.txt`). Trailing slashes are redirected, so app pages have none (`/contact`) and static pages always do (`/blog/`).
+- Old links of the form `/#/contact` (and `/#/services/seo`, `/#/blog/<slug>`) still work: the app redirects them to the real address once.
+- Hosting must send every unknown path to `server/index.mjs` (as the Node server and a reverse proxy do), not serve `dist/` as plain files.
+
 ## SEO, GEO and AEO
 
 `npm run build:blog` also publishes crawlable pages and machine-readable files, all generated from the catalog so prices never drift from the app:
@@ -117,7 +127,7 @@ Questions and the matching site content are sent to Cloudflare Workers AI to wri
 - `/services/` (price list) and `/services/<id>/` for each service: answer-first summary, packages, work items, process, competitor prices, guides and FAQs. Structured data: `Service` with `Offer` per package, `FAQPage`, `BreadcrumbList`, `WebPage` with `speakable`.
 - `/faq/`: site-wide answers (what we do, where, prices, GST, payments, instalments, free audit).
 - `/llms.txt` and `/llms-full.txt`: plain-text map and full text of every service, price and FAQ for AI assistants.
-- `robots.txt` names search and AI crawlers explicitly (and keeps `/api/` out), `sitemap.xml` has `lastmod` and priorities, and every page has `robots` directives, `en-IN` hreflang, geo tags and Open Graph tags. The home page has `LocalBusiness`/`ProfessionalService` with an offer catalogue, `WebSite`, and a no-JavaScript fallback with real links.
+- `robots.txt` names search and AI crawlers explicitly (and keeps `/api/` and the private pages out), `sitemap.xml` has `lastmod` and priorities, and every page has `robots` directives, `en-IN` hreflang, geo tags and Open Graph tags. The home page has `LocalBusiness`/`ProfessionalService` with an offer catalogue, `WebSite`, and a no-JavaScript fallback with real links.
 
 Copy and structured data live in `js/seo.js`. After re-checking prices or facts, update `REVIEWED` there, then rebuild. `npm run check` fails if a service lacks its page, FAQs, sitemap or `llms.txt` entry.
 

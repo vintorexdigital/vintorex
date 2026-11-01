@@ -3,6 +3,7 @@ import { SERVICES, ADDONS, COMPETITOR_SOURCES, PLANS, CATEGORIES } from '../dist
 import { POSTS, md, toc } from '../dist/js/blog/index.js';
 import { ART } from '../dist/js/service-art.js';
 import { serviceFaqs, serviceAnswer, siteFaqs } from '../dist/js/seo.js';
+import { matchRoute, trimPath } from '../dist/js/routes.js';
 import { buildChunks } from '../server/knowledge.mjs';
 import { chunkKey } from '../server/chat.mjs';
 import { existsSync, readFileSync } from 'node:fs';
@@ -79,14 +80,13 @@ for (const s of SERVICES) {
 if (siteFaqs(SERVICES).length < 8) errs.push('site FAQ list too short');
 for (const f of ['faq/index.html', 'services/index.html', 'llms-full.txt', 'robots.txt']) if (!existsSync(dist(f))) errs.push(`${f} missing, run npm run build:blog`);
 
-// Chat assistant knowledge: every chunk links to a real page or app route. Chunks
-// changed since the last `npm run build:chat` only cost a few neurons at start-up.
-const APP_ROUTES = new Set(['', 'about', 'contact', 'services', 'pricing', 'compare', 'shop']);
+// Chat assistant knowledge: every chunk links to a real page: an app page (js/routes.js) or a built static page.
+// Chunks changed since the last `npm run build:chat` only cost a few neurons at start-up.
 const chunks = buildChunks();
 for (const c of chunks) {
   if (!c.title || !c.text.trim()) errs.push(`chat chunk ${c.id}: empty`);
-  const app = c.url.match(/^\/#\/([a-z]*)(?:#[\w-]+)?$/);
-  if (app ? !APP_ROUTES.has(app[1]) : !existsSync(dist(c.url.slice(1) + 'index.html'))) errs.push(`chat chunk ${c.id}: unknown page ${c.url}`);
+  const path = c.url.split('#')[0];
+  if (!matchRoute(trimPath(path)) && !existsSync(dist(path.slice(1) + 'index.html'))) errs.push(`chat chunk ${c.id}: unknown page ${c.url}`);
 }
 let vectors = {};
 try { vectors = JSON.parse(readFileSync(new URL('../server/chat-vectors.json', import.meta.url), 'utf8')).vectors; } catch { /* not built */ }

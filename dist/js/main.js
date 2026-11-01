@@ -1,49 +1,46 @@
-// Hash router and page shells (public site, customer dashboard, admin panel).
+// Router and page shells (public site, customer dashboard, admin panel). Pages have real URLs such as
+// /contact and /account/orders; routes.js lists them and router.js moves between them without a reload.
 import * as D from './db.js';
 import * as Pub from './public.js';
 import * as Acc from './account.js';
 import * as Adm from './admin.js';
-import * as Blog from './blogpages.js';
 import * as Pay from './pay.js';
 import { BUSINESS } from './data.js';
 import { siteHeader, siteFooter } from './chrome.js';
 import { esc, icon, initials, responsiveTables, $, $$ } from './ui.js';
+import { matchRoute, trimPath, isPrivate, canonicalPath, ROBOTS_INDEX } from './routes.js';
+import { navigate, interceptLinks, legacyUrl, NAVIGATE } from './router.js';
 
-const routes = [
-  ['/', Pub.home], ['/services', Pub.services], ['/services/:id', Pub.serviceDetail],
-  ['/pricing', Pub.pricing], ['/compare', Pub.compare], ['/blog', Blog.blogIndex], ['/blog/:slug', Blog.article], ['/shop', Pub.shop], ['/cart', Pub.cart], ['/checkout', Pub.checkout],
-  ['/order/:id', Pub.orderDone], ['/invoice/:id', Pub.invoice], ['/contact', Pub.contact], ['/about', Pub.about],
-  ['/terms', Pub.terms], ['/login', Pub.login], ['/register', Pub.register],
-  ['/account', guard('customer', Acc.view)], ['/account/:tab', guard('customer', Acc.view)],
-  ['/admin', guard('admin', Adm.view)], ['/admin/:tab', guard('admin', Adm.view)], ['/admin/:tab/:id', guard('admin', Adm.view)],
-];
+// One view per pattern in routes.js.
+const views = {
+  '/': Pub.home, '/pricing': Pub.pricing, '/compare': Pub.compare, '/shop': Pub.shop, '/cart': Pub.cart, '/checkout': Pub.checkout,
+  '/contact': Pub.contact, '/about': Pub.about, '/login': Pub.login, '/register': Pub.register,
+  '/services/:id/packages': Pub.serviceDetail, '/order/:id': Pub.orderDone, '/invoice/:id': Pub.invoice,
+  '/account': guard('customer', Acc.view), '/account/:tab': guard('customer', Acc.view),
+  '/admin': guard('admin', Adm.view), '/admin/:tab': guard('admin', Adm.view), '/admin/:tab/:id': guard('admin', Adm.view),
+};
 
 function guard(role, fn) {
   return (params, query) => {
     const u = D.currentUser();
-    if (!u) return { redirect: '/login?next=' + location.hash.slice(2).split('?')[0] };
+    if (!u) return { redirect: '/login?next=' + location.pathname.slice(1) };
     if (u.role !== role) return { redirect: u.role === 'admin' ? '/admin' : '/account' };
     return fn(params, query, u);
   };
 }
 
 function match(path) {
-  for (const [pattern, fn] of routes) {
-    const a = pattern.split('/'), b = path.split('/');
-    if (a.length !== b.length) continue;
-    const params = {};
-    try {
-      if (a.every((seg, i) => seg.startsWith(':') ? (params[seg.slice(1)] = decodeURIComponent(b[i]), true) : seg === b[i])) return [fn, params];
-    } catch { return [Pub.notFound, {}]; } // malformed %-escape in the URL
-  }
-  return [Pub.notFound, {}];
+  const m = matchRoute(path);
+  return m ? [views[m.pattern], m.params] : [Pub.notFound, {}];
 }
 
 const app = () => $('#app');
-const DEFAULT_DESCRIPTION = $('meta[name=description]')?.getAttribute('content') || '';
+// The server writes each page's own description into its HTML and keeps the shared one in data-default.
+const DEFAULT_DESCRIPTION = $('meta[name=description]')?.dataset.default || $('meta[name=description]')?.getAttribute('content') || '';
 const DEFAULT_KEYWORDS = $('meta[name=keywords]')?.getAttribute('content') || '';
 const DEFAULT_OG_IMAGE = $('meta[property="og:image"]')?.getAttribute('content') || 'https://vintorex.com/images/og-cover.svg';
-let lastPath = null, lastUrl = null;
+const SITE = new URL($('link[rel=canonical]')?.href || location.href).origin;
+let lastPath = null, shown = '';
 
 function setMeta(selector, attr, value, fallback = '') {
   let el = $(selector);
@@ -57,24 +54,18 @@ function setMeta(selector, attr, value, fallback = '') {
   el?.setAttribute(attr, value || fallback);
 }
 
-// A plain anchor such as the skip link's #main is not a route: keep the view and its URL and focus the
-// target. One the view lacks (#audit, #work, or any on first load) opens the home page at it.
-function inPageAnchor(id) {
-  const el = lastUrl && document.getElementById(id);
-  if (!el) { location.replace('#/#' + id); return; }
-  history.replaceState(null, '', lastUrl);
-  el.scrollIntoView();
-  el.focus({ preventScroll: true });
+// Scrolls to the #fragment of the address, for links such as /#audit or /pricing#addons.
+function scrollToFragment() {
+  const id = decodeURIComponent(location.hash.slice(1));
+  if (id) document.getElementById(id)?.scrollIntoView();
 }
 
 function render() {
-  const hash = location.hash.slice(1);
-  if (hash && hash[0] !== '/') { inPageAnchor(hash); return; }
-  const raw = (hash || '/').split('#')[0];
-  const [path, qs = ''] = raw.split('?');
-  const [fn, params] = match(path.replace(/\/$/, '') || '/');
-  const v = fn(params, new URLSearchParams(qs)) || Pub.notFound();
-  if (v.redirect) { location.replace('#' + v.redirect); return; }
+  const path = trimPath(location.pathname);
+  const [fn, params] = match(path);
+  const v = fn(params, new URLSearchParams(location.search)) || Pub.notFound();
+  if (v.redirect) { navigate(v.redirect, { replace: true }); return; }
+  shown = location.pathname + location.search;
   const pageTitle = `${v.title} · ${BUSINESS.short}`;
   document.title = pageTitle;
   const desc = v.description || DEFAULT_DESCRIPTION;
@@ -96,6 +87,12 @@ function render() {
   setMeta('meta[name="twitter:description"]', 'content', desc);
   setMeta('meta[name="twitter:image"]', 'content', img);
   setMeta('meta[name="twitter:image:alt"]', 'content', imgAlt);
+  // Every page is its own address now: say which one it is, and keep private and missing pages out of search.
+  const canonical = SITE + canonicalPath(path);
+  setMeta('link[rel=canonical]', 'href', canonical);
+  setMeta('meta[property="og:url"]', 'content', canonical);
+  $$('link[rel=alternate][hreflang]').forEach(l => l.setAttribute('href', canonical));
+  setMeta('meta[name=robots]', 'content', v.noindex || isPrivate(path) ? 'noindex, nofollow' : ROBOTS_INDEX);
 
   const user = D.currentUser();
   if (v.shell) app().innerHTML = dashShell(v, user);
@@ -104,17 +101,15 @@ function render() {
   v.bind?.(app());
   bindChrome();
   if (path !== lastPath) { window.scrollTo(0, 0); lastPath = path; }
-  lastUrl = location.href;
-  const anchor = location.hash.split('#')[2];
-  if (anchor) document.getElementById(anchor)?.scrollIntoView();
+  scrollToFragment();
 }
 [Pub, Acc, Adm].forEach(m => m.setRerender(safeRender));
 
 function cartCount() { return D.getCart().reduce((s, i) => s + (i.qty || 1), 0); }
 
 function header(user) {
-  const here = (location.hash.slice(1) || '/').split('?')[0];
-  const account = user && `<a class="btn sm ghost" href="#/${user.role === 'admin' ? 'admin' : 'account'}">${icon('user')} ${user.role === 'admin' ? 'Admin' : 'Dashboard'}</a>`;
+  const here = trimPath(location.pathname);
+  const account = user && `<a class="btn sm ghost" href="/${user.role === 'admin' ? 'admin' : 'account'}">${icon('user')} ${user.role === 'admin' ? 'Admin' : 'Dashboard'}</a>`;
   return siteHeader({ here, cart: cartCount(), account });
 }
 
@@ -128,17 +123,17 @@ function dashShell(v, user) {
   return `<a class="skip" href="#main">Skip to content</a>
   <div class="dash ${admin ? 'is-admin' : ''}">
     <aside class="side" id="side">
-      <a class="logo" href="#/">${Pub.logoMark()}<span>Vintorex<small>${admin ? 'Admin · CRM' : 'Client portal'}</small></span></a>
-      <nav aria-label="Dashboard">${nav.map(([t, l, ic]) => `<a href="#${base}${t ? '/' + t : ''}" class="${v.tab === t ? 'on' : ''}">${icon(ic)}<span>${l}</span>${badges[t] ? `<em>${badges[t]}</em>` : ''}</a>`).join('')}</nav>
+      <a class="logo" href="/">${Pub.logoMark()}<span>Vintorex<small>${admin ? 'Admin · CRM' : 'Client portal'}</small></span></a>
+      <nav aria-label="Dashboard">${nav.map(([t, l, ic]) => `<a href="${base}${t ? '/' + t : ''}" class="${v.tab === t ? 'on' : ''}">${icon(ic)}<span>${l}</span>${badges[t] ? `<em>${badges[t]}</em>` : ''}</a>`).join('')}</nav>
       <div class="side-foot">
-        ${admin ? '<a href="#/">' + icon('home') + '<span>View storefront</span></a>' : '<a href="#/services">' + icon('bag') + '<span>Shop services</span></a>'}
+        ${admin ? '<a href="/">' + icon('home') + '<span>View storefront</span></a>' : '<a href="/services/">' + icon('bag') + '<span>Shop services</span></a>'}
         <button data-logout>${icon('logout')}<span>Sign out</span></button>
       </div>
     </aside>
     <div class="dash-main">
       <header class="dash-top"><button class="icon-btn side-toggle" aria-label="Menu" aria-controls="side" aria-expanded="false">${icon('menu')}</button>
         <div class="grow"></div>
-        ${admin ? '' : `<a class="icon-btn cart-btn" href="#/cart" aria-label="Cart">${icon('cart')}<span class="count" ${cartCount() ? '' : 'hidden'}>${cartCount()}</span></a>`}
+        ${admin ? '' : `<a class="icon-btn cart-btn" href="/cart" aria-label="Cart">${icon('cart')}<span class="count" ${cartCount() ? '' : 'hidden'}>${cartCount()}</span></a>`}
         <div class="who"><span class="avatar">${initials(user.name)}</span><div><b>${esc(user.name)}</b><small class="muted">${esc(user.email)}</small></div></div></header>
       <main id="main" class="dash-content" tabindex="-1">${v.html}</main>
     </div>
@@ -152,7 +147,7 @@ function bindChrome() {
   menu?.addEventListener('click', e => { if (e.target.closest('a')) setMenu(false); });
   const st = $('.side-toggle');
   st?.addEventListener('click', () => { const open = $('#side').classList.toggle('open'); st.setAttribute('aria-expanded', open); });
-  $('[data-logout]')?.addEventListener('click', () => { D.logout(); location.hash = '#/'; });
+  $('[data-logout]')?.addEventListener('click', () => { D.logout(); navigate('/'); });
   markScrolled();
 }
 
@@ -166,7 +161,11 @@ const markScrolled = () => $('.topbar')?.classList.toggle('scrolled', scrollY > 
 window.addEventListener('scroll', markScrolled, { passive: true });
 
 document.addEventListener('cart', () => $$('.cart-btn .count').forEach(c => { const n = cartCount(); c.textContent = n; c.hidden = !n; }));
-window.addEventListener('hashchange', safeRender);
+// Back and forward, links and redirects all land here. A change of #fragment alone keeps the view and scrolls.
+const onNavigate = () => (location.pathname + location.search === shown ? scrollToFragment() : safeRender());
+window.addEventListener('popstate', onNavigate);
+window.addEventListener(NAVIGATE, onNavigate);
+interceptLinks();
 // Liquid Glass: let the light on cards and buttons follow the pointer.
 document.addEventListener('pointermove', e => {
   const el = e.pointerType === 'mouse' && e.target.closest?.('.card, .btn, .chip, .icon-btn');
@@ -179,9 +178,12 @@ window.addEventListener('storage', e => { if (e.key === 'vx_db_v1') location.rel
 
 function showError(err) {
   console.error(err);
-  app().innerHTML = `<div class="shell section"><h1>Something went wrong</h1><p>${esc(err.message)}</p><p><a class="btn primary" href="#/">Go home</a></p></div>`;
+  app().innerHTML = `<div class="shell section"><h1>Something went wrong</h1><p>${esc(err.message)}</p><p><a class="btn primary" href="/">Go home</a></p></div>`;
 }
 // A broken view shows the error page instead of leaving the old page half-updated.
 function safeRender() { try { render(); } catch (err) { showError(err); } }
 
-Promise.all([D.init(), Pay.load()]).then(safeRender).catch(showError);
+// Old links such as /#/contact open the real address instead.
+const legacy = legacyUrl();
+if (legacy) location.replace(legacy);
+else Promise.all([D.init(), Pay.load()]).then(safeRender).catch(showError);

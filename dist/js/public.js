@@ -6,13 +6,15 @@ import { amountDue } from './pricing.js';
 import * as Pay from './pay.js';
 import { serviceGuides, featuredPosts, postCard } from './blogpages.js';
 import { logoMark } from './chrome.js';
+import { navigate } from './router.js';
+import { pageMeta, competitorNames } from './routes.js';
 import { serviceArt, serviceCardArt, ART, CATALOG_KEYWORDS, serviceImagePath } from './service-art.js';
 import { SHOP_ART } from './shop-art.js';
 import { WORK_PROJECTS, renderWorkCard } from './work-art.js';
 export { logoMark };
 
 const inr = D.inr;
-const go = path => { location.hash = '#' + path; };
+const go = path => navigate(path);
 const fromPrice = s => Math.min(...s.tiers.map(t => t.price));
 
 const PRODUCT_ALT = {
@@ -137,9 +139,9 @@ export function home() {
           <h1>Boost your business with <em>Vintorex Digital</em></h1>
           <p class="lead">Websites, online stores, SEO, social media and ads — with transparent prices set below typical agency rates. ${esc(BUSINESS.tagline)}</p>
           <div class="row gap wrap">
-            <a class="btn primary lg" href="#/services">Explore services ${icon('arrow')}</a>
-            <a class="btn ghost lg" href="#/pricing">See pricing</a>
-            <a class="btn ghost lg" href="#/#audit">Free audit</a>
+            <a class="btn primary lg" href="/services/">Explore services ${icon('arrow')}</a>
+            <a class="btn ghost lg" href="/pricing">See pricing</a>
+            <a class="btn ghost lg" href="/#audit">Free audit</a>
           </div>
           <ul class="ticks">
             <li>${icon('check')}Fixed, published prices</li>
@@ -168,18 +170,18 @@ export function home() {
     </section>
 
     <section class="shell section">
-      <div class="sec-head"><div><h2>Everything you need to grow online</h2><p class="muted">Fixed scopes, published packages and transparent delivery timelines.</p></div><a href="#/services" class="link">All ${c.services.length} services ${icon('arrow')}</a></div>
+      <div class="sec-head"><div><h2>Everything you need to grow online</h2><p class="muted">Fixed scopes, published packages and transparent delivery timelines.</p></div><a href="/services/" class="link">All ${c.services.length} services ${icon('arrow')}</a></div>
       <div class="cards3 svc-grid">${featured.map((s, i) => serviceCard(s, i)).join('')}</div>
     </section>
 
     <section class="shell section">
-      <div class="sec-head"><div><h2>AI & Automation for your business</h2><p class="muted">Chatbots, voice agents, workflows, content and AI search, with human review at every step.</p></div><a href="#/services?cat=ai" class="link">All AI services ${icon('arrow')}</a></div>
+      <div class="sec-head"><div><h2>AI & Automation for your business</h2><p class="muted">Chatbots, voice agents, workflows, content and AI search, with human review at every step.</p></div><a href="/services/#ai" class="link">All AI services ${icon('arrow')}</a></div>
       <div class="cards3 svc-grid">${c.services.filter(s => s.cat === 'ai').slice(0, 6).map((s, i) => serviceCard(s, i + 6)).join('')}</div>
     </section>
 
     <section class="band">
       <div class="shell section">
-        <div class="sec-head"><div><h2>Memberships that pay for themselves</h2><p class="muted">Full-funnel digital team retainer with bundled services and priority support.</p></div><a href="#/pricing" class="link">Compare plans ${icon('arrow')}</a></div>
+        <div class="sec-head"><div><h2>Memberships that pay for themselves</h2><p class="muted">Full-funnel digital team retainer with bundled services and priority support.</p></div><a href="/pricing" class="link">Compare plans ${icon('arrow')}</a></div>
         <div class="cards3">${c.plans.map(p => planCard(p, 'month')).join('')}</div>
       </div>
     </section>
@@ -190,7 +192,7 @@ export function home() {
           <h2>Real work that drives measurable revenue</h2>
           <p class="muted">Explore real client projects engineered in Coimbatore — from bespoke e-commerce to 3D CAD platforms.</p>
         </div>
-        <a href="#/contact" class="link">Start your project ${icon('arrow')}</a>
+        <a href="/contact" class="link">Start your project ${icon('arrow')}</a>
       </div>
       <div class="cards2 work-grid">
         ${WORK_PROJECTS.map(renderWorkCard).join('')}
@@ -272,7 +274,7 @@ export function home() {
 
 function serviceCard(s, idx = 0) {
   const from = fromPrice(s);
-  return `<a class="card svc" href="#/services/${s.id}">
+  return `<a class="card svc" href="/services/${s.id}/">
     ${serviceCardArt(s, idx)}
     <div class="svc-body">
       <div class="svc-top">
@@ -300,7 +302,7 @@ function planCard(p, cycle) {
     <div class="price">${p.price ? `${inr(monthly)}<small>/mo</small>` : 'Free'}</div>
     ${p.price && annual ? `<p class="fine">Billed ${inr(p.price * ANNUAL_MONTHS_PAID)} yearly · 2 months free</p>` : value > p.price ? `<p class="fine">Worth ${inr(value)}/mo bought separately — save ${Math.round((1 - p.price / value) * 100)}%</p>` : '<p class="fine">No card required</p>'}
     <ul class="ticks col">${p.features.map(f => `<li>${icon('check')}${esc(f)}</li>`).join('')}</ul>
-    ${p.price ? `<button class="btn ${p.popular ? 'primary' : 'ghost'} block" data-add="plan|${p.id}" data-go="/cart">Subscribe</button>` : `<a class="btn ghost block" href="#/register">Create free account</a>`}
+    ${p.price ? `<button class="btn ${p.popular ? 'primary' : 'ghost'} block" data-add="plan|${p.id}" data-go="/cart">Subscribe</button>` : `<a class="btn ghost block" href="/register">Create free account</a>`}
   </article>`;
 }
 
@@ -313,31 +315,6 @@ function bindCycle(root) {
 }
 
 // ---------------- Services ----------------
-export function services(params, query) {
-  const cat = query.get('cat') || 'all';
-  const list = D.catalog().services.filter(s => cat === 'all' || s.cat === cat);
-  // Hold the grid at three across only when that fills every row (all 21 services do; a 4-card category would leave one alone).
-  const gridClass = list.length % 3 ? 'cards3' : 'cards3 svc-grid';
-  const catObj = CATEGORIES.find(c => c.id === cat);
-  const title = catObj ? `${catObj.name} Services | Vintorex Coimbatore` : 'All 21 Digital Services & Packages | Vintorex Coimbatore';
-  const description = catObj ? `${catObj.name}: ${catObj.blurb}. Fixed packages with published prices set below typical metro agency rates.` : 'Explore 21 fixed digital marketing, web design, SEO, ads, branding and AI automation services with transparent prices.';
-  return {
-    title,
-    description,
-    keywords: cat === 'all' ? CATALOG_KEYWORDS : list.map(s => ART[s.id]?.keywords).filter(Boolean).join(', '),
-    image: cat === 'all' ? 'https://vintorex.com/images/hero-dashboard.jpg' : `https://vintorex.com${serviceImagePath(list[0]?.id || 'web-design')}`,
-    imageAlt: cat === 'all' ? 'Vintorex Digital Solutions service photography for websites, marketing, cloud and AI' : (ART[list[0]?.id]?.alt || title),
-    html: `<section class="shell section">
-      <div class="page-head"><h1>Our services</h1><p class="lead">Every service has fixed packages, published prices and a market comparison so you know exactly what you pay for.</p></div>
-      <nav class="chips" aria-label="Service categories">
-        <a href="#/services" class="chip ${cat === 'all' ? 'on' : ''}">All</a>
-        ${CATEGORIES.map(c => `<a href="#/services?cat=${c.id}" class="chip ${cat === c.id ? 'on' : ''}">${esc(c.name)} <small>${esc(c.blurb)}</small></a>`).join('')}
-      </nav>
-      <div class="${gridClass}">${list.map((s, i) => serviceCard(s, i)).join('')}</div>
-    </section>`,
-  };
-}
-
 const cell = v => v === 1 ? `<span class="yes" aria-label="Included">${icon('check')}</span>` : v === 0 ? '<span class="no" aria-label="Not included">—</span>' : esc(v);
 const unit = s => per(s.billing) || ' one-time';
 const defaultTier = s => { const i = s.tiers.findIndex(t => t.popular); return i < 0 ? 1 : i; };
@@ -369,7 +346,7 @@ function splitPanel(s, ti) {
       <div class="card pay-card">
         <h4>${schedule ? 'Pay in milestones' : s.billing === 'month' ? 'How billing works' : 'Payment'}</h4>
         ${schedule ? `<ol class="milestones">${schedule.map(m => `<li><span><b>${m.pct}%</b> ${esc(m.label)}</span><b>${inr(m.amount)}</b></li>`).join('')}</ol><p class="fine">Choose “Pay in milestones” at checkout. Amounts include GST. Or pay in full upfront.</p>`
-        : s.billing === 'month' ? `<ul class="ticks col"><li>${icon('check')}Billed monthly in advance, GST extra</li><li>${icon('check')}${esc(s.term)}</li><li>${icon('check')}Premium / Elite members get this bundled — <a href="#/pricing">see plans</a></li></ul>`
+        : s.billing === 'month' ? `<ul class="ticks col"><li>${icon('check')}Billed monthly in advance, GST extra</li><li>${icon('check')}${esc(s.term)}</li><li>${icon('check')}Premium / Elite members get this bundled — <a href="/pricing">see plans</a></li></ul>`
         : '<p class="muted">Paid in full at checkout — small projects start the same day.</p>'}
       </div>
     </div>
@@ -385,13 +362,12 @@ export function serviceDetail({ id }) {
   const [pos, tone] = position(s);
   const catName = CATEGORIES.find(c => c.id === s.cat)?.name || s.cat;
   return {
-    title: s.name,
-    description: s.summary || s.overview,
+    ...pageMeta(`/services/${s.id}/packages`, [s]),
     keywords: ART[s.id]?.keywords || `${s.name}, ${catName}, Vintorex Coimbatore`,
     image: `https://vintorex.com${serviceImagePath(s.id)}`,
     imageAlt: ART[s.id]?.alt || `${s.name} by Vintorex Digital Solutions in Coimbatore`,
     html: `<section class="shell section">
-      <a href="#/services" class="link back">← All services</a>
+      <a href="/services/" class="link back">← All services</a>
       <div class="detail-head">
         <span class="svc-ic lg">${icon(s.icon)}</span>
         <div><h1>${esc(s.name)}</h1><p class="lead">${esc(s.overview || s.summary)}</p>
@@ -433,12 +409,12 @@ export function serviceDetail({ id }) {
     </section>
 
     <section class="band" id="addons"><div class="shell section">
-      <div class="sec-head"><div><h2>Add-ons for ${esc(s.name)}</h2><p class="muted">Add to any package. Monthly add-ons renew with your plan.</p></div><a class="link" href="#/shop#addons">All add-ons ${icon('arrow')}</a></div>
+      <div class="sec-head"><div><h2>Add-ons for ${esc(s.name)}</h2><p class="muted">Add to any package. Monthly add-ons renew with your plan.</p></div><a class="link" href="/shop#addons">All add-ons ${icon('arrow')}</a></div>
       <div class="cards3">${addons.map(addonCard).join('')}</div>
     </div></section>
 
     <section class="shell section" id="compare">
-      <div class="sec-head"><div><h2>Competitor analysis</h2><p class="muted">Published prices checked October 2026. Competitor prices may exclude GST, ad spend or setup.</p></div><a class="link" href="#/compare">All services ${icon('arrow')}</a></div>
+      <div class="sec-head"><div><h2>Competitor analysis</h2><p class="muted">Published prices checked October 2026. Competitor prices may exclude GST, ad spend or setup.</p></div><a class="link" href="/compare">All services ${icon('arrow')}</a></div>
       ${marketBar(s, (s.tiers.find(t => t.popular) || s.tiers[1]).price)}
       <p class="position">Our most popular package is <span class="badge ${tone}">${pos}</span> ${s.marketNote ? `<small class="muted">(${esc(s.marketNote)})</small>` : ''}</p>
       ${compTable(s)}
@@ -489,10 +465,9 @@ function compTable(s) {
 // ---------------- Competitor analysis ----------------
 export function compare() {
   const c = D.catalog();
-  const named = [...new Set(c.services.flatMap(s => s.competitors.filter(x => !/market|listings/i.test(x.kind)).map(x => x.name)))];
+  const named = competitorNames(c.services);
   return {
-    title: 'Competitor analysis',
-    description: `We benchmarked Vintorex pricing against ${named.length} competitors across Coimbatore agencies, national agencies and DIY platforms. 100% transparent rate cards with milestone billing.`,
+    ...pageMeta('/compare', c.services),
     keywords: 'digital marketing competitor analysis, coimbatore agency rates comparison, web design pricing benchmark, seo packages price comparison, transparent agency pricing',
     image: 'https://vintorex.com/images/hero-dashboard.jpg',
     imageAlt: 'Studio monitor showing a client growth dashboard used to compare Vintorex pricing',
@@ -507,7 +482,7 @@ export function compare() {
           const [pos, tone] = position(s);
           const comps = s.competitors.filter(x => !/market/i.test(x.kind));
           return `<tr>
-            <td><a href="#/services/${s.id}#compare"><b>${esc(s.name)}</b></a><small>${s.billing === 'month' ? 'Monthly' : 'One-time'}</small></td>
+            <td><a href="/services/${s.id}/#compare"><b>${esc(s.name)}</b></a><small>${s.billing === 'month' ? 'Monthly' : 'One-time'}</small></td>
             <td>${s.tiers.map(t => `<div class="tier-line"><span>${esc(t.name)}</span><b>${inr(t.price)}</b></div>`).join('')}</td>
             <td>${comps.length ? comps.map(x => `<div class="comp-line"><b>${esc(x.name)}</b><span>${esc(x.price)}</span></div>`).join('') : '<span class="muted">No published rate cards</span>'}</td>
             <td>${inr(s.market[0])} – ${inr(s.market[1])}${per(s.billing)}${s.marketNote ? '<small class="muted">Estimate</small>' : ''}</td>
@@ -555,8 +530,7 @@ function bindAddonBrowser(root) {
 export function pricing() {
   const c = D.catalog();
   return {
-    title: 'Pricing',
-    description: 'Simple, transparent pricing for all digital services, monthly growth memberships, and project add-ons with milestone payment options.',
+    ...pageMeta('/pricing'),
     keywords: 'digital marketing pricing coimbatore, web development cost, marketing retainer plans, agency membership, transparent pricing india',
     image: 'https://vintorex.com/images/hero-dashboard.jpg',
     imageAlt: 'Studio monitor showing a client growth dashboard beside Vintorex pricing',
@@ -568,17 +542,17 @@ export function pricing() {
     </section>
 
     <section class="band"><div class="shell section">
-      <div class="sec-head"><div><h2>Full price list vs market</h2><p class="muted">Every package price, the India 2026 market range and where we sit. All prices exclude GST.</p></div><a class="btn ghost" href="#/compare">${icon('chart')} Full competitor analysis</a></div>
+      <div class="sec-head"><div><h2>Full price list vs market</h2><p class="muted">Every package price, the India 2026 market range and where we sit. All prices exclude GST.</p></div><a class="btn ghost" href="/compare">${icon('chart')} Full competitor analysis</a></div>
       <div class="table-wrap card"><table class="table">
         <thead><tr><th>Service</th>${['Entry', 'Popular', 'Top'].map(h => `<th class="right">${h}</th>`).join('')}<th>Market range</th><th>Our position</th><th></th></tr></thead>
         <tbody>${c.services.map(s => {
           const [pos, tone] = position(s);
           return `<tr><td><b>${esc(s.name)}</b><small class="muted block">${s.billing === 'month' ? 'per month' : 'one-time'}</small></td>
             ${s.tiers.map(t => `<td class="right ${t.popular ? 'pop-col' : ''}"><small class="muted block">${esc(t.name)}</small><b>${inr(t.price)}</b></td>`).join('')}
-            <td>${inr(s.market[0])} – ${inr(s.market[1])}</td><td><span class="badge ${tone}">${pos}</span></td><td><a class="link" href="#/services/${s.id}">Details</a></td></tr>`;
+            <td>${inr(s.market[0])} – ${inr(s.market[1])}</td><td><span class="badge ${tone}">${pos}</span></td><td><a class="link" href="/services/${s.id}/">Details</a></td></tr>`;
         }).join('')}</tbody>
       </table></div>
-      <p class="fine">“Our position” compares the most popular package with the market range. Sources and named competitor prices are on the <a href="#/compare">competitor analysis</a> page.</p>
+      <p class="fine">“Our position” compares the most popular package with the market range. Sources and named competitor prices are on the <a href="/compare">competitor analysis</a> page.</p>
     </div></section>
 
     <section class="shell section" id="addons">
@@ -645,8 +619,7 @@ export function shop() {
   const c = D.catalog();
   const items = c.products.filter(p => p.active !== false);
   return {
-    title: 'Shop',
-    description: 'Digital downloads, templates, SEO spreadsheets, client agreements, and quick add-on services with instant delivery from Vintorex Digital.',
+    ...pageMeta('/shop'),
     keywords: ['vintorex shop', 'digital downloads', 'printable art prints', 'wall art download', ...Object.values(SHOP_ART).map(a => a.keywords), 'social media template pack', 'local seo checklist', 'content calendar template'].join(', '),
     image: 'https://vintorex.com/images/shop/seo-checklist.jpg',
     imageAlt: 'Printed local SEO checklist booklet with tick marks, a magnifying glass, and a map pin',
@@ -674,7 +647,7 @@ export function cart() {
   const items = D.getCart();
   const user = D.currentUser();
   const q = D.quote(items, user, coupon);
-  if (!q.lines.length) return { title: 'Cart', html: `<section class="shell section narrow"><h1>Your cart</h1>${empty('Your cart is empty.', '<a class="btn primary" href="#/services">Browse services</a>')}</section>` };
+  if (!q.lines.length) return { title: 'Cart', html: `<section class="shell section narrow"><h1>Your cart</h1>${empty('Your cart is empty.', '<a class="btn primary" href="/services/">Browse services</a>')}</section>` };
   return {
     title: 'Cart',
     html: `<section class="shell section">
@@ -691,7 +664,7 @@ export function cart() {
           </div>`).join('')}
           <form class="coupon row gap" id="coupon"><input name="code" placeholder="Coupon code (try WELCOME10)" value="${esc(coupon)}" aria-label="Coupon code"><button class="btn ghost">Apply</button></form>
         </div>
-        ${summary(q, `<a class="btn primary block lg" href="#/checkout">Proceed to checkout ${icon('arrow')}</a>`)}
+        ${summary(q, `<a class="btn primary block lg" href="/checkout">Proceed to checkout ${icon('arrow')}</a>`)}
       </div>
     </section>`,
     bind: root => {
@@ -718,7 +691,7 @@ function summary(q, cta) {
       <div><dt>GST (${q.gstPct}%)</dt><dd>${inr(q.gst)}</dd></div>
       <div class="total"><dt>Total payable</dt><dd>${inr(q.total)}</dd></div>
     </dl>
-    ${!q.memberPct && q.lines.some(l => l.type === 'package' && l.info.billing === 'once') ? `<p class="hint">${icon('star')} Premium members save 10% on this order. <a href="#/pricing">See plans</a></p>` : ''}
+    ${!q.memberPct && q.lines.some(l => l.type === 'package' && l.info.billing === 'once') ? `<p class="hint">${icon('star')} Premium members save 10% on this order. <a href="/pricing">See plans</a></p>` : ''}
     ${cta}
   </aside>`;
 }
@@ -822,7 +795,7 @@ export function orderDone({ id }) {
       <div class="success-box big">${icon('check')}<h1>Payment successful</h1>
       <p class="lead">Order <b>${esc(o.invoice)}</b> for <b>${inr(o.total)}</b> is confirmed${D.orderBalance(o) ? ` — you paid <b>${inr(D.orderPaid(o))}</b> today, and the balance of ${inr(D.orderBalance(o))} is due at the milestones below` : ''}. A project manager will contact you within 2 working hours.</p>
       ${D.orderBalance(o) ? `<div class="card left">${paymentSchedule(o)}</div>` : ''}
-      <div class="row gap center"><a class="btn primary" href="#/account/orders">Track my order</a><a class="btn ghost" href="#/invoice/${o.id}">View invoice</a></div></div>
+      <div class="row gap center"><a class="btn primary" href="/account/orders">Track my order</a><a class="btn ghost" href="/invoice/${o.id}">View invoice</a></div></div>
     </section>`,
   };
 }
@@ -848,8 +821,7 @@ export function contact() {
     ['Free, fixed-price proposal', 'You get a clear scope and price. No pressure and no obligation.'],
   ];
   return {
-    title: 'Contact',
-    description: 'Get in touch with Vintorex Digital in Coimbatore. Call, WhatsApp, email, or visit our office for a free digital audit and custom project quote.',
+    ...pageMeta('/contact'),
     keywords: 'contact vintorex, digital marketing office coimbatore, web design enquiry, coimbatore agency phone number, hire digital agency',
     image: 'https://vintorex.com/images/about-studio.jpg',
     imageAlt: 'Vintorex studio desk at dusk with monitors, a laptop, and a plant by the window',
@@ -887,15 +859,14 @@ export function contact() {
     </div></section>
 
     <section class="shell section"><div class="card cta-band"><div><h2>Not ready to talk yet?</h2><p class="muted">Browse transparent pricing, or see how we compare with other agencies.</p></div>
-      <div class="row gap wrap"><a class="btn primary" href="#/pricing">See pricing</a><a class="btn ghost" href="#/compare">Competitor analysis</a></div></div></section>`,
+      <div class="row gap wrap"><a class="btn primary" href="/pricing">See pricing</a><a class="btn ghost" href="/compare">Competitor analysis</a></div></div></section>`,
     bind: bindLeadForms,
   };
 }
 
 export function about() {
   return {
-    title: 'About Vintorex Digital',
-    description: 'Learn about Vintorex Digital Solutions in Coimbatore, founded by Ranjith Kumar to deliver transparent, data-driven web development, SEO, ads and AI automation.',
+    ...pageMeta('/about'),
     keywords: 'about vintorex digital solutions, ranjith kumar coimbatore, digital marketing team coimbatore, data driven marketing agency tamil nadu, web developers cheran ma nagar coimbatore',
     image: 'https://vintorex.com/images/about-studio.jpg',
     imageAlt: 'Vintorex studio desk at dusk with monitors, a laptop, and a plant by the window',
@@ -1004,13 +975,12 @@ export function about() {
   };
 }
 
-// Policies are static pages built from js/policies.js; old #/terms links land there.
-export function terms() {
-  location.replace('/terms/');
-  return { title: 'Terms and Conditions', html: '<section class="shell section"><p class="muted">Opening the terms…</p></section>' };
-}
-
 // ---------------- Auth ----------------
+// Where to go after signing in: the page in `next` (a path of this site without its leading slash), else `fallback`.
+const afterSignIn = (query, fallback) => {
+  const next = query.get('next');
+  return next && /^[\w%-][\w\-./%]*$/.test(next) && !next.includes('//') ? '/' + next : fallback;
+};
 export function login(params, query) {
   return {
     title: 'Sign in',
@@ -1022,7 +992,7 @@ export function login(params, query) {
         ${field('Password', 'password', { type: 'password', required: true, attrs: 'autocomplete="current-password"' })}
         <p class="err" hidden></p>
         <button class="btn primary block lg">Sign in</button>
-        <p class="center muted">New here? <a href="#/register${query.get('next') ? '?next=' + esc(query.get('next')) : ''}">Create an account</a></p>
+        <p class="center muted">New here? <a href="/register${query.get('next') ? '?next=' + esc(query.get('next')) : ''}">Create an account</a></p>
       </form>
     </section>`,
     bind: root => {
@@ -1032,7 +1002,7 @@ export function login(params, query) {
         try {
           const u = await D.login(f.email.value, f.password.value);
           toast(`Welcome, ${u.name.split(' ')[0]}`);
-          go(query.get('next') ? '/' + query.get('next') : u.role === 'admin' ? '/admin' : '/account');
+          go(afterSignIn(query, u.role === 'admin' ? '/admin' : '/account'));
         } catch (err) { const p = $('.err', f); p.hidden = false; p.textContent = err.message; }
       });
     },
@@ -1053,7 +1023,7 @@ export function register(params, query) {
         ${field('Password', 'password', { type: 'password', required: true, attrs: 'minlength="6" autocomplete="new-password"' })}
         <p class="err" hidden></p>
         <button class="btn primary block lg">Create account</button>
-        <p class="center muted">Already have an account? <a href="#/login">Sign in</a></p>
+        <p class="center muted">Already have an account? <a href="/login">Sign in</a></p>
       </form>
     </section>`,
     bind: root => {
@@ -1063,7 +1033,7 @@ export function register(params, query) {
         try {
           await D.register(Object.fromEntries(new FormData(f)));
           toast('Account created');
-          go(query.get('next') ? '/' + query.get('next') : '/account');
+          go(afterSignIn(query, '/account'));
         } catch (err) { const p = $('.err', f); p.hidden = false; p.textContent = err.message; }
       });
     },
@@ -1071,7 +1041,7 @@ export function register(params, query) {
 }
 
 export function notFound() {
-  return { title: 'Not found', html: `<section class="shell section narrow center"><h1>Page not found</h1><p><a class="btn primary" href="#/">Go home</a></p></section>` };
+  return { title: 'Not found', noindex: true, html: `<section class="shell section narrow center"><h1>Page not found</h1><p><a class="btn primary" href="/">Go home</a></p></section>` };
 }
 
 // Printable GST invoice, shared by customers and admins.
@@ -1085,7 +1055,7 @@ export function invoice({ id }) {
   return {
     title: 'Invoice ' + o.invoice, bare: true,
     html: `<section class="shell section invoice-page">
-      <div class="row between noprint"><a class="link" href="#/${user.role === 'admin' ? 'admin/orders' : 'account/orders'}">← Back</a><button class="btn primary" data-print>Print / Save PDF</button></div>
+      <div class="row between noprint"><a class="link" href="/${user.role === 'admin' ? 'admin/orders' : 'account/orders'}">← Back</a><button class="btn primary" data-print>Print / Save PDF</button></div>
       <article class="card invoice">
         <header class="row between"><div><div class="logo">${logoMark()}<span>${esc(s.businessName)}</span></div><p class="muted">${esc(s.address)}<br>${esc(s.phone)} · ${esc(s.email)}<br>GSTIN ${esc(s.gstin)}</p></div>
         <div class="right"><h2>Tax invoice</h2><p><b>${esc(o.invoice)}</b><br>${date(o.createdAt)}<br>${o.paid ? '<span class="badge green">Paid</span>' : `<span class="badge amber">Part-paid · ${inr(D.orderBalance(o))} due</span>`} via ${esc(o.method)}</p></div></header>

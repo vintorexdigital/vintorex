@@ -3,6 +3,7 @@
 // without it the launcher never appears. The conversation lives in sessionStorage,
 // so it follows the visitor between pages until the tab is closed.
 import { esc, icon } from './ui.js';
+import { ROUTES } from './routes.js';
 
 const API = '/api/chat';
 const KEY = 'vx_chat';
@@ -17,7 +18,11 @@ const save = () => { try { sessionStorage.setItem(KEY, JSON.stringify({ ...state
 // ---------- answer formatting ----------
 // Escaped first, then a small Markdown subset. Links are kept only for this site,
 // WhatsApp, phone and email; [n] citations link to the answer's sources.
-const SITE_LINK = /^(\/|#\/|https:\/\/(vintorex\.com|wa\.me)\/|tel:|mailto:)/;
+const SITE_LINK = /^(\/|https:\/\/(vintorex\.com|wa\.me)\/|tel:|mailto:)/;
+// Pages the assistant may name in plain text: the app's own (/pricing, /account/orders), the #anchors on the home page
+// (/#audit) and the static pages, which are always followed by a slash.
+const APP_PATHS = ROUTES.filter(r => r.length > 1 && !r.includes(':')).map(r => r.slice(1)).join('|');
+const PAGE = String.raw`(^|[\s(])(\/(?:${APP_PATHS})(?:\/[\w\-]+)*(?:#[\w-]+)?|\/#[\w-]+|\/(?:services|blog|faq|terms|privacy-policy|refund-policy|shipping-policy)\/[\w\-/]*|https:\/\/(?:vintorex\.com|wa\.me)\/[^\s<)]*)`;
 const link = (href, label) => `<a href="${href}"${/^https:/.test(href) ? ' target="_blank" rel="noopener"' : ''}>${label}</a>`;
 const literal = s => esc(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const CITES = /\[(\d+(?:\]\[\d+|,\s*\d+)*)\]/g;
@@ -28,7 +33,7 @@ function inline(t, sources) {
   const tokens = new RegExp([
     /\[([^\]]+)\]\(([^)\s]+)\)/.source,
     CITES.source,
-    /(^|[\s(])(\/#\/[\w\-/#]*|\/(?:services|blog|faq|terms|privacy-policy|refund-policy|shipping-policy)\/[\w\-/]*|https:\/\/(?:vintorex\.com|wa\.me)\/[^\s<)]*)/.source,
+    PAGE,
     `(${literal(status.contact.phone)})`,
     `(${literal(status.contact.email)})`,
   ].join('|'), 'g');
@@ -77,7 +82,7 @@ function handover() {
   return `<div class="vxc-handover"><span>Talk to a person:</span>
     <a class="chip" href="${esc(whatsapp())}" target="_blank" rel="noopener">${icon('wa')} WhatsApp</a>
     <a class="chip" href="tel:${status.contact.phone.replace(/\s/g, '')}">${icon('phoneCall')} Call</a>
-    <a class="chip" href="/#/contact">${icon('mail')} Get a quote</a></div>`;
+    <a class="chip" href="/contact">${icon('mail')} Get a quote</a></div>`;
 }
 
 function message(m, last) {
@@ -123,7 +128,7 @@ async function ask(question) {
   try {
     const res = await fetch(API, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: mine.signal,
-      body: JSON.stringify({ messages: [...history, { role: 'user', content: question }].slice(-9), page: location.pathname + location.hash }),
+      body: JSON.stringify({ messages: [...history, { role: 'user', content: question }].slice(-9), page: location.pathname }),
     });
     if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || 'The assistant is unavailable right now.');
     const reader = res.body.getReader(), decoder = new TextDecoder();

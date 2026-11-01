@@ -1,33 +1,33 @@
-// Site header and footer, shared by the single-page app and the static blog
-// pages. `base` is '' inside the app (hash links) and '/' on static pages.
+// Site header and footer, shared by the single-page app and the static pages. Every link is a real
+// address: the app takes over clicks on its own pages (js/router.js), the rest load as ordinary pages.
 import { BUSINESS, SERVICES } from './data.js';
 import { esc, icon } from './ui.js';
 import { POLICIES } from './policies.js';
 
 export const logoMark = () => `<img src="/images/vintorex-logo.png" class="logo-mark" alt="Vintorex brand logo" width="44" height="44" decoding="async">`;
 
-const NAV = [['/services', 'Services'], ['/pricing', 'Pricing'], ['/compare', 'Compare'], ['blog', 'Blog'], ['/shop', 'Shop'], ['/about', 'About'], ['/contact', 'Contact']];
-// Static pages (base '/') link to the crawlable services index; the app keeps hash routes.
-const to = (base, path) => path === 'blog' ? '/blog/' : base && path === '/services' ? '/services/' : base + '#' + path;
+const NAV = [['/services', 'Services'], ['/pricing', 'Pricing'], ['/compare', 'Compare'], ['/blog', 'Blog'], ['/shop', 'Shop'], ['/about', 'About'], ['/contact', 'Contact']];
+// The services index and the blog are static pages, which live at /services/ and /blog/.
+const to = path => path === '/services' || path === '/blog' ? path + '/' : path;
 const svcLink = id => `/services/${id}/`;
 
 // An offer strip that scrolls away, then a floating bar that sticks. Below 1100px the links fold
 // into a drop-down menu; Sign in (or the account button) moves into it, and Get a quote too on phones.
-export function siteHeader({ base = '', here = '', cart = 0, account = '' } = {}) {
-  const signIn = account || `<a class="btn sm ghost" href="${to(base, '/login')}">Sign in</a>`;
-  const quote = `<a class="btn sm primary" href="${to(base, '/contact')}">Get a quote</a>`;
+export function siteHeader({ here = '', cart = 0, account = '' } = {}) {
+  const signIn = account || `<a class="btn sm ghost" href="${to('/login')}">Sign in</a>`;
+  const quote = `<a class="btn sm primary" href="${to('/contact')}">Get a quote</a>`;
   return `<a class="skip" href="#main">Skip to content</a>
   <div class="announce"><div class="shell announce-row">
     <p><span class="live-dot" aria-hidden="true"></span>Free 15-point website &amp; SEO audit<span class="announce-more"> · fixed-price action plan</span></p>
-    <a class="announce-cta" href="${to(base, '/#audit')}">Request my free audit <span aria-hidden="true">→</span></a>
+    <a class="announce-cta" href="${to('/#audit')}">Request my free audit <span aria-hidden="true">→</span></a>
   </div></div>
   <header class="topbar"><div class="nav">
-    <a class="logo" href="${to(base, '/')}">${logoMark()}<span>Vintorex<small>Digital Solutions</small></span></a>
-    <nav class="nav-links" id="nav-links" aria-label="Primary">${NAV.map(([h, l]) => `<a href="${to(base, h)}" class="${here.startsWith(h) ? 'on' : ''}">${l}</a>`).join('')}
+    <a class="logo" href="${to('/')}">${logoMark()}<span>Vintorex<small>Digital Solutions</small></span></a>
+    <nav class="nav-links" id="nav-links" aria-label="Primary">${NAV.map(([h, l]) => `<a href="${to(h)}" class="${here.startsWith(h) ? 'on' : ''}">${l}</a>`).join('')}
       <div class="nav-menu-cta">${signIn}${quote}</div>
     </nav>
     <div class="nav-actions">
-      <a class="icon-btn cart-btn" href="${to(base, '/cart')}" aria-label="Cart">${icon('cart')}<span class="count" ${cart ? '' : 'hidden'}>${cart}</span></a>
+      <a class="icon-btn cart-btn" href="${to('/cart')}" aria-label="Cart">${icon('cart')}<span class="count" ${cart ? '' : 'hidden'}>${cart}</span></a>
       ${signIn}
       ${quote}
       <button class="icon-btn menu-btn" aria-expanded="false" aria-controls="nav-links" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -35,12 +35,12 @@ export function siteHeader({ base = '', here = '', cart = 0, account = '' } = {}
   </div></header>`;
 }
 
-export function siteFooter({ base = '', services = SERVICES } = {}) {
+export function siteFooter({ services = SERVICES } = {}) {
   return `<footer class="footer"><div class="shell foot-grid">
-    <div><a class="logo" href="${to(base, '/')}">${logoMark()}<span>Vintorex<small>Digital Solutions</small></span></a><p class="muted">${esc(BUSINESS.tagline)} Digital marketing, web and cloud services from Coimbatore.</p>
+    <div><a class="logo" href="${to('/')}">${logoMark()}<span>Vintorex<small>Digital Solutions</small></span></a><p class="muted">${esc(BUSINESS.tagline)} Digital marketing, web and cloud services from Coimbatore.</p>
       <div class="row gap wrap">${Object.entries(BUSINESS.social).map(([n, u]) => `<a class="chip" href="${u}" target="_blank" rel="noopener">${n}</a>`).join('')}</div></div>
     <div class="foot-links"><h4>Services</h4>${services.slice(0, 7).map(s => `<a href="${svcLink(s.id)}">${esc(s.name)}</a>`).join('')}<a href="/services/">All services &amp; prices</a></div>
-    <div class="foot-links"><h4>Company</h4><a href="${to(base, '/about')}">About</a><a href="${to(base, '/pricing')}">Pricing</a><a href="${to(base, '/compare')}">Competitor analysis</a><a href="/blog/">Blog & guides</a><a href="/faq/">FAQ</a><a href="${to(base, '/shop')}">Shop</a><a href="${to(base, '/contact')}">Contact</a></div>
+    <div class="foot-links"><h4>Company</h4><a href="${to('/about')}">About</a><a href="${to('/pricing')}">Pricing</a><a href="${to('/compare')}">Competitor analysis</a><a href="/blog/">Blog & guides</a><a href="/faq/">FAQ</a><a href="${to('/shop')}">Shop</a><a href="${to('/contact')}">Contact</a></div>
     <div class="foot-contact"><h4>Get in Touch</h4>
       <a class="f-pill" href="${BUSINESS.maps}" target="_blank" rel="noopener">${icon('pin')}<span>${esc(BUSINESS.address)}</span></a>
       <a class="f-pill" href="tel:+918667209838">${icon('phoneCall')}<span>${esc(BUSINESS.phone)}</span></a>

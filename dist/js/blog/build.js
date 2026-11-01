@@ -59,7 +59,7 @@ A slow page loses visitors before they read a word. Compress images, avoid heavy
 
 Set up analytics and track the actions that matter to your business: form submissions, calls, WhatsApp clicks and bookings. Page views alone tell you little. Knowing which pages and sources produce enquiries tells you where to invest next.
 
-If you would like this done for you, our [Website Design & Development](#/services/web-design) packages cover all of the above.
+If you would like this done for you, our [Website Design & Development](/services/web-design) packages cover all of the above.
 `,
     faqs: [
       ['How many pages does a small business website need?', 'Most need a home page, an about page, one page per main service, a contact page and the privacy and terms pages. Add a blog when you can publish regularly.'],
@@ -125,7 +125,7 @@ Collect three to five websites you like and note exactly what you like about eac
 
 Before launch, test every form, link and page on mobile and desktop. Set up redirects if you are replacing an old site so existing search rankings and bookmarks keep working. After launch, decide who updates content, who handles backups and security, and how you will review results each month.
 
-Ready to start? See what is included in our [website packages](#/services/web-design), or ask about [ongoing maintenance](#/services/maintenance).
+Ready to start? See what is included in our [website packages](/services/web-design), or ask about [ongoing maintenance](/services/maintenance).
 `,
     faqs: [
       ['How long does a typical business website take?', 'A small site can be ready in one to three weeks once content is available. Larger or custom sites take longer. The biggest variable is usually how quickly content and approvals arrive.'],
@@ -202,7 +202,7 @@ Payment gateways often require these pages before they activate your account, so
 4. Check every email and message the customer receives.
 5. Review analytics to confirm purchases are being recorded.
 
-Our [E-commerce Store](#/services/ecommerce) packages include payments, shipping, invoices and test orders as standard.
+Our [E-commerce Store](/services/ecommerce) packages include payments, shipping, invoices and test orders as standard.
 `,
     faqs: [
       ['Should I offer cash on delivery?', 'COD can increase orders where customers are hesitant to pay online, but it brings higher return and refusal rates. Many stores offer it with a small fee or only below a set order value.'],
@@ -265,7 +265,7 @@ If you want to launch quickly with minimal technical involvement and a standard 
 
 Whichever you choose, invest equally in product content, photography, shipping and customer service. Those matter more to customers than the platform underneath.
 
-We build on both. Compare what is included in our [E-commerce Store](#/services/ecommerce) packages, or add [maintenance](#/services/maintenance) for a self-hosted store.
+We build on both. Compare what is included in our [E-commerce Store](/services/ecommerce) packages, or add [maintenance](/services/maintenance) for a self-hosted store.
 `,
     faqs: [
       ['Can I move from one platform to another later?', 'Yes. Products, customers and orders can be migrated, and old URLs redirected. It takes careful planning, so choosing well at the start saves effort.'],
@@ -324,7 +324,7 @@ Cross-platform frameworks let one codebase run on both Android and iOS, which re
 4. Who will manage content, orders or data inside it?
 5. What will success look like six months after launch?
 
-If the answers point to an app, start with a focused first version that does one job really well, then grow it based on real usage. Our [Mobile App Development](#/services/mobile-app) packages are built around that approach. If the answers point to a website, start with [Website Design & Development](#/services/web-design).
+If the answers point to an app, start with a focused first version that does one job really well, then grow it based on real usage. Our [Mobile App Development](/services/mobile-app) packages are built around that approach. If the answers point to a website, start with [Website Design & Development](/services/web-design).
 `,
     faqs: [
       ['Can a website work like an app?', 'Yes, to a degree. Progressive web apps can be added to a home screen, work partly offline and send some notifications. They suit many businesses that want app-like convenience without store distribution.'],
@@ -389,7 +389,7 @@ Prepare store listings with a name, description, screenshots and privacy details
 
 Make sure the app is published under your own developer accounts, and that you receive the source code, design files and access to the backend. This protects your investment if you change partners in the future.
 
-See how these stages map to our [Mobile App Development](#/services/mobile-app) packages, and keep the app healthy afterwards with [Cloud Services](#/services/cloud).
+See how these stages map to our [Mobile App Development](/services/mobile-app) packages, and keep the app healthy afterwards with [Cloud Services](/services/cloud).
 `,
     faqs: [
       ['What makes app projects go over budget?', 'Unclear requirements, features added mid-build and late design changes. A clear specification and an approved prototype are the best protection.'],

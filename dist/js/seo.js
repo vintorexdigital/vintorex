@@ -67,7 +67,7 @@ export function siteFaqs(services, site = 'https://vintorex.com') {
     ['Which payment methods are accepted?', 'UPI (GPay, PhonePe, Paytm), RuPay, Visa and Mastercard cards, and net banking.'],
     ['Can I pay in instalments?',
       `Yes. One-time projects of ${inr(MILESTONE_MIN)} or more can be paid in milestones: ${MILESTONES.map(([n, p]) => `${p}% ${lc(n)}`).join(', ')}.`],
-    ['Is there a free website and SEO audit?', `Yes. Vintorex offers a free 15-point audit covering site speed and Core Web Vitals, local SEO and Google Business Profile, competitor keyword gaps, and social and paid ads quick wins. Request it at ${site}/#/#audit.`],
+    ['Is there a free website and SEO audit?', `Yes. Vintorex offers a free 15-point audit covering site speed and Core Web Vitals, local SEO and Google Business Profile, competitor keyword gaps, and social and paid ads quick wins. Request it at ${site}/#audit.`],
     ['Does Vintorex offer membership plans?',
       `Yes: ${PLANS.map(p => `${p.name} (${p.price ? inr(p.price) + ' per month' : 'free'})`).join(', ')}. Paid plans include discounts on one-time services.`],
     ['Does Vintorex offer AI and automation services?',
@@ -156,8 +156,8 @@ export function serviceBody(s) {
         <aside class="post-side">
           <nav class="card toc" aria-label="Contents"><h4>On this page</h4>${toc.map(([id, t]) => `<a href="#${id}">${esc(t)}</a>`).join('')}</nav>
           <div class="card side-cta"><span class="svc-ic">${icon(s.icon)}</span><h4>Get ${esc(s.name)}</h4><p class="muted">From ${inr(fromPrice(s))}${s.billing === 'month' ? ' per month' : ''} + GST. Order online or ask for a custom quote.</p>
-            <a class="btn primary block" href="/#/services/${s.id}">Choose a package</a>
-            <a class="btn ghost block" href="/#/contact">Get a free proposal</a>
+            <a class="btn primary block" href="/services/${s.id}/packages">Choose a package</a>
+            <a class="btn ghost block" href="/contact">Get a free proposal</a>
             <a class="btn ghost block" href="${BUSINESS.whatsapp}" target="_blank" rel="noopener">${icon('wa')} WhatsApp us</a></div>
         </aside>
       </div>
@@ -181,7 +181,7 @@ export function servicesIndexBody(services) {
       <tbody>${services.map(s => `<tr><td><a href="${servicePath(s.id)}">${esc(s.name)}</a></td><td><b>${inr(fromPrice(s))}</b>${s.billing === 'month' ? '/mo' : ''}</td><td>${inr(s.market[0])} – ${inr(s.market[1])}${s.billing === 'month' ? '/mo' : ''}</td><td>${esc(s.delivery)}</td></tr>`).join('')}</tbody></table></div>
       <p class="fine">All prices in INR, excluding 18% GST. Market ranges are indicative and were reviewed ${REVIEWED.label}.</p></section>
     <section class="shell section"><div class="card cta-band"><div><h2>Not sure which package fits?</h2><p class="muted">Tell us about your business and get a fixed-price proposal. Free consultation.</p></div>
-      <div class="row gap wrap"><a class="btn primary" href="/#/contact">Get a free proposal</a><a class="btn ghost" href="${BUSINESS.whatsapp}" target="_blank" rel="noopener">${icon('wa')} WhatsApp</a></div></div></section>`;
+      <div class="row gap wrap"><a class="btn primary" href="/contact">Get a free proposal</a><a class="btn ghost" href="${BUSINESS.whatsapp}" target="_blank" rel="noopener">${icon('wa')} WhatsApp</a></div></div></section>`;
 }
 
 export function faqBody(faqs) {
@@ -212,7 +212,7 @@ ${CATEGORIES.map(c => `## ${c.name}\n${services.filter(s => s.cat === c.id).map(
 - [All services and prices](${site}/services/)
 - [Frequently asked questions](${site}/faq/)
 - [Guides and blog](${site}/blog/)
-- [Contact](${site}/#/contact)
+- [Contact](${site}/contact)
 
 ## Guides
 ${posts.map(p => `- [${p.title}](${site}/blog/${p.slug}/): ${p.excerpt}`).join('\n')}

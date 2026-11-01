@@ -61,7 +61,7 @@ A brand guide documents everything above with examples of correct and incorrect 
 
 Audit every place your brand appears: website, social profiles, invoices, email signatures, packaging, uniforms, vehicles and signage. Update anything that does not match. Consistency over time is what turns a design into a recognisable brand.
 
-Our [Digital Branding](#/services/branding) packages range from a logo to a complete identity with brand book, social templates and stationery.
+Our [Digital Branding](/services/branding) packages range from a logo to a complete identity with brand book, social templates and stationery.
 `,
     faqs: [
       ['How often should a business rebrand?', 'Only when there is a real reason: a change in direction, audience or offering, a merger, or an identity that no longer works across modern channels. Small refreshes are often enough.'],
@@ -126,7 +126,7 @@ Our [Digital Branding](#/services/branding) packages range from a logo to a comp
 
 Check that the design is original, and consider registering it as a trademark in the classes relevant to your business. This protects your investment as the brand grows.
 
-Our [Digital Branding](#/services/branding) process includes a structured brief, multiple concepts, revisions and full file handover.
+Our [Digital Branding](/services/branding) process includes a structured brief, multiple concepts, revisions and full file handover.
 `,
     faqs: [
       ['How many logo concepts should I expect?', 'It varies by package, typically between two and eight initial directions. Fewer, well-reasoned concepts are often more useful than many quick ones.'],
@@ -191,7 +191,7 @@ Read it aloud. Cut repetition, filler and vague claims. Check facts and links. M
 
 Share new posts on social media and in your newsletter, and link to them from related pages. Review older posts periodically. Update outdated sections, improve weak ones and merge overlapping articles. Refreshing good content is often more effective than publishing more.
 
-Need a steady flow of well-researched articles? See our [SEO Content Writing](#/services/content-writing) packages, which pair naturally with [SEO](#/services/seo).
+Need a steady flow of well-researched articles? See our [SEO Content Writing](/services/content-writing) packages, which pair naturally with [SEO](/services/seo).
 `,
     faqs: [
       ['How long should a blog post be?', 'As long as it takes to answer the question well. Match the depth that searchers and the current top results suggest. Padding for length makes content worse.'],
@@ -251,7 +251,7 @@ For a web design business, the pillar might be “Planning a business website”
 
 Review each cluster periodically. Refresh the pillar, add articles for new questions, update outdated advice and combine thin posts. A well-maintained cluster keeps growing in value.
 
-Our [SEO Content Writing](#/services/content-writing) Growth and Premium packages include topic cluster planning and internal linking. Our [SEO](#/services/seo) team makes sure the structure is technically sound.
+Our [SEO Content Writing](/services/content-writing) Growth and Premium packages include topic cluster planning and internal linking. Our [SEO](/services/seo) team makes sure the structure is technically sound.
 `,
     faqs: [
       ['How many articles should a cluster have?', 'Enough to cover the meaningful questions within the topic, often between five and fifteen. Quality and coverage matter more than a specific number.'],
@@ -321,7 +321,7 @@ Use recurring formats, consistent colours, fonts and intro styles, and a regular
 
 Watch retention: where do viewers drop off? If it’s at the start, the hook needs work. If it’s mid-way, the pacing or relevance is off. Compare saves and shares, which signal real value, more than views alone.
 
-Our [Reels & Video Production](#/services/video) packages include hook scripting, editing, captions and motion graphics. [Social Media Marketing](#/services/social-media) can publish them for you.
+Our [Reels & Video Production](/services/video) packages include hook scripting, editing, captions and motion graphics. [Social Media Marketing](/services/social-media) can publish them for you.
 `,
     faqs: [
       ['How long should a short-form video be?', 'Long enough to deliver its one idea and no longer. Many effective business videos are under a minute. Let retention data guide you.'],
@@ -392,7 +392,7 @@ Viewers forgive slightly soft images but not bad sound.
 - Use consistent fonts and colours that match your brand.
 - Export at high quality in the platform’s recommended format.
 
-Want professional footage instead? Our [Reels & Video Production](#/services/video) Brand Film package includes an on-site shoot, voice-over and edits for every platform.
+Want professional footage instead? Our [Reels & Video Production](/services/video) Brand Film package includes an on-site shoot, voice-over and edits for every platform.
 `,
     faqs: [
       ['Which phone video settings should I use?', 'Use the highest resolution your phone handles smoothly at a standard frame rate. Keep settings consistent across a project so clips match when edited.'],
@@ -454,7 +454,7 @@ A render is a computer-generated image created from a 3D model of the product. W
 
 Real-world photos of installations, your factory and your team build authenticity. Renders work best alongside them: renders for clarity and consistency, photos for proof and credibility.
 
-Our [Industrial & Product Design](#/services/industrial-design) packages cover single-product renders, full catalogues and concept-to-CAD product design.
+Our [Industrial & Product Design](/services/industrial-design) packages cover single-product renders, full catalogues and concept-to-CAD product design.
 `,
     faqs: [
       ['Can renders be made without CAD files?', 'Yes. Products can be modelled from photographs, drawings and measurements. Accuracy depends on the detail of the reference material provided.'],
@@ -520,7 +520,7 @@ Purchasing decisions often involve engineers, finance and management. Include in
 
 Plan for updates. Use templates and organised source files so adding products or changing specifications is quick. Put a version number on the catalogue so sales teams know they are sharing the latest edition.
 
-Our [Industrial & Product Design](#/services/industrial-design) Catalogue package includes layout, photo editing, renders and print-ready and digital files. Add a [brochure](#/services/branding) for quick introductions.
+Our [Industrial & Product Design](/services/industrial-design) Catalogue package includes layout, photo editing, renders and print-ready and digital files. Add a [brochure](/services/branding) for quick introductions.
 `,
     faqs: [
       ['Should prices be in the catalogue?', 'Usually not in B2B catalogues meant to last, because prices change and vary by customer. Use a separate price list that can be updated independently.'],

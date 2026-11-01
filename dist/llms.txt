@@ -40,7 +40,7 @@ Prices reviewed October 2026. Full text of every service, price and FAQ: https:/
 - [All services and prices](https://vintorex.com/services/)
 - [Frequently asked questions](https://vintorex.com/faq/)
 - [Guides and blog](https://vintorex.com/blog/)
-- [Contact](https://vintorex.com/#/contact)
+- [Contact](https://vintorex.com/contact)
 
 ## Guides
 - [What Every Small Business Website Needs to Turn Visitors into Enquiries](https://vintorex.com/blog/small-business-website-essentials/): A website’s job is to answer a visitor’s questions quickly and make contacting you effortless. These are the elements that do that, page by page.

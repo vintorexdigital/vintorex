@@ -72,7 +72,7 @@ These tactics can cause ranking drops that take a long time to recover from.
 
 Expect early improvements within a few months and stronger results over six to twelve months, depending on competition and your starting point. SEO is an investment that compounds. Good pages keep bringing visitors long after they are published.
 
-Want a team to handle it? Our [SEO packages](#/services/seo) cover technical, on-page, local and content work, and pair well with [SEO Content Writing](#/services/content-writing).
+Want a team to handle it? Our [SEO packages](/services/seo) cover technical, on-page, local and content work, and pair well with [SEO Content Writing](/services/content-writing).
 `,
     faqs: [
       ['Can anyone guarantee a #1 ranking?', 'No. Search engines control rankings and change them constantly. Be wary of guarantees. Ask instead how progress will be measured and reported.'],
@@ -134,7 +134,7 @@ Get listed in reputable local and industry directories. Join local business asso
 
 Measure calls, direction requests, website clicks and messages from your business profile, along with enquiries from your location pages. These show whether local visibility is turning into customers.
 
-Local SEO is included in every one of our [SEO packages](#/services/seo). Ongoing profile management is available as a [monthly add-on](#/services/seo).
+Local SEO is included in every one of our [SEO packages](/services/seo). Ongoing profile management is available as a [monthly add-on](/services/seo).
 `,
     faqs: [
       ['Can I rank in areas where I do not have an office?', 'Map results favour nearby businesses, so ranking far from your address is hard. Service-area settings and good service pages help you appear for searches across the areas you cover.'],
@@ -200,7 +200,7 @@ Reply to comments and messages promptly. Engage with your customers’ and partn
 
 Look beyond likes. Track reach, saves, shares, profile visits, link clicks and enquiries. Identify your top posts each month, understand why they worked, and make more of them.
 
-Want it done for you? Our [Social Media Marketing](#/services/social-media) packages include planning, design, reels, scheduling and reporting. Add [Reels & Video Production](#/services/video) for more video.
+Want it done for you? Our [Social Media Marketing](/services/social-media) packages include planning, design, reels, scheduling and reporting. Add [Reels & Video Production](/services/video) for more video.
 `,
     faqs: [
       ['How many posts per week is right?', 'There is no universal number. Start with a schedule you can sustain, often three to five posts a week, and adjust based on results and capacity.'],
@@ -255,7 +255,7 @@ Start with a modest daily budget, test two or three creatives and audiences, and
 
 For organic, track reach, engagement rate, follower growth and profile actions. For paid, track cost per result, conversion rate and, where possible, revenue or enquiries generated. Connect your website analytics so you can see what happens after the click.
 
-Our [Social Media Marketing](#/services/social-media) packages cover organic content. [Paid Advertising](#/services/advertising) handles campaigns across platforms.
+Our [Social Media Marketing](/services/social-media) packages cover organic content. [Paid Advertising](/services/advertising) handles campaigns across platforms.
 `,
     faqs: [
       ['Is boosting a post the same as running ads?', 'Boosting is a simplified form of advertising. Full ad campaigns offer more control over objectives, audiences, placements and testing, which usually means better results.'],
@@ -319,7 +319,7 @@ The creative is critical here. The first second of a video or the main image dec
 4. Compare on cost per conversion and lead quality, not clicks.
 5. Shift budget towards what performs.
 
-Our [Paid Advertising](#/services/advertising) packages include search and social campaigns with conversion tracking set up from day one. Pair them with a [campaign landing page](#/services/web-design) for best results.
+Our [Paid Advertising](/services/advertising) packages include search and social campaigns with conversion tracking set up from day one. Pair them with a [campaign landing page](/services/web-design) for best results.
 `,
     faqs: [
       ['Should I bid on my own brand name?', 'Often yes. It is usually cheap, protects you from competitors appearing above you, and lets you control the message. Review it periodically to confirm it adds value.'],
@@ -379,7 +379,7 @@ For lead generation, not every lead is equal. Track which campaigns produce lead
 - Lead-to-customer rate by source.
 - Decisions: what to scale, what to fix, what to pause.
 
-Our [Paid Advertising](#/services/advertising) packages report on these metrics. [Data Insights & Analytics](#/services/analytics) connects them to your sales data in one dashboard.
+Our [Paid Advertising](/services/advertising) packages report on these metrics. [Data Insights & Analytics](/services/analytics) connects them to your sales data in one dashboard.
 `,
     faqs: [
       ['What is a good conversion rate?', 'It varies widely by industry, offer, price and traffic source. Compare against your own past results and improve steadily, rather than chasing a generic benchmark.'],
@@ -451,7 +451,7 @@ Messaging apps get read quickly, which makes them ideal for order updates, appoi
 - Personalise beyond the first name: past purchases, location, interests.
 - Test on mobile, where most messages are read.
 
-Our [Email & WhatsApp Marketing](#/services/email-marketing) packages set up these flows and manage your campaigns every month.
+Our [Email & WhatsApp Marketing](/services/email-marketing) packages set up these flows and manage your campaigns every month.
 `,
     faqs: [
       ['How many emails should a welcome series have?', 'Three to five messages over one to two weeks works for most businesses. Measure engagement and trim messages that do not perform.'],
@@ -520,7 +520,7 @@ Sudden spikes in volume look suspicious. If you have a new domain or haven’t s
 
 Track bounce rates, spam complaints, unsubscribes and engagement after every send. Rising bounces or complaints are early warnings. Review DMARC reports to spot anyone misusing your domain.
 
-Deliverability setup comes with every [Email & WhatsApp Marketing](#/services/email-marketing) package, and authentication is part of our [Cloud Services](#/services/cloud) email setup.
+Deliverability setup comes with every [Email & WhatsApp Marketing](/services/email-marketing) package, and authentication is part of our [Cloud Services](/services/cloud) email setup.
 `,
     faqs: [
       ['Why do my emails go to the Promotions tab?', 'Tabs are based on content type, not quality. Promotional emails landing there is normal. Encouraging subscribers to interact and reply can help, but focus first on staying out of spam.'],

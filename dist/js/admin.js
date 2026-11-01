@@ -5,6 +5,7 @@ import { LEAD_STAGES, LEAD_SOURCES, ORDER_STATUSES, RAZORPAY } from './data.js';
 import { esc, icon, toast, field, per, date, dateTime, ago, badge, empty, modal, confirmBox, barChart, initials, $, $$ } from './ui.js';
 import { thread, bindThread } from './account.js';
 import * as Pay from './pay.js';
+import { navigate } from './router.js';
 
 const inr = D.inr;
 const k = n => n >= 100000 ? '₹' + (n / 100000).toFixed(1) + 'L' : n >= 1000 ? '₹' + Math.round(n / 1000) + 'k' : '₹' + n;
@@ -59,24 +60,24 @@ function dashboard() {
     title: 'Admin dashboard',
     html: `
     <div class="dash-head"><div><h1>Dashboard</h1><p class="muted">${now.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}</p></div>
-      <div class="row gap"><button class="btn ghost" data-newlead>${icon('plus')} Add lead</button><a class="btn primary" href="#/admin/orders">Orders</a></div></div>
+      <div class="row gap"><button class="btn ghost" data-newlead>${icon('plus')} Add lead</button><a class="btn primary" href="/admin/orders">Orders</a></div></div>
     <div class="kpis">
-      <div class="kpi"><small>Bookings this month</small><b>${inr(thisMonth)}</b><span>${outstanding ? `<a href="#/admin/orders">${inr(outstanding)} milestone balance due</a>` : 'incl. GST · nothing outstanding'}</span></div>
+      <div class="kpi"><small>Bookings this month</small><b>${inr(thisMonth)}</b><span>${outstanding ? `<a href="/admin/orders">${inr(outstanding)} milestone balance due</a>` : 'incl. GST · nothing outstanding'}</span></div>
       <div class="kpi"><small>Monthly recurring (MRR)</small><b>${inr(mrr)}</b><span>${activeSubs.length} active subscriptions</span></div>
       <div class="kpi"><small>New leads (30d)</small><b>${leads30.length}</b><span>${openPipe.length} open · ${k(openPipe.reduce((s, l) => s + (l.value || 0), 0))} pipeline</span></div>
       <div class="kpi"><small>Win rate</small><b>${winRate}%</b><span>${closed.length} closed leads</span></div>
     </div>
     <div class="dash-grid">
       <section class="card span2"><div class="card-head"><h3>Bookings — last 6 months</h3></div>${barChart(months, { fmt: k })}</section>
-      <section class="card"><div class="card-head"><h3>Follow-ups due</h3><a class="link" href="#/admin/pipeline">Pipeline</a></div>
-        ${due.length ? due.slice(0, 6).map(l => `<a class="list-row link-row" href="#/admin/leads/${l.id}"><div><b>${esc(l.name)}</b><small class="muted">${esc(l.company || l.source)} · ${esc(l.stage)}</small></div><span class="${new Date(l.followUp) < Date.now() ? 'overdue' : 'muted'}">${ago(l.followUp)}</span></a>`).join('') : empty('No follow-ups due.')}</section>
+      <section class="card"><div class="card-head"><h3>Follow-ups due</h3><a class="link" href="/admin/pipeline">Pipeline</a></div>
+        ${due.length ? due.slice(0, 6).map(l => `<a class="list-row link-row" href="/admin/leads/${l.id}"><div><b>${esc(l.name)}</b><small class="muted">${esc(l.company || l.source)} · ${esc(l.stage)}</small></div><span class="${new Date(l.followUp) < Date.now() ? 'overdue' : 'muted'}">${ago(l.followUp)}</span></a>`).join('') : empty('No follow-ups due.')}</section>
       <section class="card"><div class="card-head"><h3>Lead funnel</h3></div>
         <div class="funnel">${LEAD_STAGES.map(s => { const n = d.leads.filter(l => l.stage === s).length; return `<div><span>${s}</span><i style="width:${Math.max(4, n / Math.max(1, d.leads.length) * 100)}%" class="st-${s.toLowerCase()}"></i><b>${n}</b></div>`; }).join('')}</div></section>
       <section class="card"><div class="card-head"><h3>Leads by source</h3></div>
         <div class="funnel">${bySource.map(s => `<div><span>${esc(s.label)}</span><i style="width:${s.value / bySource[0].value * 100}%"></i><b>${s.value}</b></div>`).join('')}</div></section>
       <section class="card"><div class="card-head"><h3>Top services by revenue</h3></div>
         <div class="funnel">${top.map(([n, v]) => `<div><span>${esc(n)}</span><i style="width:${v / topMax * 100}%" class="st-won"></i><b>${k(v)}</b></div>`).join('')}</div></section>
-      <section class="card span2"><div class="card-head"><h3>Recent orders</h3><a class="link" href="#/admin/orders">All</a></div>${orderTable(d.orders.slice(0, 5), true)}</section>
+      <section class="card span2"><div class="card-head"><h3>Recent orders</h3><a class="link" href="/admin/orders">All</a></div>${orderTable(d.orders.slice(0, 5), true)}</section>
       <section class="card"><div class="card-head"><h3>Activity</h3></div>
         <ul class="feed">${d.activity.slice(0, 8).map(a => `<li><span class="muted">${ago(a.at)}</span>${esc(a.text)}</li>`).join('')}</ul></section>
     </div>`,
@@ -128,13 +129,13 @@ function leads(user, query) {
       <select name="sort" aria-label="Sort"><option value="new">Newest</option><option value="score" ${sort === 'score' ? 'selected' : ''}>Highest score</option><option value="value" ${sort === 'value' ? 'selected' : ''}>Highest value</option></select>
     </form>
     <div class="card table-wrap">${list.length ? `<table class="table hover"><thead><tr><th>Lead</th><th>Service</th><th>Source</th><th>Value</th><th>Score</th><th>Stage</th><th>Created</th></tr></thead><tbody>
-      ${list.map(l => `<tr data-href="#/admin/leads/${l.id}"><td><div class="who"><span class="avatar">${initials(l.name)}</span><div><b>${esc(l.name)}</b><small class="muted">${esc(l.company || l.email)}</small></div></div></td>
+      ${list.map(l => `<tr data-href="/admin/leads/${l.id}"><td><div class="who"><span class="avatar">${initials(l.name)}</span><div><b>${esc(l.name)}</b><small class="muted">${esc(l.company || l.email)}</small></div></div></td>
         <td>${esc(D.service(l.service)?.name || '—')}</td><td>${esc(l.source)}</td><td>${l.value ? inr(l.value) : '—'}</td>
         <td><span class="score s${Math.floor(l.score / 34)}">${l.score}</span></td><td>${badge(l.stage)}</td><td class="muted">${ago(l.createdAt)}</td></tr>`).join('')}
     </tbody></table>` : empty('No leads match these filters.')}</div>`,
     bind: root => {
       const f = $('#lf', root);
-      const apply = () => { const p = new URLSearchParams([...new FormData(f)].filter(([, v]) => v)); history.replaceState(null, '', '#/admin/leads' + (p.toString() ? '?' + p : '')); rerender(); };
+      const apply = () => { const p = new URLSearchParams([...new FormData(f)].filter(([, v]) => v)); history.replaceState(null, '', '/admin/leads' + (p.toString() ? '?' + p : '')); rerender(); };
       f.addEventListener('change', apply);
       f.addEventListener('submit', e => { e.preventDefault(); apply(); });
       $('[data-newlead]', root).addEventListener('click', () => editLead());
@@ -151,19 +152,19 @@ function leadDetail(user, query, id) {
   const s = D.service(l.service);
   return {
     title: l.name,
-    html: `<a class="link back" href="#/admin/leads">← Leads</a>
+    html: `<a class="link back" href="/admin/leads">← Leads</a>
     <div class="dash-head"><div class="who lg"><span class="avatar lg">${initials(l.name)}</span><div><h1>${esc(l.name)}</h1><p class="muted">${esc(l.company || 'Individual')} · ${esc(l.source)} · created ${date(l.createdAt)}</p></div></div>
       <div class="row gap wrap">
         ${l.phone ? `<a class="btn ghost" href="tel:${esc(l.phone)}">${icon('phoneCall')} Call</a><a class="btn ghost" target="_blank" rel="noopener" href="https://wa.me/${esc(l.phone.replace(/\D/g, ''))}">${icon('wa')} WhatsApp</a>` : ''}
         <a class="btn ghost" href="mailto:${esc(l.email)}">${icon('mail')} Email</a>
         <button class="btn ghost" data-edit>Edit</button>
-        ${cust ? `<a class="btn primary" href="#/admin/customers/${cust.id}">View customer</a>` : `<button class="btn primary" data-convert>Convert to customer</button>`}
+        ${cust ? `<a class="btn primary" href="/admin/customers/${cust.id}">View customer</a>` : `<button class="btn primary" data-convert>Convert to customer</button>`}
       </div></div>
     <div class="stagebar">${LEAD_STAGES.map(st => `<button class="${st === l.stage ? 'on' : ''} st-${st.toLowerCase()}" data-stage="${st}">${st}</button>`).join('')}</div>
     <div class="dash-grid">
       <section class="card"><h3>Details</h3><dl class="kv">
         <div><dt>Email</dt><dd>${esc(l.email)}</dd></div><div><dt>Phone</dt><dd>${esc(l.phone || '—')}</dd></div>
-        <div><dt>Service</dt><dd>${s ? `<a href="#/services/${s.id}">${esc(s.name)}</a>` : '—'}</dd></div>
+        <div><dt>Service</dt><dd>${s ? `<a href="/services/${s.id}/">${esc(s.name)}</a>` : '—'}</dd></div>
         <div><dt>Deal value</dt><dd>${l.value ? inr(l.value) : '—'}</dd></div>
         <div><dt>Lead score</dt><dd><span class="score s${Math.floor(l.score / 34)}">${l.score}</span></dd></div>
         <div><dt>Owner</dt><dd>${esc(l.owner)}</dd></div>
@@ -214,7 +215,7 @@ async function convert(l) {
   l.customerId = u.id; l.stage = 'Won'; l.followUp = null;
   l.notes.unshift({ at: new Date().toISOString(), by: 'System', text: 'Converted to customer account' });
   D.logActivity(`Lead ${l.name} converted to customer`);
-  D.save(); toast('Customer created'); location.hash = '#/admin/customers/' + u.id;
+  D.save(); toast('Customer created'); navigate('/admin/customers/' + u.id);
 }
 
 // ---------------- Pipeline (kanban) ----------------
@@ -238,8 +239,8 @@ function pipeline() {
       $$('.kcard', root).forEach(c => {
         c.addEventListener('dragstart', e => { dragId = c.dataset.id; e.dataTransfer.effectAllowed = 'move'; c.classList.add('dragging'); });
         c.addEventListener('dragend', () => c.classList.remove('dragging'));
-        c.addEventListener('click', () => { location.hash = '#/admin/leads/' + c.dataset.id; });
-        c.addEventListener('keydown', e => { if (e.key === 'Enter') location.hash = '#/admin/leads/' + c.dataset.id; });
+        c.addEventListener('click', () => { navigate('/admin/leads/' + c.dataset.id); });
+        c.addEventListener('keydown', e => { if (e.key === 'Enter') navigate('/admin/leads/' + c.dataset.id); });
       });
       $$('[data-col]', root).forEach(col => {
         col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('over'); });
@@ -267,11 +268,11 @@ function customerList(user, query) {
     ${list.map(c => {
       const os = d.orders.filter(o => o.customerId === c.id);
       const mrr = d.subscriptions.filter(s => s.customerId === c.id && s.status === 'Active').reduce((s, x) => s + D.subscriptionMonthly(x), 0);
-      return `<tr data-href="#/admin/customers/${c.id}"><td><div class="who"><span class="avatar">${initials(c.name)}</span><div><b>${esc(c.name)}</b><small class="muted">${esc(c.company || c.email)}</small></div></div></td>
+      return `<tr data-href="/admin/customers/${c.id}"><td><div class="who"><span class="avatar">${initials(c.name)}</span><div><b>${esc(c.name)}</b><small class="muted">${esc(c.company || c.email)}</small></div></div></td>
       <td>${esc(D.plan(c.plan || 'free')?.name)}</td><td>${os.length}</td><td>${inr(os.reduce((s, o) => s + o.total, 0))}</td><td>${mrr ? inr(mrr) : '—'}</td><td>${badge(c.status)}</td><td class="muted">${date(c.createdAt)}</td></tr>`;
     }).join('')}</tbody></table></div>`,
     bind: root => {
-      $('#cf', root).addEventListener('submit', e => { e.preventDefault(); const v = e.target.q.value; history.replaceState(null, '', '#/admin/customers' + (v ? '?q=' + encodeURIComponent(v) : '')); rerender(); });
+      $('#cf', root).addEventListener('submit', e => { e.preventDefault(); const v = e.target.q.value; history.replaceState(null, '', '/admin/customers' + (v ? '?q=' + encodeURIComponent(v) : '')); rerender(); });
       $('[data-new]', root).addEventListener('click', async () => {
         const f = await modal({ title: 'Add customer', submit: 'Create', body: `${field('Name', 'name', { required: true })}${field('Email', 'email', { type: 'email', required: true })}${field('Phone', 'phone', { type: 'tel' })}${field('Company', 'company')}${field('Temporary password', 'password', { value: 'welcome123', required: true, attrs: 'minlength="6"' })}` });
         if (!f) return;
@@ -279,7 +280,7 @@ function customerList(user, query) {
         try {
           const u = await D.register(Object.fromEntries(f));
           localStorage.setItem('vx_session', sess.id); // register signs in; keep the admin session
-          toast('Customer created'); location.hash = '#/admin/customers/' + u.id;
+          toast('Customer created'); navigate('/admin/customers/' + u.id);
         } catch (err) { localStorage.setItem('vx_session', sess.id); toast(err.message, 'err'); }
       });
       bindRows(root);
@@ -297,9 +298,9 @@ function customerDetail(user, query, id) {
   const lead = d.leads.find(l => l.customerId === c.id);
   return {
     title: c.name,
-    html: `<a class="link back" href="#/admin/customers">← Customers</a>
+    html: `<a class="link back" href="/admin/customers">← Customers</a>
     <div class="dash-head"><div class="who lg"><span class="avatar lg">${initials(c.name)}</span><div><h1>${esc(c.name)}</h1><p class="muted">${esc(c.company || '')} · ${esc(c.email)} · ${esc(c.phone || '')}</p></div></div>
-      <div class="row gap wrap">${lead ? `<a class="btn ghost" href="#/admin/leads/${lead.id}">Lead history</a>` : ''}
+      <div class="row gap wrap">${lead ? `<a class="btn ghost" href="/admin/leads/${lead.id}">Lead history</a>` : ''}
       <button class="btn ghost" data-plan>Change plan</button>
       <button class="btn ${c.status === 'Blocked' ? 'primary' : 'danger-ghost'}" data-block>${c.status === 'Blocked' ? 'Unblock' : 'Block'}</button></div></div>
     <div class="kpis">
@@ -310,7 +311,7 @@ function customerDetail(user, query, id) {
     </div>
     <section class="card"><h3>Orders</h3>${os.length ? orderTable(os) : empty('No orders.')}</section>
     <section class="card"><h3>Subscriptions</h3>${subs.length ? subTable(subs) : empty('No subscriptions.')}</section>
-    <section class="card"><h3>Support tickets</h3>${ts.length ? ts.map(t => `<a class="list-row link-row" href="#/admin/tickets?t=${t.id}"><span>#${t.number} ${esc(t.subject)}</span>${badge(t.status)}</a>`).join('') : empty('No tickets.')}</section>`,
+    <section class="card"><h3>Support tickets</h3>${ts.length ? ts.map(t => `<a class="list-row link-row" href="/admin/tickets?t=${t.id}"><span>#${t.number} ${esc(t.subject)}</span>${badge(t.status)}</a>`).join('') : empty('No tickets.')}</section>`,
     bind: root => {
       $('[data-block]', root).addEventListener('click', () => { c.status = c.status === 'Blocked' ? 'Active' : 'Blocked'; D.save(); toast(`Customer ${c.status.toLowerCase()}`); rerender(); });
       $('[data-plan]', root).addEventListener('click', async () => {
@@ -336,12 +337,12 @@ function orderTable(list, compact = false) {
     const bal = D.orderBalance(o);
     const pays = D.orderPayments(o);
     return `<tr><td><b>${esc(o.invoice)}</b><small class="muted block">${date(o.createdAt)}</small></td>
-    <td>${c ? `<a href="#/admin/customers/${c.id}">${esc(c.name)}</a>` : '—'}</td>
+    <td>${c ? `<a href="/admin/customers/${c.id}">${esc(c.name)}</a>` : '—'}</td>
     <td class="muted">${o.items.map(i => esc(i.title)).join('<br>')}</td><td><b>${inr(o.total)}</b></td>
     <td>${bal ? `${badge(`${pays.filter(p => p.paid).length}/${pays.length} paid`, 'amber')}<small class="muted block">${inr(bal)} due</small>${compact ? '' : `<button class="btn sm ghost" data-record="${o.id}">Record payment</button>`}` : badge(pays.length > 1 ? 'Milestones paid' : 'Paid', 'green')}</td>
     <td>${compact ? badge(o.status) : `<select data-status="${o.id}" aria-label="Order status">${ORDER_STATUSES.map(s => `<option ${s === o.status ? 'selected' : ''}>${s}</option>`).join('')}</select>`}</td>
     ${compact ? '' : `<td>${proj.length ? `<input type="range" min="0" max="100" step="5" value="${prog}" data-progress="${o.id}" aria-label="Progress"> <span class="muted">${prog}%</span>` : '<span class="muted">—</span>'}</td>
-    <td class="right"><a class="btn sm ghost" href="#/invoice/${o.id}">Invoice</a></td>`}</tr>`;
+    <td class="right"><a class="btn sm ghost" href="/invoice/${o.id}">Invoice</a></td>`}</tr>`;
   }).join('')}</tbody></table></div>`;
 }
 function bindOrderControls(root) {
@@ -376,7 +377,7 @@ function orders(user, query) {
   return {
     title: 'Orders',
     html: `<div class="dash-head"><div><h1>Orders</h1><p class="muted">${list.length} orders · ${inr(total)}</p></div><button class="btn ghost" data-export>${icon('download')} Export CSV</button></div>
-    <nav class="chips"><a class="chip ${!st ? 'on' : ''}" href="#/admin/orders">All</a>${ORDER_STATUSES.map(s => `<a class="chip ${s === st ? 'on' : ''}" href="#/admin/orders?status=${encodeURIComponent(s)}">${s} <small>${D.db().orders.filter(o => o.status === s).length}</small></a>`).join('')}</nav>
+    <nav class="chips"><a class="chip ${!st ? 'on' : ''}" href="/admin/orders">All</a>${ORDER_STATUSES.map(s => `<a class="chip ${s === st ? 'on' : ''}" href="/admin/orders?status=${encodeURIComponent(s)}">${s} <small>${D.db().orders.filter(o => o.status === s).length}</small></a>`).join('')}</nav>
     <section class="card">${list.length ? orderTable(list) : empty('No orders.')}</section>`,
     bind: root => {
       bindOrderControls(root);
@@ -425,7 +426,7 @@ function catalog(user, query) {
   const tab = query.get('t') || 'services';
   const tabs = [['services', 'Service packages'], ['plans', 'Membership plans'], ['addons', 'Add-ons'], ['products', 'Downloads'], ['coupons', 'Coupons']];
   let body = '';
-  if (tab === 'services') body = c.services.map((s, si) => `<section class="card"><div class="card-head"><div><h3>${esc(s.name)}</h3><small class="muted">Market ${inr(s.market[0])}–${inr(s.market[1])}${per(s.billing)} · ${s.billing === 'month' ? 'Monthly' : 'One-time'}</small></div><a class="link" href="#/services/${s.id}" target="_blank" rel="noopener">View page</a></div>
+  if (tab === 'services') body = c.services.map((s, si) => `<section class="card"><div class="card-head"><div><h3>${esc(s.name)}</h3><small class="muted">Market ${inr(s.market[0])}–${inr(s.market[1])}${per(s.billing)} · ${s.billing === 'month' ? 'Monthly' : 'One-time'}</small></div><a class="link" href="/services/${s.id}/" target="_blank" rel="noopener">View page</a></div>
     <div class="price-edit">${s.tiers.map((t, ti) => `<label><span>${esc(t.name)}</span><input type="number" min="0" step="1" value="${t.price}" data-price="services|${si}|${ti}" aria-label="${esc(s.name + ' ' + t.name)} price"><small class="${t.price < s.market[0] ? 'good' : t.price > s.market[1] ? 'overdue' : 'muted'}">${t.price < s.market[0] ? 'Below market' : t.price > s.market[1] ? 'Above market' : 'Within market'}</small></label>`).join('')}</div>
     ${s.competitors.length ? `<details class="comp-peek"><summary>Competitor prices (${s.competitors.length})</summary>${s.competitors.map(x => `<div class="list-row"><span><b>${esc(x.name)}</b> <small class="muted">${esc(x.kind)}</small></span><span>${esc(x.price)}</span></div>`).join('')}</details>` : ''}
     <p class="fine">${s.works.length} work items · price split scales with the price you set.</p></section>`).join('');
@@ -439,7 +440,7 @@ function catalog(user, query) {
   return {
     title: 'Services & pricing',
     html: `<div class="dash-head"><div><h1>Services & pricing</h1><p class="muted">Changes go live on the storefront immediately.</p></div></div>
-    <nav class="chips">${tabs.map(([id, n]) => `<a class="chip ${id === tab ? 'on' : ''}" href="#/admin/catalog?t=${id}">${n}</a>`).join('')}</nav>${body}`,
+    <nav class="chips">${tabs.map(([id, n]) => `<a class="chip ${id === tab ? 'on' : ''}" href="/admin/catalog?t=${id}">${n}</a>`).join('')}</nav>${body}`,
     bind: root => {
       $$('[data-price]', root).forEach(inp => inp.addEventListener('change', () => {
         const [coll, i, key] = inp.dataset.price.split('|');
@@ -468,13 +469,13 @@ function tickets(user, query) {
   return {
     title: 'Support',
     html: `<div class="dash-head"><h1>Support tickets</h1></div>
-    <nav class="chips">${[['open', 'Open'], ['closed', 'Closed'], ['all', 'All']].map(([id, n]) => `<a class="chip ${id === st ? 'on' : ''}" href="#/admin/tickets?s=${id}">${n}</a>`).join('')}</nav>
+    <nav class="chips">${[['open', 'Open'], ['closed', 'Closed'], ['all', 'All']].map(([id, n]) => `<a class="chip ${id === st ? 'on' : ''}" href="/admin/tickets?s=${id}">${n}</a>`).join('')}</nav>
     ${list.length || open ? `<div class="inbox">
-      <nav class="card inbox-list">${list.map(t => `<a href="#/admin/tickets?s=${st}&t=${t.id}" class="${t === open ? 'on' : ''}"><b>#${t.number} ${esc(t.subject)}</b><span class="row between"><small class="muted">${esc(userById(t.customerId)?.name)} · ${ago(t.messages.at(-1).at)}</small>${badge(t.priority)}</span></a>`).join('')}</nav>
+      <nav class="card inbox-list">${list.map(t => `<a href="/admin/tickets?s=${st}&t=${t.id}" class="${t === open ? 'on' : ''}"><b>#${t.number} ${esc(t.subject)}</b><span class="row between"><small class="muted">${esc(userById(t.customerId)?.name)} · ${ago(t.messages.at(-1).at)}</small>${badge(t.priority)}</span></a>`).join('')}</nav>
       <div>${open ? `<div class="row gap ticket-tools">
         <select data-tprio aria-label="Priority">${['Low', 'Normal', 'High'].map(p => `<option ${p === open.priority ? 'selected' : ''}>${p}</option>`).join('')}</select>
         <button class="btn sm ghost" data-tclose>${open.status === 'Closed' ? 'Reopen' : 'Close ticket'}</button>
-        <a class="btn sm ghost" href="#/admin/customers/${open.customerId}">Customer</a></div>${thread(open, user)}` : ''}</div>
+        <a class="btn sm ghost" href="/admin/customers/${open.customerId}">Customer</a></div>${thread(open, user)}` : ''}</div>
     </div>` : empty('No tickets here.')}`,
     bind: root => {
       if (!open) return;
@@ -523,7 +524,7 @@ function settings() {
 
 // ---------------- helpers ----------------
 function bindRows(root) {
-  $$('tr[data-href]', root).forEach(r => { r.tabIndex = 0; r.addEventListener('click', () => { location.hash = r.dataset.href; }); r.addEventListener('keydown', e => { if (e.key === 'Enter') location.hash = r.dataset.href; }); });
+  $$('tr[data-href]', root).forEach(r => { r.tabIndex = 0; r.addEventListener('click', () => { navigate(r.dataset.href); }); r.addEventListener('keydown', e => { if (e.key === 'Enter') navigate(r.dataset.href); }); });
 }
 function download(name, text, type = 'text/csv') {
   const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob([text], { type })), download: name });

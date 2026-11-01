@@ -52,7 +52,7 @@ A grounded assistant looks up the relevant parts of your approved pages and docu
 
 List your ten most common customer questions and the five actions customers need. If most are fixed steps, start with rules. If customers ask many different questions in their own words, start with a grounded AI assistant, and add rules for the actions.
 
-Our [AI Chatbot & WhatsApp Assistant](#/services/ai-chatbot) packages build the combined approach, with guardrails and handover included.
+Our [AI Chatbot & WhatsApp Assistant](/services/ai-chatbot) packages build the combined approach, with guardrails and handover included.
 `,
     faqs: [
       ['Will an AI chatbot replace my staff?', 'It handles repetitive questions so your team can focus on conversations that need judgement. Most businesses keep people for complex, sensitive and high-value interactions.'],
@@ -118,7 +118,7 @@ Start with a small audience or a single page. Review conversations daily in the 
 
 Update content when prices, policies or products change. Add answers for new questions that appear in the logs. Re-test regularly.
 
-Our [AI Chatbot & WhatsApp Assistant](#/services/ai-chatbot) service covers each of these steps, and our [Knowledge Assistant](#/services/ai-knowledge) suits larger document collections.
+Our [AI Chatbot & WhatsApp Assistant](/services/ai-chatbot) service covers each of these steps, and our [Knowledge Assistant](/services/ai-knowledge) suits larger document collections.
 `,
     faqs: [
       ['How long does it take to launch?', 'A focused assistant can launch within a few weeks. Preparing accurate content and testing usually take longer than the technical build.'],
@@ -180,7 +180,7 @@ Outbound calls should go only to people who have agreed to be contacted, at reas
 
 Track answered calls, completed bookings, qualified leads, transfers and caller satisfaction. Listen to a sample of recordings every week to find where the agent struggles.
 
-Our [AI Voice Agent](#/services/ai-voice) packages start with call analysis, so the agent handles the calls it is good at and passes the rest to you.
+Our [AI Voice Agent](/services/ai-voice) packages start with call analysis, so the agent handles the calls it is good at and passes the rest to you.
 `,
     faqs: [
       ['Will callers be able to tell it is AI?', 'Often yes, and they should be told. Good design focuses on quick, helpful calls rather than trying to fool anyone.'],
@@ -242,7 +242,7 @@ Define exactly when a call transfers to a person and what that person sees: the 
 
 Run many test calls: fast talkers, slow talkers, background noise, poor connections, changes of mind and unexpected questions. Review failures, adjust the flow and test again. After launch, listen to a sample of real calls every week.
 
-See how this fits into our [AI Voice Agent](#/services/ai-voice) build process, and how it connects with [automation](#/services/ai-automation) of bookings and follow-ups.
+See how this fits into our [AI Voice Agent](/services/ai-voice) build process, and how it connects with [automation](/services/ai-automation) of bookings and follow-ups.
 `,
     faqs: [
       ['How many questions can one call flow handle?', 'Keep each flow to a handful of questions. If a call needs many steps, split it into separate flows or hand part of it to a person.'],
@@ -300,7 +300,7 @@ Multiply time saved per run by how often it runs, then compare with the cost to 
 
 Build one workflow, test it with real examples, run it alongside the manual process for a short time and then switch. Document how it works and who owns it.
 
-Our [Business Process Automation](#/services/ai-automation) service starts with a process mapping session. For team skills, see [AI Consulting & Team Training](#/services/ai-training).
+Our [Business Process Automation](/services/ai-automation) service starts with a process mapping session. For team skills, see [AI Consulting & Team Training](/services/ai-training).
 `,
     faqs: [
       ['How much time can automation save?', 'It depends on the task. The biggest wins come from high-frequency processes where people repeat the same steps many times a week.'],
@@ -368,7 +368,7 @@ Use accounts you own and control, give automations only the permissions they nee
 - Test again after changing a connected app.
 - Retire workflows you no longer need.
 
-Our [Business Process Automation](#/services/ai-automation) packages include error alerts, logs and approval steps, and a monthly [monitoring add-on](#/services/ai-automation) is available. For hosting, see [Cloud Services](#/services/cloud).
+Our [Business Process Automation](/services/ai-automation) packages include error alerts, logs and approval steps, and a monthly [monitoring add-on](/services/ai-automation) is available. For hosting, see [Cloud Services](/services/cloud).
 `,
     faqs: [
       ['Is it safe to let AI write messages automatically?', 'Start with a human reviewing each message. Once you trust the quality for a specific, low-risk type of message, you can automate that type while keeping review for the rest.'],
@@ -435,7 +435,7 @@ Save approved briefs, strong examples, brand voice notes and prompts that work. 
 
 Track engagement, enquiries and conversions by content type, not just volume. If AI helps you publish more but results fall, tighten the edit stage.
 
-Our [AI Content & Creative Studio](#/services/ai-content) follows this workflow, and pairs well with [SEO Content Writing](#/services/content-writing).
+Our [AI Content & Creative Studio](/services/ai-content) follows this workflow, and pairs well with [SEO Content Writing](/services/content-writing).
 `,
     faqs: [
       ['Will search engines penalise AI-assisted content?', 'Search engines aim to reward helpful, original, reliable content regardless of how it was produced. Unedited, generic, mass-produced pages are the risk.'],
@@ -505,7 +505,7 @@ When you edit AI output, note the repeated corrections: “too formal”, “too
 
 Do not paste confidential information, customer personal data or unpublished plans into tools without understanding how they store and use it. Use business-grade tools and set clear rules for your team.
 
-Our [AI Content & Creative Studio](#/services/ai-content) starts by building your voice guide, and our [branding service](#/services/branding) can define the voice from scratch. Team skills are covered in [AI Consulting & Team Training](#/services/ai-training).
+Our [AI Content & Creative Studio](/services/ai-content) starts by building your voice guide, and our [branding service](/services/branding) can define the voice from scratch. Team skills are covered in [AI Consulting & Team Training](/services/ai-training).
 `,
     faqs: [
       ['How long should a brand voice guide be?', 'One to two pages is enough to be used every day. A longer brand book can sit behind it.'],
@@ -568,7 +568,7 @@ If a document is restricted, the assistant must not reveal its contents to peopl
 
 Internal helpdesks, onboarding, product and technical support, sales enablement, compliance questions and customer self-service.
 
-Our [Custom AI Assistant & Knowledge Base](#/services/ai-knowledge) service builds this with citations, access control and evaluation. Preparing your files first is covered in [Preparing Your Documents for an AI Knowledge Assistant](/blog/prepare-documents-for-ai-assistant/).
+Our [Custom AI Assistant & Knowledge Base](/services/ai-knowledge) service builds this with citations, access control and evaluation. Preparing your files first is covered in [Preparing Your Documents for an AI Knowledge Assistant](/blog/prepare-documents-for-ai-assistant/).
 `,
     faqs: [
       ['Does the assistant learn from my documents permanently?', 'Typically it reads them at question time rather than being retrained, which makes updates quick and keeps your data out of the model itself. Check how your chosen provider handles data.'],
@@ -637,7 +637,7 @@ Group documents by sensitivity: public, internal, restricted. Decide which peopl
 
 Write twenty to fifty questions with the correct answers and their source documents. Use them before launch and after every content change to confirm quality has not slipped.
 
-Our [Custom AI Assistant & Knowledge Base](#/services/ai-knowledge) packages include document preparation and evaluation. Pair them with an [AI usage policy](#/services/ai-training) for your team.
+Our [Custom AI Assistant & Knowledge Base](/services/ai-knowledge) packages include document preparation and evaluation. Pair them with an [AI usage policy](/services/ai-training) for your team.
 `,
     faqs: [
       ['How many documents do I need to start?', 'Start with the documents that answer your most frequent questions. A small, accurate set works better than a large, messy one.'],
@@ -705,7 +705,7 @@ Decide what data may be entered into AI tools, which tools are approved, what mu
 
 Revisit your list of use cases, results and risks every quarter. Tools improve quickly, so something that was impractical last quarter may now be easy.
 
-Our [AI Consulting & Team Training](#/services/ai-training) roadmap package runs this process for your business. To build the first project, see [Business Process Automation](#/services/ai-automation) or [AI Chatbot & WhatsApp Assistant](#/services/ai-chatbot).
+Our [AI Consulting & Team Training](/services/ai-training) roadmap package runs this process for your business. To build the first project, see [Business Process Automation](/services/ai-automation) or [AI Chatbot & WhatsApp Assistant](/services/ai-chatbot).
 `,
     faqs: [
       ['Do small businesses really need an AI strategy?', 'A lightweight plan is enough: a short list of use cases, some basic rules and a regular review. It prevents scattered, risky or wasted experiments.'],
@@ -780,7 +780,7 @@ Name who maintains the policy and who answers questions. Review it at least twic
 
 Privacy and data protection laws, client contracts and industry regulations may add obligations. If you handle sensitive data, ask a qualified adviser to review your policy.
 
-Our [AI Consulting & Team Training](#/services/ai-training) programmes include a policy template tailored to your business, and our [Knowledge Assistant](#/services/ai-knowledge) projects start with a data-safety review.
+Our [AI Consulting & Team Training](/services/ai-training) programmes include a policy template tailored to your business, and our [Knowledge Assistant](/services/ai-knowledge) projects start with a data-safety review.
 `,
     faqs: [
       ['Is a policy needed if only a few people use AI?', 'Yes, a short one. Small teams handle customer data too, and a brief policy prevents avoidable mistakes.'],
@@ -846,7 +846,7 @@ These tactics rarely work for long and can damage trust with people and platform
 
 Solid fundamentals still matter: crawlable pages, fast loading, clear structure and trustworthy content. See [SEO Fundamentals](/blog/seo-fundamentals/) and [Local SEO](/blog/local-seo-guide/).
 
-Our [AI Search Optimisation](#/services/ai-geo) service measures how assistants describe you and works to improve it, alongside our [SEO packages](#/services/seo).
+Our [AI Search Optimisation](/services/ai-geo) service measures how assistants describe you and works to improve it, alongside our [SEO packages](/services/seo).
 `,
     faqs: [
       ['Is GEO replacing SEO?', 'No. They overlap. Good SEO provides much of the foundation, and AI search adds attention to clear answers, entities and mentions.'],
@@ -914,7 +914,7 @@ Show a last-updated date when it matters, and revise pages when facts change. Re
 
 Ask assistants the questions your page answers. See whether your information is reflected correctly, and which sources are cited. Improve pages that are misunderstood.
 
-Our [AI Search Optimisation](#/services/ai-geo) packages include answer-first rewrites, schema and monthly checks. Writing support is available through [SEO Content Writing](#/services/content-writing).
+Our [AI Search Optimisation](/services/ai-geo) packages include answer-first rewrites, schema and monthly checks. Writing support is available through [SEO Content Writing](/services/content-writing).
 `,
     faqs: [
       ['Should I write differently for AI and for people?', 'Not really. Clear, specific, well-organised writing serves both. Avoid writing text that exists only to please machines.'],
