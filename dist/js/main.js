@@ -146,12 +146,24 @@ function dashShell(v, user) {
 }
 
 function bindChrome() {
-  const mb = $('.menu-btn');
-  mb?.addEventListener('click', () => { const open = $('#nav-links').classList.toggle('open'); mb.setAttribute('aria-expanded', open); });
+  const mb = $('.menu-btn'), menu = $('#nav-links');
+  // The menu sits before its button in the page, so opening it moves focus to the first link.
+  mb?.addEventListener('click', () => { const open = !menu.classList.contains('open'); setMenu(open); if (open) menu.querySelector('a')?.focus(); });
+  menu?.addEventListener('click', e => { if (e.target.closest('a')) setMenu(false); });
   const st = $('.side-toggle');
   st?.addEventListener('click', () => { const open = $('#side').classList.toggle('open'); st.setAttribute('aria-expanded', open); });
   $('[data-logout]')?.addEventListener('click', () => { D.logout(); location.hash = '#/'; });
+  markScrolled();
 }
+
+function setMenu(open) {
+  $('#nav-links')?.classList.toggle('open', open);
+  $('.menu-btn')?.setAttribute('aria-expanded', open);
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#nav-links.open')) { setMenu(false); $('.menu-btn').focus(); } });
+// The floating header firms up once the page scrolls under it.
+const markScrolled = () => $('.topbar')?.classList.toggle('scrolled', scrollY > 20);
+window.addEventListener('scroll', markScrolled, { passive: true });
 
 document.addEventListener('cart', () => $$('.cart-btn .count').forEach(c => { const n = cartCount(); c.textContent = n; c.hidden = !n; }));
 window.addEventListener('hashchange', safeRender);
