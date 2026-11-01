@@ -140,7 +140,7 @@ Data lives in each browser's `localStorage`. For production:
 
 ## Brand assets
 
-The shared header, footer, dashboards and invoices use `dist/images/vintorex-logo.png`, derived from the supplied transparent artwork preserved in `dist/images/vintorex-logo-original.png`. Browser icons live in `dist/icons/` and `dist/favicon.ico`; `dist/site.webmanifest` defines the Vintorex home-screen name and app icons. The 1200 × 630 sharing image is `dist/images/vintorex-social.png`.
+The header, footer, dashboards and invoices show the emblem as `dist/images/vintorex-emblem-144.webp` and `-288.webp` (trimmed, transparent, no block behind it, sized from the wordmark width). `vintorex-logo.png` is the same artwork on a square canvas for schema.org and checkout. Both come from the supplied transparent artwork preserved in `dist/images/vintorex-logo-original.png`. Browser icons live in `dist/icons/` and `dist/favicon.ico`; `dist/site.webmanifest` defines the Vintorex home-screen name and app icons. The 1200 × 630 sharing image is `dist/images/vintorex-social.png`.
 
 Next to the logo, the header, footer and dashboards show the wordmark: "Vintorex" in Gladiola and "DIGITAL SOLUTIONS" in Montaser Arabic, with Canva's echo effect. Canva doesn't export its fonts, so the site shows the supplied artwork (`dist/images/vintorex-wordmark-original.png`) rather than web fonts. `scripts/build-wordmark.py` cuts it into `vintorex-name-*.webp` and `vintorex-tagline-*.webp`, plus `-dark` versions for the footer and the admin sidebar; `brandLogo()` in `js/chrome.js` writes the markup. After replacing the artwork, check the crop boxes in the script, then run `python3 scripts/build-wordmark.py` (needs Pillow and NumPy) and `npm run build:blog`.
 

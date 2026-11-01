@@ -4,7 +4,8 @@ import { BUSINESS, SERVICES } from './data.js';
 import { esc, icon } from './ui.js';
 import { POLICIES } from './policies.js';
 
-export const logoMark = (alt = 'Vintorex brand logo') => `<img src="/images/vintorex-logo.png" class="logo-mark" alt="${alt}" width="44" height="44" decoding="async">`;
+// The emblem from the logo artwork, trimmed to its edges with a transparent background.
+export const logoMark = (alt = 'Vintorex brand logo') => `<img src="/images/vintorex-emblem-144.webp" srcset="/images/vintorex-emblem-144.webp 144w, /images/vintorex-emblem-288.webp 288w" sizes="80px" class="logo-mark" alt="${alt}" width="144" height="94" decoding="async">`;
 
 // The brand name and tagline are cut from the logo artwork (Gladiola and Montaser Arabic with Canva's
 // echo effect) by scripts/build-wordmark.py, which also makes a set for dark backgrounds.
