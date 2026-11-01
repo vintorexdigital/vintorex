@@ -169,12 +169,12 @@ export function home() {
 
     <section class="shell section">
       <div class="sec-head"><div><h2>Everything you need to grow online</h2><p class="muted">Fixed scopes, published packages and transparent delivery timelines.</p></div><a href="#/services" class="link">All ${c.services.length} services ${icon('arrow')}</a></div>
-      <div class="cards3">${featured.map((s, i) => serviceCard(s, i)).join('')}</div>
+      <div class="cards3 svc-grid">${featured.map((s, i) => serviceCard(s, i)).join('')}</div>
     </section>
 
     <section class="shell section">
       <div class="sec-head"><div><h2>AI & Automation for your business</h2><p class="muted">Chatbots, voice agents, workflows, content and AI search, with human review at every step.</p></div><a href="#/services?cat=ai" class="link">All AI services ${icon('arrow')}</a></div>
-      <div class="cards3">${c.services.filter(s => s.cat === 'ai').slice(0, 6).map((s, i) => serviceCard(s, i + 6)).join('')}</div>
+      <div class="cards3 svc-grid">${c.services.filter(s => s.cat === 'ai').slice(0, 6).map((s, i) => serviceCard(s, i + 6)).join('')}</div>
     </section>
 
     <section class="band">
@@ -220,8 +220,8 @@ export function home() {
                 <div class="quote-who">
                   <b>${esc(n)}</b>
                   <small>${esc(c)} · ${esc(city)}</small>
+                  <span class="quote-verified" title="Verified Google Review">${icon('check')} Verified</span>
                 </div>
-                <span class="quote-verified" title="Verified Google Review">${icon('check')} Verified</span>
               </figcaption>
             </figure>
           `).join('')}
@@ -316,6 +316,8 @@ function bindCycle(root) {
 export function services(params, query) {
   const cat = query.get('cat') || 'all';
   const list = D.catalog().services.filter(s => cat === 'all' || s.cat === cat);
+  // Hold the grid at three across only when that fills every row (all 21 services do; a 4-card category would leave one alone).
+  const gridClass = list.length % 3 ? 'cards3' : 'cards3 svc-grid';
   const catObj = CATEGORIES.find(c => c.id === cat);
   const title = catObj ? `${catObj.name} Services | Vintorex Coimbatore` : 'All 21 Digital Services & Packages | Vintorex Coimbatore';
   const description = catObj ? `${catObj.name}: ${catObj.blurb}. Fixed packages with published prices set below typical metro agency rates.` : 'Explore 21 fixed digital marketing, web design, SEO, ads, branding and AI automation services with transparent prices.';
@@ -331,7 +333,7 @@ export function services(params, query) {
         <a href="#/services" class="chip ${cat === 'all' ? 'on' : ''}">All</a>
         ${CATEGORIES.map(c => `<a href="#/services?cat=${c.id}" class="chip ${cat === c.id ? 'on' : ''}">${esc(c.name)} <small>${esc(c.blurb)}</small></a>`).join('')}
       </nav>
-      <div class="cards3">${list.map((s, i) => serviceCard(s, i)).join('')}</div>
+      <div class="${gridClass}">${list.map((s, i) => serviceCard(s, i)).join('')}</div>
     </section>`,
   };
 }
