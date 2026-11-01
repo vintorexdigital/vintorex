@@ -27,7 +27,9 @@ const { RAZORPAY_KEY_ID: KEY_ID, RAZORPAY_KEY_SECRET: KEY_SECRET } = process.env
 const RAZORPAY_API = process.env.RAZORPAY_API_BASE || 'https://api.razorpay.com/v1';
 const PORT = Number(process.env.PORT) || 5173;
 // Set HOST=127.0.0.1 in production so only the reverse proxy / tunnel on this machine can connect.
-const HOST = process.env.HOST || '0.0.0.0';
+// Unset, the server takes IPv6 and IPv4 together (Node's default); binding 0.0.0.0 alone left
+// [::1]:PORT free, so another local server could answer "localhost" without /api/chat.
+const HOST = process.env.HOST || undefined;
 const PAYMENTS = Boolean(KEY_ID && KEY_SECRET);
 const TOKEN_KEY = process.env.PAYMENT_TOKEN_SECRET || (KEY_SECRET && createHmac('sha256', KEY_SECRET).update('vintorex-token').digest('hex'));
 // Prices come from the shipped catalog, never from the browser.
