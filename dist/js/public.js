@@ -11,7 +11,6 @@ import { pageMeta, competitorNames } from './routes.js';
 import { serviceArt, serviceCardArt, ART, CATALOG_KEYWORDS, serviceImagePath } from './service-art.js';
 import { SHOP_ART } from './shop-art.js';
 import { WORK_PROJECTS, renderWorkCard } from './work-art.js';
-export { logoMark };
 
 const inr = D.inr;
 const go = path => navigate(path);

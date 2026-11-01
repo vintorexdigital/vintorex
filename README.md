@@ -142,6 +142,8 @@ Data lives in each browser's `localStorage`. For production:
 
 The shared header, footer, dashboards and invoices use `dist/images/vintorex-logo.png`, derived from the supplied transparent artwork preserved in `dist/images/vintorex-logo-original.png`. Browser icons live in `dist/icons/` and `dist/favicon.ico`; `dist/site.webmanifest` defines the Vintorex home-screen name and app icons. The 1200 × 630 sharing image is `dist/images/vintorex-social.png`.
 
+Next to the logo, the header, footer and dashboards show the wordmark: "Vintorex" in Gladiola and "DIGITAL SOLUTIONS" in Montaser Arabic, with Canva's echo effect. Canva doesn't export its fonts, so the site shows the supplied artwork (`dist/images/vintorex-wordmark-original.png`) rather than web fonts. `scripts/build-wordmark.py` cuts it into `vintorex-name-*.webp` and `vintorex-tagline-*.webp`, plus `-dark` versions for the footer and the admin sidebar; `brandLogo()` in `js/chrome.js` writes the markup. After replacing the artwork, check the crop boxes in the script, then run `python3 scripts/build-wordmark.py` (needs Pillow and NumPy) and `npm run build:blog`.
+
 Browser metadata is shared through `dist/js/brand.js`. Run `npm run build:blog` after changing branding so the home page and every static guide receive the same icons and metadata.
 
 ## Typography

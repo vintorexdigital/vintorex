@@ -4,7 +4,17 @@ import { BUSINESS, SERVICES } from './data.js';
 import { esc, icon } from './ui.js';
 import { POLICIES } from './policies.js';
 
-export const logoMark = () => `<img src="/images/vintorex-logo.png" class="logo-mark" alt="Vintorex brand logo" width="44" height="44" decoding="async">`;
+export const logoMark = (alt = 'Vintorex brand logo') => `<img src="/images/vintorex-logo.png" class="logo-mark" alt="${alt}" width="44" height="44" decoding="async">`;
+
+// The brand name and tagline are cut from the logo artwork (Gladiola and Montaser Arabic with Canva's
+// echo effect) by scripts/build-wordmark.py, which also makes a set for dark backgrounds.
+const wordmarkImg = (part, alt, [w, h], sizes, dark) => {
+  const src = width => `/images/vintorex-${part}${dark ? '-dark' : ''}-${width}.webp`;
+  return `<img class="wm-${part}" src="${src(w)}" srcset="${src(w)} ${w}w, ${src(w * 2)} ${w * 2}w" sizes="${sizes}" width="${w}" height="${h}" alt="${alt}" decoding="async">`;
+};
+// The mark and the wordmark, which names the brand, so the mark is decorative here. A label such as
+// "Client portal" takes the tagline's place.
+export const brandLogo = ({ dark = false, label = '' } = {}) => `${logoMark('')}<span class="wordmark">${wordmarkImg('name', 'Vintorex', [400, 86], '240px', dark)}${label ? `<small>${label}</small>` : wordmarkImg('tagline', 'Digital Solutions', [300, 15], '170px', dark)}</span>`;
 
 const NAV = [['/services', 'Services'], ['/pricing', 'Pricing'], ['/compare', 'Compare'], ['/blog', 'Blog'], ['/shop', 'Shop'], ['/about', 'About'], ['/contact', 'Contact']];
 // The services index and the blog are static pages, which live at /services/ and /blog/.
@@ -22,7 +32,7 @@ export function siteHeader({ here = '', cart = 0, account = '' } = {}) {
     <a class="announce-cta" href="${to('/#audit')}">Request my free audit <span aria-hidden="true">→</span></a>
   </div></div>
   <header class="topbar"><div class="nav">
-    <a class="logo" href="${to('/')}">${logoMark()}<span>Vintorex<small>Digital Solutions</small></span></a>
+    <a class="logo" href="${to('/')}">${brandLogo()}</a>
     <nav class="nav-links" id="nav-links" aria-label="Primary">${NAV.map(([h, l]) => `<a href="${to(h)}" class="${here.startsWith(h) ? 'on' : ''}">${l}</a>`).join('')}
       <div class="nav-menu-cta">${signIn}${quote}</div>
     </nav>
@@ -37,7 +47,7 @@ export function siteHeader({ here = '', cart = 0, account = '' } = {}) {
 
 export function siteFooter({ services = SERVICES } = {}) {
   return `<footer class="footer"><div class="shell foot-grid">
-    <div><a class="logo" href="${to('/')}">${logoMark()}<span>Vintorex<small>Digital Solutions</small></span></a><p class="muted">${esc(BUSINESS.tagline)} Digital marketing, web and cloud services from Coimbatore.</p>
+    <div><a class="logo" href="${to('/')}">${brandLogo({ dark: true })}</a><p class="muted">${esc(BUSINESS.tagline)} Digital marketing, web and cloud services from Coimbatore.</p>
       <div class="row gap wrap">${Object.entries(BUSINESS.social).map(([n, u]) => `<a class="chip" href="${u}" target="_blank" rel="noopener">${n}</a>`).join('')}</div></div>
     <div class="foot-links"><h4>Services</h4>${services.slice(0, 7).map(s => `<a href="${svcLink(s.id)}">${esc(s.name)}</a>`).join('')}<a href="/services/">All services &amp; prices</a></div>
     <div class="foot-links"><h4>Company</h4><a href="${to('/about')}">About</a><a href="${to('/pricing')}">Pricing</a><a href="${to('/compare')}">Competitor analysis</a><a href="/blog/">Blog & guides</a><a href="/faq/">FAQ</a><a href="${to('/shop')}">Shop</a><a href="${to('/contact')}">Contact</a></div>

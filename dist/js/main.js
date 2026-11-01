@@ -6,7 +6,7 @@ import * as Acc from './account.js';
 import * as Adm from './admin.js';
 import * as Pay from './pay.js';
 import { BUSINESS } from './data.js';
-import { siteHeader, siteFooter } from './chrome.js';
+import { siteHeader, siteFooter, brandLogo } from './chrome.js';
 import { esc, icon, initials, responsiveTables, $, $$ } from './ui.js';
 import { matchRoute, trimPath, isPrivate, canonicalPath, ROBOTS_INDEX } from './routes.js';
 import { navigate, interceptLinks, legacyUrl, NAVIGATE } from './router.js';
@@ -123,7 +123,7 @@ function dashShell(v, user) {
   return `<a class="skip" href="#main">Skip to content</a>
   <div class="dash ${admin ? 'is-admin' : ''}">
     <aside class="side" id="side">
-      <a class="logo" href="/">${Pub.logoMark()}<span>Vintorex<small>${admin ? 'Admin · CRM' : 'Client portal'}</small></span></a>
+      <a class="logo" href="/">${brandLogo({ dark: admin, label: admin ? 'Admin · CRM' : 'Client portal' })}</a>
       <nav aria-label="Dashboard">${nav.map(([t, l, ic]) => `<a href="${base}${t ? '/' + t : ''}" class="${v.tab === t ? 'on' : ''}">${icon(ic)}<span>${l}</span>${badges[t] ? `<em>${badges[t]}</em>` : ''}</a>`).join('')}</nav>
       <div class="side-foot">
         ${admin ? '<a href="/">' + icon('home') + '<span>View storefront</span></a>' : '<a href="/services/">' + icon('bag') + '<span>Shop services</span></a>'}
