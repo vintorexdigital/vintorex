@@ -302,6 +302,10 @@ createServer(async (req, res) => {
     if (res.headersSent) return res.end();
     send(res, err.status || 500, { error: err.status ? err.message : 'Something went wrong. Please try again.' });
   }
+}).on('error', err => {
+  if (err.code !== 'EADDRINUSE') throw err;
+  console.error(`Port ${PORT} is already in use, so this server did not start: another process, probably an old copy of this server, is listening there. Find it with: sudo ss -ltnp | grep ${PORT}`);
+  process.exit(1);
 }).listen(PORT, HOST, () => {
   if (PAYMENTS) checkRazorpay();
   const mode = PAYMENTS ? `on, ${KEY_ID.startsWith('rzp_live_') ? 'LIVE' : 'test'} key` : 'off (set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)';
