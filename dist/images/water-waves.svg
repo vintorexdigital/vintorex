@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="240" viewBox="0 0 600 240" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="water" x2="0" y2="1">
+      <stop stop-color="#88c8d6" stop-opacity=".56"/>
+      <stop offset=".55" stop-color="#bfe4ec" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#bfe4ec" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <path d="M0 72 Q75 22 150 72 T300 72 T450 72 T600 72 V230 H0Z" fill="url(#water)"/>
+  <path d="M0 72 Q75 22 150 72 T300 72 T450 72 T600 72" fill="none" stroke="#fff" stroke-opacity=".82" stroke-width="3"/>
+</svg>

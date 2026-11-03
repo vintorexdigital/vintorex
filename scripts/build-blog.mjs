@@ -94,7 +94,7 @@ function page({ path, title, description, keywords = '', type = 'website', image
   <meta name="twitter:image" content="${esc(ogImg)}">
   <meta name="twitter:image:alt" content="${esc(ogImgAlt)}">
   <link rel="preload" href="/fonts/inter-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/app.css?v=4">
+  <link rel="stylesheet" href="/css/app.css?v=6">
   <link rel="stylesheet" href="/css/typography.css">
 ${path === '/offer' ? '<link rel="stylesheet" href="/css/offer.css">' : ''}
   ${schema.map(jsonLd).join('\n  ')}

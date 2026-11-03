@@ -1,3 +1,4 @@
+import "./water.js";
 // Router and page shells (public site, customer dashboard, admin panel). Pages have real URLs such as
 // /contact and /account/orders; routes.js lists them and router.js moves between them without a reload.
 import * as D from './db.js';
