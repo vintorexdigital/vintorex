@@ -172,10 +172,11 @@ function bindPayNext(root) {
     const o = D.db().orders.find(o => o.id === b.dataset.paynext);
     const next = D.orderPayments(o).find(p => !p.paid);
     if (Pay.live()) return payInstalment(o, next);
+    if (!D.isLocalHost()) return toast('Online payments are not available right now. Please try again later or contact us on WhatsApp.', 'err');
     const f = await modal({ title: `Pay ${next.label.toLowerCase()}`, submit: `Pay ${inr(next.amount)}`, body: `
       <p>${esc(o.invoice)} · ${inr(next.amount)} of ${inr(D.orderBalance(o))} balance.</p>
       ${field('Payment method', 'method', { options: ['UPI', 'Card', 'Net banking', 'Bank transfer'] })}
-      <p class="hint">${icon('shield')} Demo mode: payment is simulated.</p>` });
+      <p class="hint">${icon('shield')} Local demo mode: payment is simulated.</p>` });
     if (!f) return;
     D.payNext(o, f.get('method'));
     toast(`Paid ${inr(next.amount)} — thank you!`); rerender();

@@ -723,13 +723,16 @@ export function checkout() {
           </div>
           <ol class="milestones small">${q.milestones.map((m, i) => `<li><span><b>${m.pct}%</b> ${esc(m.label)}${i === 0 && q.lines.some(l => !(l.type === 'package' && l.info.billing === 'once')) ? ' <small class="muted">+ other items in full</small>' : ''}</span><b>${inr(m.amount)}</b></li>`).join('')}</ol>` : ''}
           ${Pay.live() ? `<h3>Payment</h3>
-          <p class="hint">${icon('shield')} Pay securely by UPI, card, net banking or wallet in the Razorpay window.</p>` : `<h3>Payment method</h3>
+          <p class="hint">${icon('shield')} Pay securely by UPI, card, net banking or wallet in the Razorpay window.</p>`
+          : D.isLocalHost() ? `<h3>Payment method</h3>
           <div class="pay-methods">
             ${['UPI', 'Card', 'Net banking', 'Bank transfer'].map((m, i) => `<label class="pay-opt"><input type="radio" name="method" value="${m}" ${i ? '' : 'checked'}><span>${esc(m)}</span></label>`).join('')}
           </div>
-          <p class="hint">${icon('shield')} Demo mode: payment is simulated until the Razorpay payment server is connected.</p>`}
+          <p class="hint">${icon('shield')} Local demo mode: payment is simulated. Connect Razorpay on the payment server before going live.</p>`
+          : `<h3>Payment</h3>
+          <p class="hint">${icon('shield')} Online payments are temporarily unavailable. Please try again later or contact us on WhatsApp.</p>`}
           <label class="check"><input type="checkbox" required> I agree to the <a href="/terms/" target="_blank" rel="noopener">terms</a> and the <a href="/refund-policy/" target="_blank" rel="noopener">cancellation & refund policy</a>.</label>
-          <button class="btn primary lg block" id="pay-btn">Pay ${inr(q.total)}</button>
+          <button class="btn primary lg block" id="pay-btn" ${!Pay.live() && !D.isLocalHost() ? 'disabled' : ''}>${Pay.live() || D.isLocalHost() ? `Pay ${inr(q.total)}` : 'Payments unavailable'}</button>
         </form>
         ${summary(q, '')}
       </div>
@@ -747,6 +750,11 @@ export function checkout() {
         const reset = () => { btn.disabled = false; btn.textContent = label; };
         btn.disabled = true;
         if (!Pay.live()) {
+          // Simulated checkout is loopback-only. A live domain without /api/payments must not create free orders.
+          if (!D.isLocalHost()) {
+            reset();
+            return toast('Online payments are not available right now. Please try again later or contact us on WhatsApp.', 'err');
+          }
           btn.textContent = 'Processing payment…';
           setTimeout(() => {
             const order = D.placeOrder(user, D.getCart(), coupon, f.method, plan);

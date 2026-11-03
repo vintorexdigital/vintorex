@@ -203,11 +203,19 @@ Data lives in each browser's `localStorage`. For production:
 
 ## Brand assets
 
-The header, footer, dashboards and invoices show the emblem as `dist/images/vintorex-emblem-144.webp` and `-288.webp` (trimmed, transparent, no block behind it, sized from the wordmark width). `vintorex-logo.png` is the same artwork on a square canvas for schema.org and checkout. Both come from the supplied transparent artwork preserved in `dist/images/vintorex-logo-original.png`. Browser icons live in `dist/icons/` and `dist/favicon.ico`; `dist/site.webmanifest` defines the Vintorex home-screen name and app icons. The 1200 × 630 sharing image is `dist/images/vintorex-social.png`.
+The winged-V mark is built by `npm run build:logo` (`scripts/build-logo.py`, needs Pillow and NumPy) from `dist/images/vintorex-logo-original.png`. It writes:
 
-Next to the logo, the header, footer and dashboards show the wordmark: "Vintorex" in Gladiola and "DIGITAL SOLUTIONS" in Montaser Arabic, with Canva's echo effect. Canva doesn't export its fonts, so the site shows the supplied artwork (`dist/images/vintorex-wordmark-original.png`) rather than web fonts. `scripts/build-wordmark.py` cuts it into `vintorex-name-*.webp` and `vintorex-tagline-*.webp`, plus `-dark` versions for the footer and the admin sidebar; `brandLogo()` in `js/chrome.js` writes the markup. After replacing the artwork, check the crop boxes in the script, then run `python3 scripts/build-wordmark.py` (needs Pillow and NumPy) and `npm run build:blog`.
+- Transparent emblems: `vintorex-emblem-144.webp`, `-288.webp`, `-480.webp` (header, footer, dashboards, invoices, page loader)
+- Square app mark: `vintorex-logo.png` (schema.org, Razorpay checkout, chat)
+- Icons: `dist/icons/icon-{16,32,48,192,512}.png`, `apple-touch-icon.png`, `icon-maskable-512.png`, plus `dist/favicon.ico`
+- Share card: `dist/images/vintorex-social.png` (1200×630)
+- PWA: `dist/site.webmanifest` (theme/background `#1a1a1c`)
 
-Browser metadata is shared through `dist/js/brand.js`. Run `npm run build:blog` after changing branding so the home page and every static guide receive the same icons and metadata.
+The SPA boot screen in `dist/index.html` is a responsive animated loader using the emblem. After replacing the source mark, run `npm run build:logo` then `npm run build:blog`.
+
+Next to the emblem, the header, footer and dashboards show the wordmark cut from `dist/images/vintorex-wordmark-original.png` via `scripts/build-wordmark.py` (`vintorex-name-*.webp` / `vintorex-tagline-*.webp`, plus `-dark` variants). `brandLogo()` in `js/chrome.js` writes the markup.
+
+Browser metadata is shared through `dist/js/brand.js`. Run `npm run build:blog` after changing branding so every static page receives the same icons and metadata.
 
 ## Typography
 

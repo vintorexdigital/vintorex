@@ -11,6 +11,8 @@ const CART = 'vx_cart';
 const safe = (fn, fallback) => { try { return fn(); } catch { return fallback; } };
 export const uid = (p = '') => p + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-3);
 const daysAgo = (d, h = 10) => { const t = new Date(); t.setDate(t.getDate() - d); t.setHours(h, 0, 0, 0); return t.toISOString(); };
+// Demo CRM seed and simulated checkout stay on loopback only. Live hosts fail closed.
+export const isLocalHost = () => /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) || location.hostname.endsWith('.local');
 
 // Passwords are stored as PBKDF2-SHA256 with a per-user salt ("pbkdf2$iterations$salt$hash").
 // Older accounts keep the plain SHA-256 form until their next successful sign-in upgrades it.
@@ -34,6 +36,7 @@ async function verify(text, stored = '') {
 }
 
 let state = null;
+let sessionUser = null;
 
 export function db() {
   if (!state) state = safe(() => JSON.parse(localStorage.getItem(KEY)), null);
@@ -41,9 +44,34 @@ export function db() {
 }
 export function save() { safe(() => localStorage.setItem(KEY, JSON.stringify(state))); }
 
+async function sessionToken(userId, pass, salt) {
+  return legacyHash(`${userId}|${pass || ''}|${salt}`);
+}
+function clearSession() {
+  sessionUser = null;
+  safe(() => localStorage.removeItem(SESSION));
+}
+async function openSession(u) {
+  const salt = hex(crypto.getRandomValues(new Uint8Array(16)));
+  const token = await sessionToken(u.id, u.pass, salt);
+  sessionUser = u;
+  safe(() => localStorage.setItem(SESSION, JSON.stringify({ id: u.id, salt, token })));
+  return u;
+}
+async function restoreSession() {
+  const raw = safe(() => JSON.parse(localStorage.getItem(SESSION)), null);
+  // Drop the old plain user-id session format (it allowed setting vx_session=u_admin).
+  if (!raw || typeof raw !== 'object' || !raw.id || !raw.salt || !raw.token) { clearSession(); return; }
+  const u = db()?.users?.find(x => x.id === raw.id);
+  if (!u || u.status === 'Blocked') { clearSession(); return; }
+  if (await sessionToken(u.id, u.pass, raw.salt) !== raw.token) { clearSession(); return; }
+  sessionUser = u;
+}
+
 export async function init() {
-  if (!db()) { state = await seed(); save(); return; }
-  if (state.catalogVersion !== CATALOG_VERSION) { refreshCatalog(state); save(); }
+  if (!db()) { state = await seed(); save(); }
+  else if (state.catalogVersion !== CATALOG_VERSION) { refreshCatalog(state); save(); }
+  await restoreSession();
 }
 // Replace services, add-ons and plans with the shipped catalog; new downloads are merged in,
 // coupons and all customer data are kept.
@@ -57,6 +85,15 @@ function refreshCatalog(s) {
   // Retire the published demo admin password in browsers that already stored the old data.
   const admin = (s.users || []).find(u => u.id === 'u_admin');
   if (admin) admin.pass = ADMIN_PASS;
+  // Live hosts: drop seeded demo CRM that older builds put in every visitor's browser.
+  if (!isLocalHost()) {
+    const demoIds = new Set(['u_demo', 'u_kailash', 'u_yamuna', 'u_arjun', 'u_divya']);
+    s.users = (s.users || []).filter(u => !demoIds.has(u.id));
+    s.orders = (s.orders || []).filter(o => !String(o.id || '').startsWith('o_seed'));
+    s.subscriptions = (s.subscriptions || []).filter(sub => !demoIds.has(sub.customerId));
+    s.leads = (s.leads || []).filter(l => !demoIds.has(l.customerId) && !['demo@vintorex.com', 'kailash@idolworld.in', 'yamuna@emsolutions.in', 'arjun@kovaicafe.in', 'divya@glowclinic.in'].includes(String(l.email || '').toLowerCase()));
+    s.tickets = (s.tickets || []).filter(t => !demoIds.has(t.customerId));
+  }
   s.catalogVersion = CATALOG_VERSION;
 }
 export async function resetDemo() { state = await seed(); save(); setCart([]); }
@@ -86,19 +123,15 @@ export function splitFor(s, tierIndex) {
 }
 
 // ---------- auth ----------
-export const currentUser = () => {
-  const id = safe(() => localStorage.getItem(SESSION), null);
-  return id ? db().users.find(u => u.id === id) || null : null;
-};
+export const currentUser = () => sessionUser;
 export async function login(email, password) {
   const u = db().users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
   if (!u || !await verify(password, u.pass)) throw new Error('Email or password is incorrect.');
   if (!u.pass.startsWith('pbkdf2$')) { u.pass = await hash(password); save(); }
   if (u.status === 'Blocked') throw new Error('This account is blocked. Contact support.');
-  safe(() => localStorage.setItem(SESSION, u.id));
-  return u;
+  return openSession(u);
 }
-export function logout() { safe(() => localStorage.removeItem(SESSION)); }
+export function logout() { clearSession(); }
 const findUser = email => db().users.find(u => u.email.toLowerCase() === String(email).trim().toLowerCase());
 export const userByEmail = findUser;
 // True when the password matches the one stored in this browser (accounts made before Firebase Auth).
@@ -117,25 +150,34 @@ function createCustomer({ name, email, phone, company, pass }) {
 }
 // Signs in the customer record for an email that Firebase has just authenticated, creating it on first use.
 // Their password lives with Firebase, so none is kept here. The admin account is never reached this way.
-export function adoptUser({ name, email, phone, company }) {
+export async function adoptUser({ name, email, phone, company }) {
   let u = findUser(email);
   if (u?.role === 'admin') throw new Error('Use the admin sign-in for this account.');
   if (u?.status === 'Blocked') throw new Error('This account is blocked. Contact support.');
   if (!u) u = createCustomer({ name: name || String(email).split('@')[0], email, phone, company, pass: '' });
   else if (!u.pass.startsWith('pbkdf2$')) u.pass = '';
   save();
-  safe(() => localStorage.setItem(SESSION, u.id));
-  return u;
+  return openSession(u);
+}
+// Re-bind the signed-in session after admin creates a customer (register() would otherwise steal the session).
+export async function resumeSession(userId) {
+  const u = db().users.find(x => x.id === userId);
+  if (!u) { clearSession(); return null; }
+  return openSession(u);
 }
 // Local-only sign-up, used when Firebase is unavailable.
 export async function register({ name, email, phone, company, password }) {
   if (findUser(email)) throw new Error('An account with this email already exists.');
   const u = createCustomer({ name, email, phone, company, pass: await hash(password) });
   save();
-  safe(() => localStorage.setItem(SESSION, u.id));
-  return u;
+  return openSession(u);
 }
-export async function changePassword(user, next) { user.pass = await hash(next); save(); }
+export async function changePassword(user, next) {
+  user.pass = await hash(next);
+  save();
+  // Re-bind the session to the new password hash so a stolen old token cannot stay signed in.
+  if (sessionUser?.id === user.id) await openSession(user);
+}
 
 // ---------- cart ----------
 export const getCart = () => safe(() => JSON.parse(localStorage.getItem(CART)) || [], []);
@@ -273,8 +315,19 @@ export const inr = n => '₹' + Math.round(n).toLocaleString('en-IN');
 // ---------- seed ----------
 async function seed() {
   const clone = x => JSON.parse(JSON.stringify(x));
+  const admin = { id: 'u_admin', role: 'admin', name: 'Ranjith Kumar', email: 'admin@vintorex.com', phone: BUSINESS.phone, pass: ADMIN_PASS, status: 'Active', createdAt: daysAgo(400), tags: [] };
+  // Live hosts get a clean catalog only — no demo customers, leads, phones or password hashes for visitors.
+  if (!isLocalHost()) {
+    return {
+      version: 1, catalogVersion: CATALOG_VERSION,
+      settings: { gst: BUSINESS.gst, businessName: BUSINESS.name, email: BUSINESS.email, phone: BUSINESS.phone, gstin: '', address: BUSINESS.address },
+      counters: { invoice: 0, ticket: 1000 },
+      catalog: { services: clone(SERVICES), plans: clone(PLANS), addons: clone(ADDONS), products: clone(PRODUCTS), coupons: clone(COUPONS).map(c => ({ ...c, active: true })) },
+      users: [admin], orders: [], subscriptions: [], leads: [], tickets: [], activity: [],
+    };
+  }
   const users = [
-    { id: 'u_admin', role: 'admin', name: 'Ranjith Kumar', email: 'admin@vintorex.com', phone: BUSINESS.phone, pass: ADMIN_PASS, status: 'Active', createdAt: daysAgo(400), tags: [] },
+    admin,
     { id: 'u_demo', role: 'customer', name: 'Siva Prakash', email: 'demo@vintorex.com', phone: '+91 98430 11223', company: 'Prakash Textiles', pass: await legacyHash('demo123'), plan: 'premium', status: 'Active', createdAt: daysAgo(150), tags: ['Retail'] },
     { id: 'u_kailash', role: 'customer', name: 'Kailash', email: 'kailash@idolworld.in', phone: '+91 94422 55110', company: 'The World of Idols', pass: await legacyHash('demo123'), plan: 'elite', status: 'Active', createdAt: daysAgo(170), tags: ['E-commerce'] },
     { id: 'u_yamuna', role: 'customer', name: 'Yamuna', email: 'yamuna@emsolutions.in', phone: '+91 99940 33442', company: 'Electrical & Mechanical Solutions', pass: await legacyHash('demo123'), plan: 'free', status: 'Active', createdAt: daysAgo(120), tags: ['Industrial'] },

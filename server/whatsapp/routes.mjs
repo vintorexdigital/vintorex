@@ -81,10 +81,13 @@ async function receive(req, res) {
       if (key) seen.add(key);
       try { bus.emit(evt.kind, evt); } catch (err) { console.error('WhatsApp handler error', err); }
     }
-    // Hand every event to another backend too, if asked.
+    // Hand every event to another backend too, if asked. Prefer FORWARD_WEBHOOK_SECRET so the sink can authenticate us.
     if (config.forwardUrl && events.length) {
+      const headers = { 'Content-Type': 'application/json' };
+      if (config.forwardSecret) headers.Authorization = 'Bearer ' + config.forwardSecret;
+      else console.warn('FORWARD_WEBHOOK_URL is set without FORWARD_WEBHOOK_SECRET; the receiving URL is not authenticated.');
       fetch(config.forwardUrl, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(10000),
+        method: 'POST', headers, signal: AbortSignal.timeout(10000),
         body: JSON.stringify({ events: events.map(({ raw, ...e }) => e) }),
       }).catch(err => console.error('WhatsApp forward failed:', err.message));
     }

@@ -204,8 +204,8 @@ function setStage(l, stage, user) {
 
 async function convert(l) {
   const f = await modal({ title: 'Convert to customer', submit: 'Create customer', body: `<p>Creates a customer account for <b>${esc(l.name)}</b> (${esc(l.email)}) and marks the lead as Won.</p>
-    ${field('Temporary password', 'pw', { value: 'welcome123', required: true, attrs: 'minlength="6"' })}
-    <p class="hint">Share the login with the customer. They can subscribe to a paid plan from their dashboard, or you can set one from the customer page.</p>` });
+    ${field('Temporary password', 'pw', { value: D.uid('tmp'), required: true, attrs: 'minlength="8" autocomplete="new-password"' })}
+    <p class="hint">Share this one-time password with the customer, then ask them to change it. They can subscribe from their dashboard, or you can set a plan from the customer page.</p>` });
   if (!f) return;
   let u = D.db().users.find(u => u.email.toLowerCase() === l.email.toLowerCase());
   if (!u) {
@@ -274,14 +274,14 @@ function customerList(user, query) {
     bind: root => {
       $('#cf', root).addEventListener('submit', e => { e.preventDefault(); const v = e.target.q.value; history.replaceState(null, '', '/admin/customers' + (v ? '?q=' + encodeURIComponent(v) : '')); rerender(); });
       $('[data-new]', root).addEventListener('click', async () => {
-        const f = await modal({ title: 'Add customer', submit: 'Create', body: `${field('Name', 'name', { required: true })}${field('Email', 'email', { type: 'email', required: true })}${field('Phone', 'phone', { type: 'tel' })}${field('Company', 'company')}${field('Temporary password', 'password', { value: 'welcome123', required: true, attrs: 'minlength="6"' })}` });
+        const f = await modal({ title: 'Add customer', submit: 'Create', body: `${field('Name', 'name', { required: true })}${field('Email', 'email', { type: 'email', required: true })}${field('Phone', 'phone', { type: 'tel' })}${field('Company', 'company')}${field('Temporary password', 'password', { value: D.uid('tmp'), required: true, attrs: 'minlength="8" autocomplete="new-password"' })}` });
         if (!f) return;
         const sess = D.currentUser();
         try {
           const u = await D.register(Object.fromEntries(f));
-          localStorage.setItem('vx_session', sess.id); // register signs in; keep the admin session
+          await D.resumeSession(sess.id); // register signs the new customer in; keep the admin session
           toast('Customer created'); navigate('/admin/customers/' + u.id);
-        } catch (err) { localStorage.setItem('vx_session', sess.id); toast(err.message, 'err'); }
+        } catch (err) { await D.resumeSession(sess.id); toast(err.message, 'err'); }
       });
       bindRows(root);
     },
@@ -505,7 +505,7 @@ function settings() {
         <dl class="kv"><div><dt>Razorpay Key ID</dt><dd><code>${esc(RAZORPAY.keyId)}</code> ${RAZORPAY.keyId.startsWith('rzp_live_') ? badge('Live', 'green') : badge('Test', 'amber')}</dd></div>
           <div><dt>Key secret</dt><dd>In <code>.env</code> for the payment server</dd></div>
           <div><dt>Payment server</dt><dd>${Pay.live() ? badge('Connected', 'green') : badge('Not running', 'grey')}</dd></div></dl>
-        <p class="muted">${Pay.live() ? 'Checkout takes real Razorpay payments. The server prices each order and verifies every payment signature.' : 'Checkout runs in demo mode. Run the site with <code>npm start</code> to take real Razorpay payments.'}</p>
+        <p class="muted">${Pay.live() ? 'Checkout takes real Razorpay payments. The server prices each order and verifies every payment signature.' : D.isLocalHost() ? 'Local demo mode simulates payments. Run with <code>npm start</code> and set Razorpay keys plus <code>PAYMENT_TOKEN_SECRET</code> for real checkout.' : 'Online payments are disabled until the payment server is connected with Razorpay keys and <code>PAYMENT_TOKEN_SECRET</code>.'}</p>
         <ul class="ticks col"><li>${icon('check')}Razorpay / UPI — ${Pay.live() ? 'live' : 'needs the payment server'}</li><li>${icon('check')}WhatsApp Business API — for lead alerts</li><li>${icon('check')}Email (SMTP / Brevo) — for order mails</li></ul>
         <h3>Data</h3>
         <div class="row gap wrap"><button class="btn ghost" data-backup>${icon('download')} Backup JSON</button><button class="btn danger-ghost" data-reset>Reset demo data</button></div>

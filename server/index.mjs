@@ -37,7 +37,11 @@ const PORT = Number(process.env.PORT) || 5173;
 // [::1]:PORT free, so another local server could answer "localhost" without /api/chat.
 const HOST = process.env.HOST || undefined;
 const PAYMENTS = Boolean(KEY_ID && KEY_SECRET);
-const TOKEN_KEY = process.env.PAYMENT_TOKEN_SECRET || (KEY_SECRET && createHmac('sha256', KEY_SECRET).update('vintorex-token').digest('hex'));
+// Membership/instalment tokens must use their own secret. Falling back to the Razorpay key
+// couples payment rotation to every signed membership and widens blast radius if either leaks.
+const TOKEN_KEY = process.env.PAYMENT_TOKEN_SECRET
+  || (!PAYMENTS ? '' : (console.error('PAYMENT_TOKEN_SECRET is not set. Online payments are disabled until you add one (openssl rand -hex 32). Do not reuse RAZORPAY_KEY_SECRET.'), ''));
+const PAYMENTS_READY = PAYMENTS && Boolean(TOKEN_KEY);
 // Prices come from the shipped catalog, never from the browser.
 const CATALOG = { services: SERVICES, addons: ADDONS, plans: PLANS, products: PRODUCTS, coupons: COUPONS };
 const DAY = 864e5;
@@ -187,11 +191,11 @@ async function readJson(req) {
 }
 
 async function api(req, pathname) {
-  if (pathname === '/api/payments' && req.method === 'GET') return PAYMENTS ? { enabled: true, keyId: KEY_ID } : { enabled: false };
+  if (pathname === '/api/payments' && req.method === 'GET') return PAYMENTS_READY ? { enabled: true, keyId: KEY_ID } : { enabled: false };
   const route = { '/api/payments/order': 'order', '/api/payments/verify': 'verify' }[pathname];
   if (!route) throw new HttpError(404, 'Not found.');
   if (req.method !== 'POST') throw new HttpError(405, 'Method not allowed.');
-  if (!PAYMENTS) throw new HttpError(503, 'Online payments are not set up.');
+  if (!PAYMENTS_READY) throw new HttpError(503, 'Online payments are not set up.');
   if (route === 'order') { rateLimit(req); return createOrder(await readJson(req)); }
   return verifyPayment(await readJson(req));
 }
@@ -307,8 +311,10 @@ createServer(async (req, res) => {
   console.error(`Port ${PORT} is already in use, so this server did not start: another process, probably an old copy of this server, is listening there. Find it with: sudo ss -ltnp | grep ${PORT}`);
   process.exit(1);
 }).listen(PORT, HOST, () => {
-  if (PAYMENTS) checkRazorpay();
-  const mode = PAYMENTS ? `on, ${KEY_ID.startsWith('rzp_live_') ? 'LIVE' : 'test'} key` : 'off (set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)';
+  if (PAYMENTS_READY) checkRazorpay();
+  const mode = PAYMENTS_READY ? `on, ${KEY_ID.startsWith('rzp_live_') ? 'LIVE' : 'test'} key`
+    : PAYMENTS ? 'off (set PAYMENT_TOKEN_SECRET — openssl rand -hex 32)'
+    : 'off (set RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET and PAYMENT_TOKEN_SECRET)';
   const assistant = AI_ON ? 'on (Cloudflare Workers AI)' : 'search-only (set CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN)';
   const wa = whatsappMissing();
   const whatsapp = wa.send.length ? `off (set ${wa.send.join(', ')})` : `on${wa.webhook.length ? `, webhook off (set ${wa.webhook.join(', ')})` : ''}${wa.api.length ? `, API off (set ${wa.api.join(', ')})` : ''}`;

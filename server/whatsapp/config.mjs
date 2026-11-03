@@ -17,6 +17,8 @@ export const config = {
   get apiKey() { return env('WHATSAPP_API_KEY'); },
   get countryCode() { return env('DEFAULT_COUNTRY_CODE', '91'); },
   get forwardUrl() { return env('FORWARD_WEBHOOK_URL'); },
+  // Optional Bearer token sent with FORWARD_WEBHOOK_URL so the receiving backend can authenticate us.
+  get forwardSecret() { return env('FORWARD_WEBHOOK_SECRET'); },
   get bot() { return /^(on|true|1)$/i.test(env('WHATSAPP_BOT')); },
   // Partner (Tech Provider / Solution Partner) settings, only for onboarding client WABAs.
   // Facebook Login for Business configuration with the WhatsApp Embedded Signup product (App dashboard → Facebook Login for Business).

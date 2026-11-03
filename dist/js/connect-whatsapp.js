@@ -51,9 +51,10 @@ export function connectWhatsapp(params, query) {
           done.innerHTML = `<p><b>${icon('check')} Your WhatsApp number is connected.</b></p><p class="muted">Vintorex can now set up your messages. If you have not yet added a payment method, do it in <a href="https://business.facebook.com/wa/manage/home/" target="_blank" rel="noopener">WhatsApp Manager</a> → Overview → Add payment method.</p>`;
         } catch (e) { sent = false; session = code = null; intro.textContent = 'Setup did not finish.'; fail(e); }
       };
+      const FB_ORIGINS = new Set(['https://www.facebook.com', 'https://web.facebook.com', 'https://facebook.com', 'https://m.facebook.com', 'https://l.facebook.com']);
       window.addEventListener('message', e => {
-        if (!e.origin.endsWith('facebook.com')) return;
-        let data; try { data = JSON.parse(e.data); } catch { return; }
+        if (!FB_ORIGINS.has(e.origin)) return;
+        let data; try { data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch { return; }
         if (data.type !== 'WA_EMBEDDED_SIGNUP') return;
         if (/^FINISH/.test(data.event) && data.data?.waba_id && data.data?.phone_number_id) { session = data.data; finish(); }
         else if (data.event === 'ERROR') fail(new Error(data.data?.error_message || 'WhatsApp reported an error. Please try again.'));

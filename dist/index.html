@@ -8,13 +8,19 @@
   <!-- brand-meta -->
   <meta name="application-name" content="Vintorex">
   <meta name="apple-mobile-web-app-title" content="Vintorex">
-  <meta name="theme-color" content="#0f1222">
-  <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48 64x64 128x128 256x256">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1a1a1c">
+  <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
   <!-- /brand-meta -->
+  <link rel="preload" href="/images/vintorex-emblem-288.webp" as="image" type="image/webp">
   <meta name="description" content="Vintorex Digital Solutions, Coimbatore — websites, e-commerce, SEO, social media, ads, branding and cloud services with transparent pricing.">
   <meta name="keywords" content="website design coimbatore, web development coimbatore, ecommerce store development, mobile app development, seo services coimbatore, local seo, social media marketing coimbatore, google ads management, meta ads, email marketing, whatsapp marketing, digital branding, logo design, seo content writing, reels and video production, industrial product design, cloud hosting, web analytics, website maintenance, ai chatbot, ai voice agent, business process automation, ai content studio, custom ai assistant, ai team training, ai search optimisation, vintorex digital solutions">
   <meta property="og:site_name" content="Vintorex">
@@ -51,7 +57,17 @@
   <!-- /business-jsonld -->
 </head>
 <body>
-  <div id="app"><div class="boot">Loading Vintorex…</div></div>
+  <div id="app">
+    <div class="boot" role="status" aria-live="polite" aria-label="Loading Vintorex">
+      <div class="boot-stage">
+        <span class="boot-glow" aria-hidden="true"></span>
+        <img class="boot-mark" src="/images/vintorex-emblem-288.webp" srcset="/images/vintorex-emblem-144.webp 144w, /images/vintorex-emblem-288.webp 288w, /images/vintorex-emblem-480.webp 480w" sizes="(max-width: 480px) 42vw, 260px" width="288" height="182" alt="" decoding="async" fetchpriority="high">
+        <p class="boot-brand">Vintorex</p>
+        <p class="boot-tag">Digital Solutions</p>
+        <span class="boot-bar" aria-hidden="true"></span>
+      </div>
+    </div>
+  </div>
   <div id="toasts" aria-live="polite"></div>
   <!-- seo-noscript -->
   <noscript>

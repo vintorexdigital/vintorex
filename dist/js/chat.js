@@ -19,6 +19,7 @@ const save = () => { try { sessionStorage.setItem(KEY, JSON.stringify({ ...state
 // Escaped first, then a small Markdown subset. Links are kept only for this site,
 // WhatsApp, phone and email; [n] citations link to the answer's sources.
 const SITE_LINK = /^(\/|https:\/\/(vintorex\.com|wa\.me)\/|tel:|mailto:)/;
+const SAFE_HREF = /^(https?:|\/|#|tel:|mailto:)/i;
 // Pages the assistant may name in plain text: the app's own (/pricing, /account/orders), the #anchors on the home page
 // (/#audit) and the static pages, which are always followed by a slash.
 const APP_PATHS = ROUTES.filter(r => r.length > 1 && !r.includes(':')).map(r => r.slice(1)).join('|');
@@ -42,7 +43,11 @@ function inline(t, sources) {
     .replace(/(^|[^*\w])\*(?=\S)(.+?)\*(?!\w)/g, '$1<em>$2</em>')
     .replace(tokens, (m, label, href, cites, pre, path, phone, email) => {
       if (label) return SITE_LINK.test(href) ? link(href, label) : label;
-      if (cites) return citeNums(cites).map(n => sources[n - 1] ? `<a class="vxc-cite" href="${esc(sources[n - 1].url)}" title="${esc(sources[n - 1].title)}">${n}</a>` : '').join('');
+      if (cites) return citeNums(cites).map(n => {
+        const src = sources[n - 1];
+        if (!src || !SAFE_HREF.test(src.url || '')) return '';
+        return `<a class="vxc-cite" href="${esc(src.url)}" title="${esc(src.title)}"${/^https?:/i.test(src.url) ? ' target="_blank" rel="noopener"' : ''}>${n}</a>`;
+      }).join('');
       if (path) return pre + link(path, path.replace(/^https:\/\//, ''));
       if (phone) return `<a href="tel:${phone.replace(/\s/g, '')}">${phone}</a>`;
       return `<a href="mailto:${email}">${email}</a>`;
@@ -90,7 +95,7 @@ function message(m, last) {
   const body = m.content ? format(m.content, m.sources) : m.note ? '' : '<span class="vxc-typing" role="status" aria-label="The assistant is typing"><i></i><i></i><i></i></span>';
   const sources = cited(m);
   return `<div class="vxc-msg bot"><div class="vxc-bubble">${body}${m.note ? `<p class="vxc-note">${esc(m.note)}</p>` : ''}</div>
-    ${sources.length ? `<div class="vxc-sources"><span>Sources</span>${sources.map(s => `<a href="${esc(s.url)}">${esc(s.title.replace(/^Guide: /, '').split(' — ')[0])}</a>`).join('')}</div>` : ''}
+    ${sources.length ? `<div class="vxc-sources"><span>Sources</span>${sources.filter(s => SAFE_HREF.test(s.url || '')).map(s => `<a href="${esc(s.url)}"${/^https?:/i.test(s.url) ? ' target="_blank" rel="noopener"' : ''}>${esc(s.title.replace(/^Guide: /, '').split(' — ')[0])}</a>`).join('')}</div>` : ''}
     ${last && (m.content || m.note) && !controller ? handover() : ''}</div>`;
 }
 
