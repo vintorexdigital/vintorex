@@ -254,7 +254,7 @@ for (const s of SERVICES) await out(`services/${s.id}/index.html`, servicePage(s
 await out('faq/index.html', faqPage());
 
 // ---------- sitemap, robots and llms.txt ----------
-const APP_PAGES = ['/offer', '/pricing', '/compare', '/shop', '/about', '/contact'];
+const APP_PAGES = ['/vintorent', '/offer', '/pricing', '/compare', '/shop', '/about', '/contact'];
 const urls = ['/', '/services/', ...SERVICES.map(s => servicePath(s.id)), ...APP_PAGES, '/faq/', '/blog/', ...POSTS.map(postUrl), ...POLICIES.map(p => p.path)];
 const priority = u => u === '/' ? '1.0' : u === '/services/' || u.startsWith('/services/') ? '0.9' : u === '/faq/' || u === '/blog/' || APP_PAGES.includes(u) ? '0.8' : u.startsWith('/blog/') ? '0.7' : '0.3';
 await out('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
@@ -275,6 +275,7 @@ const noscript = `<!-- seo-noscript -->
       <p>${esc(`${SERVICES.length} services with published prices from ${inr(Math.min(...SERVICES.map(fromPrice)))} (excluding 18% GST): websites, online stores, mobile apps, SEO, social media, ads, branding, cloud hosting, analytics and AI automation.`)}</p>
       <p>The online shop, customer dashboard and checkout need JavaScript. The pages below work without it.</p>
       <ul>${SERVICES.map(s => `<li><a href="${servicePath(s.id)}">${esc(s.name)}</a>: from ${inr(fromPrice(s))}${s.billing === 'month' ? '/month' : ''}</li>`).join('')}</ul>
+      <p><a href="/vintorent">Vintorent downloads, image upscaling and public profile analysis</a></p>
       <p><a href="/services/">All services and prices</a> · <a href="/faq/">FAQ</a> · <a href="/blog/">Guides</a> · <a href="/privacy-policy/">Privacy</a> · <a href="/terms/">Terms</a></p>
       <p>${esc(BUSINESS.address)} · <a href="tel:+918667209838">${esc(BUSINESS.phone)}</a> · <a href="mailto:${BUSINESS.email}">${esc(BUSINESS.email)}</a></p>
     </main>

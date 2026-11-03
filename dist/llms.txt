@@ -36,6 +36,9 @@ Prices reviewed October 2026. Full text of every service, price and FAQ: https:/
 - [AI Consulting & Team Training](https://vintorex.com/services/ai-training/): from ₹34,999. Hands-on workshops and a clear roadmap so your team uses AI safely and gets real results.
 - [AI Search Optimisation (GEO)](https://vintorex.com/services/ai-geo/): from ₹19,999/month. Get your business understood, cited and recommended in AI answers and AI search results.
 
+## Public tools
+- [Vintorent](https://vintorex.com/vintorent): Find files on public pages, manage browser torrents and analyse public social profiles. Upscale PNG, JPEG and WebP images locally up to 32 megapixels, compare the original and result with a slider, and save a PNG.
+
 ## Company
 - [All services and prices](https://vintorex.com/services/)
 - [Frequently asked questions](https://vintorex.com/faq/)

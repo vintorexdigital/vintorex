@@ -173,7 +173,7 @@ export function home() {
       <div class="card vintorent-feature">
         <img src="/images/vintorent-logo.svg" width="72" height="72" alt="">
         <div><p class="eyebrow">Public project</p><h2 id="vintorent-heading">Vintorent download manager</h2>
-        <p>Save files from direct links, find media on supported pages, and manage browser-compatible torrents in one place.</p></div>
+        <p>Paste a public URL to find linked videos, documents and archives. Manage browser-compatible torrents or <a href="/vintorent#profiles">explore public audience statistics</a> and estimate YouTube revenue using your own inputs.</p><p><a href="/vintorent#upscaler">Enlarge and compare images</a> locally. Export a PNG up to 32 megapixels and use the comparison slider to see what changed.</p></div>
         <a class="btn primary" href="/vintorent">Open Vintorent ${icon('arrow')}</a>
       </div>
     </section>

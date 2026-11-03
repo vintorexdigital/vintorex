@@ -208,6 +208,9 @@ Prices reviewed ${REVIEWED.label}. Full text of every service, price and FAQ: ${
 
 ${CATEGORIES.map(c => `## ${c.name}\n${services.filter(s => s.cat === c.id).map(line).join('\n')}`).join('\n\n')}
 
+## Public tools
+- [Vintorent](${site}/vintorent): Find files on public pages, manage browser torrents and analyse public social profiles. Upscale PNG, JPEG and WebP images locally up to 32 megapixels, compare the original and result with a slider, and save a PNG.
+
 ## Company
 - [All services and prices](${site}/services/)
 - [Frequently asked questions](${site}/faq/)
