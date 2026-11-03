@@ -25,3 +25,37 @@
   .offer-hero,.offer-enquire,.offer-steps,.offer-grid { grid-template-columns:minmax(0,1fr); }
   .offer-steps { gap:0; }
 }
+
+.offer-dialog { width:min(520px,calc(100% - 24px)); max-height:calc(100dvh - 24px); margin:auto; padding:clamp(18px,4vw,32px); overflow:auto; overscroll-behavior:contain; border:1px solid var(--line); border-radius:20px; color:var(--ink); box-shadow:0 20px 70px #15102840; }
+.offer-dialog::backdrop { background:rgb(22 15 39 / .65); }
+body:has(.offer-dialog[open]) { overflow:hidden; }
+.offer-dialog header { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.offer-dialog header p { margin:0; }
+.offer-dialog h2 { margin-block:12px 4px; }
+.offer-dialog .offer-form { padding:0; }
+.offer-ticket { position:relative; display:grid; place-content:center; text-align:center; min-height:108px; margin:16px 0; overflow:hidden; border-radius:14px; background:linear-gradient(120deg,#fbebb7,#f4d295); color:#493414; }
+.offer-ticket b { font-size:1.6rem; }
+.offer-ticket canvas { position:absolute; inset:0; width:100%; height:100%; touch-action:none; cursor:crosshair; }
+.offer-dialog [hidden] { display:none; }
+.offer-actions { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr)); gap:12px; align-items:stretch; }
+.offer-actions .btn { min-width:0; white-space:normal; text-align:center; justify-content:center; }
+.offer-signin { grid-column:1 / -1; justify-self:start; padding-block:4px; }
+.offer-dialog { overflow-wrap:anywhere; }
+.offer-dialog [data-close] { flex:none; }
+.offer-dialog [data-status]:not(:empty) { margin:12px 0 0; }
+.offer-confetti { position:absolute; left:50%; top:50%; width:5px; height:9px; border-radius:2px; pointer-events:none; animation:offer-burst .85s ease-out both; }
+.offer-ticket.celebrating b { position:relative; z-index:1; animation:offer-prize .55s ease-out both; }
+@keyframes offer-burst {
+  from { opacity:0; transform:scale(.25); }
+  15% { opacity:1; }
+  to { opacity:0; transform:translate(var(--dx),var(--dy)) rotate(190deg); }
+}
+@keyframes offer-prize {
+  from { opacity:.35; transform:scale(.84); }
+  60% { transform:scale(1.08); }
+  to { opacity:1; transform:scale(1); }
+}
+@media (prefers-reduced-motion:reduce) {
+  .offer-confetti { display:none; }
+  .offer-ticket.celebrating b { animation:none; }
+}

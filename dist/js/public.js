@@ -1055,7 +1055,7 @@ export function register(params, query) {
         <p class="err" hidden></p>
         <button class="btn primary block lg">Create account</button>
         <button type="button" class="btn ghost block" data-google>Sign up with Google</button>
-        <p class="center muted">Already have an account? <a href="/login">Sign in</a></p>
+        <p class="center muted">Already have an account? <a href="/login${query.get('next') ? '?next=' + encodeURIComponent(query.get('next')) : ''}">Sign in</a></p>
       </form>
     </section>`,
     bind: root => {

@@ -220,3 +220,8 @@ Browser metadata is shared through `dist/js/brand.js`. Run `npm run build:blog` 
 ## Typography
 
 `dist/css/typography.css` defines the shared Inter type scale, heading weights, reading widths, form text and dashboard styles. It loads after `app.css` on the app and all generated pages. The variable Latin WOFF2 font is hosted in `dist/fonts/`, with its SIL Open Font License in `Inter-OFL.txt`; other scripts and unsupported characters use the native system fallbacks. No external font request is needed. Run `npm run build:blog` after updating page-level stylesheet links.
+
+### Registered scratch offers
+The Node server at /offer draws a signed ₹7,999–₹9,999 coupon and verifies the customer's Firebase ID token before saving a claim. Each Firebase UID can own one claim and each code can be claimed once. The quoted tier price is frozen at claim time. The credit is capped at the tier price before GST. Customers return to /offer to pay through Razorpay, or see a settled zero-balance claim. For monthly services the coupon covers the selected package payment once.
+
+Run the offer server with Node 22.13+ and persist OFFER_DB_PATH on a private durable volume shared by the server across restarts. Back it up with the SQLite database. Configure OFFER_ADMIN_KEY on the server and provide it privately to staff for Admin → Qualified offer leads. Follow-up dates and notes are managed there. Static hosting alone cannot save claims. Use Firebase Authentication and Razorpay test credentials to exercise signup and payment in staging.

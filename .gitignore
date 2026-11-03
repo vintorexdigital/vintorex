@@ -46,3 +46,6 @@ tmp/
 
 # Not ignored on purpose: dist/ (hosting serves the generated pages, bundles and images as committed),
 # package-lock.json, server/chat-vectors.json (npm run build:chat) and .env.example.
+
+# Private offer records
+/var/

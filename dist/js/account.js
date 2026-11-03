@@ -12,6 +12,7 @@ export const NAV = [
   ['subscription', 'My plan & add-ons', 'repeat'],
   ['orders', 'Projects & orders', 'bag'],
   ['downloads', 'Downloads', 'download'],
+  ['offer', 'My service coupon', 'tag'],
   ['invoices', 'Invoices', 'receipt'],
   ['support', 'Support', 'help'],
   ['profile', 'Profile', 'user'],
@@ -23,7 +24,7 @@ export const setRerender = fn => { rerender = fn; };
 const mine = (coll, user) => D.db()[coll].filter(x => x.customerId === user.id);
 
 export function view({ tab = '' }, query, user) {
-  const tabs = { '': overview, subscription, orders, downloads, invoices, support, profile };
+  const tabs = { '': overview, subscription, orders, downloads, invoices, support, profile, offer: () => ({title:'My service coupon',html:'<section class="card pad"><h1>My service coupon</h1><p>Review your saved service, discounted price and payment status.</p><a class="btn primary" href="/offer">Open my offer</a></section>'}) };
   const fn = Object.hasOwn(tabs, tab) && tabs[tab];
   if (!fn) return { redirect: '/account' };
   const v = fn(user, query);

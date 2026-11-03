@@ -1,5 +1,6 @@
 // Admin panel: dashboard, lead CRM + pipeline, customers, orders, subscriptions,
 // catalog & pricing editor, support tickets and settings.
+import { offerLeads } from './offer-leads.js';
 import * as D from './db.js';
 import { LEAD_STAGES, LEAD_SOURCES, ORDER_STATUSES, RAZORPAY } from './data.js';
 import { esc, icon, toast, field, per, date, dateTime, ago, badge, empty, modal, confirmBox, barChart, initials, $, $$ } from './ui.js';
@@ -13,6 +14,7 @@ const k = n => n >= 100000 ? '₹' + (n / 100000).toFixed(1) + 'L' : n >= 1000 ?
 export const NAV = [
   ['', 'Dashboard', 'chart'],
   ['leads', 'Leads', 'funnel'],
+  ['offers', 'Qualified offer leads', 'tag'],
   ['pipeline', 'Pipeline', 'board'],
   ['customers', 'Customers', 'users'],
   ['orders', 'Orders', 'bag'],
@@ -29,7 +31,7 @@ const customers = () => D.db().users.filter(u => u.role === 'customer');
 const userById = id => D.db().users.find(u => u.id === id);
 
 export function view({ tab = '', id }, query, user) {
-  const tabs = { '': dashboard, leads: id ? leadDetail : leads, pipeline, customers: id ? customerDetail : customerList, orders, subscriptions, catalog, tickets, settings };
+  const tabs = { '': dashboard, leads: id ? leadDetail : leads, offers: offerLeads, pipeline, customers: id ? customerDetail : customerList, orders, subscriptions, catalog, tickets, settings };
   const fn = Object.hasOwn(tabs, tab) && tabs[tab];
   if (!fn) return { redirect: '/admin' };
   return { shell: 'admin', tab, ...fn(user, query, id) };

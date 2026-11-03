@@ -11,6 +11,7 @@
 // must remember later (a paid membership, the instalments still due) goes back to the
 // browser as a token signed with PAYMENT_TOKEN_SECRET that the browser cannot alter.
 import './env.mjs';
+import { offers, markOfferPaid } from './offers.mjs';
 import { clientIp } from './client-ip.mjs';
 import { createServer } from 'node:http';
 import { Readable, pipeline } from 'node:stream';
@@ -86,7 +87,7 @@ async function razorpay(path, body) {
   let res, data;
   try {
     res = await fetch(RAZORPAY_API + path, {
-      method: 'POST',
+      method: body === undefined ? 'GET' : 'POST',
       headers: { Authorization: 'Basic ' + Buffer.from(`${KEY_ID}:${KEY_SECRET}`).toString('base64'), 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(15000),
@@ -143,7 +144,7 @@ async function createOrder(body) {
 }
 
 // Body: Razorpay's handler response plus the ticket from createOrder.
-function verifyPayment(body) {
+async function verifyPayment(body) {
   const { razorpay_order_id: orderId, razorpay_payment_id: paymentId, razorpay_signature: signature } = body;
   const expected = createHmac('sha256', KEY_SECRET).update(`${orderId}|${paymentId}`).digest('hex');
   const t = unsign(body.ticket, 'ticket');
@@ -155,6 +156,11 @@ function verifyPayment(body) {
   const out = { ok: true, paymentId };
   if (t.plan) out.memberToken = sign({ k: 'member', email: t.account, plan: t.plan.id, exp: issued + (t.plan.cycle === 'year' ? 372 : 38) * DAY });
   if (t.rest.length) out.balanceToken = sign({ k: 'balance', account: t.account, first: t.first || orderId, rest: t.rest, exp: issued + 730 * DAY });
+  if (t.offerUid) {
+    const order = await razorpay('/orders/' + encodeURIComponent(orderId));
+    if (order.status !== 'paid') throw new HttpError(409, 'Payment is processing. Return to your saved offer to check its status.');
+    await markOfferPaid(t.offerUid, orderId);
+  }
   return out;
 }
 
@@ -288,6 +294,11 @@ async function serveApp(req, res, pathname, search) {
 }
 
 async function serveStatic(req, res, pathname, search) {
+  if (pathname === '/offer/' || pathname === '/offer/index.html') {
+    res.writeHead(301, { Location: '/offer' + search });
+    return res.end();
+  }
+  if (pathname === '/offer') pathname = '/offer/index.html';
   let rel;
   try { rel = decodeURIComponent(pathname); } catch { throw new HttpError(400, 'Bad request.'); }
   // Nothing outside dist/ and no dotfiles.
@@ -323,6 +334,7 @@ createServer(async (req, res) => {
     if (!req.url.startsWith('/') || req.url.startsWith('//')) throw new HttpError(400, 'Invalid request target.');
     const url = new URL(req.url, 'http://localhost');
     const { pathname, search } = url;
+    if (pathname.startsWith('/api/offers/')) return send(res, 200, await offers(req, pathname, {readJson, razorpay, sign, keyId:KEY_ID, payments:PAYMENTS_READY, limit:rateLimit}));
     if (pathname === '/api/chat') return await chatRoute(req, res);
     if (pathname === '/api/whatsapp' || pathname.startsWith('/api/whatsapp/')) return await whatsappRoute(req, res, pathname, url.searchParams);
     if (pathname.startsWith('/api/')) return send(res, 200, await api(req, pathname));
