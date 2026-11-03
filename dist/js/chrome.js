@@ -49,7 +49,7 @@ export function siteFooter({ services = SERVICES } = {}) {
   return `<footer class="footer"><div class="shell foot-grid">
     <div><a class="logo" href="${to('/')}">${brandLogo({ dark: true })}</a><p class="muted">${esc(BUSINESS.tagline)} Digital marketing, web and cloud services from Coimbatore.</p>
       <div class="row gap wrap">${Object.entries(BUSINESS.social).map(([n, u]) => `<a class="chip" href="${u}" target="_blank" rel="noopener">${n}</a>`).join('')}</div></div>
-    <div class="foot-links"><h4>Services</h4>${services.slice(0, 7).map(s => `<a href="${svcLink(s.id)}">${esc(s.name)}</a>`).join('')}<a href="/services/">All services &amp; prices</a></div>
+    <div class="foot-links"><h4>Services</h4>${services.slice(0, 7).map(s => `<a href="${svcLink(s.id)}">${esc(s.name)}</a>`).join('')}<a href="/services/">All services &amp; prices</a><a href="/vintorent">Vintorent downloads</a></div>
     <div class="foot-links"><h4>Company</h4><a href="${to('/about')}">About</a><a href="${to('/pricing')}">Pricing</a><a href="${to('/compare')}">Competitor analysis</a><a href="/blog/">Blog & guides</a><a href="/faq/">FAQ</a><a href="${to('/shop')}">Shop</a><a href="${to('/contact')}">Contact</a></div>
     <div class="foot-contact"><h4>Get in Touch</h4>
       <a class="f-pill" href="${BUSINESS.maps}" target="_blank" rel="noopener">${icon('pin')}<span>${esc(BUSINESS.address)}</span></a>

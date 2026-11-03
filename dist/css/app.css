@@ -2186,3 +2186,7 @@ body:has(.dash.is-admin) :is(.vxc-launch, .vxc-panel) { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .topbar::before { left: 64%; animation: none; }
 }
+
+.vintorent-feature { display: flex; align-items: center; flex-wrap: wrap; gap: clamp(1rem, 3vw, 2rem); padding: clamp(1.25rem, 4vw, 3rem); background: linear-gradient(115deg, #effaf8, #f6f3ff); }
+.vintorent-feature > div { flex: 1 1 20rem; min-width: 0; }
+.vintorent-feature h2 { margin: .25rem 0; }

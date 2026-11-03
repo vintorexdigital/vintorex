@@ -11,6 +11,11 @@
 // Payment tokens carry verified entitlements between checkout requests.
 import './env.mjs';
 import { offers, markOfferPaid, identity } from './offers.mjs';
+import { inspectPublic, savePublic } from './public-download.mjs';
+import { inspectMovie, streamMovie } from './uqload.mjs';
+import { inspectYoutube, youtubeFile } from './youtube.mjs';
+import { socialProfile } from './social-profile.mjs';
+import { resolvePost, downloadFile } from './vintorent.mjs';
 import { llmsTxt, llmsFullTxt } from '../dist/js/seo.js';
 import { contentPage, sitemap } from './pages.mjs';
 import * as Store from './store.mjs';
@@ -319,6 +324,11 @@ async function serveStatic(req, res, pathname, search) {
     return sendAsset(req, res, content.status, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' }, html.length, () => Readable.from([html]));
   }
   if (/^\/services\/[^/]+\/?$/.test(pathname)) return serveApp(req, res, pathname, search);
+  if (['/instagram-downloader', '/instagram-downloader/', '/instagram-downloader/index.html', '/vintorent/', '/vintorent/index.html'].includes(pathname)) {
+    res.writeHead(301, { Location: '/vintorent' + search });
+    return res.end();
+  }
+  if (pathname === '/vintorent') pathname = '/vintorent/index.html';
   if (pathname === '/offer/' || pathname === '/offer/index.html') {
     res.writeHead(301, { Location: '/offer' + search });
     return res.end();
@@ -359,6 +369,50 @@ createServer(async (req, res) => {
     if (!req.url.startsWith('/') || req.url.startsWith('//')) throw new HttpError(400, 'Invalid request target.');
     const url = new URL(req.url, 'http://localhost');
     const { pathname, search } = url;
+    if (pathname === '/api/vintorent/public') {
+      rateLimit(req,'public-download',40);
+      if (req.method === 'POST') return send(res,200,await inspectPublic((await readJson(req))?.url));
+      if (req.method === 'GET') return await savePublic(url.searchParams.get('url'),req,res);
+      throw new HttpError(405,'Method not allowed.');
+    }
+    if (pathname === '/api/vintorent/source') {
+      if (req.method !== 'POST') throw new HttpError(405,'Method not allowed.');
+      rateLimit(req,'source-inspect',12);
+      return send(res,200,await inspectMovie((await readJson(req))?.url));
+    }
+    if (pathname.startsWith('/api/vintorent/source/')) {
+      if (req.method !== 'GET') throw new HttpError(405,'Method not allowed.');
+      rateLimit(req,'source-download',20);
+      return await streamMovie(pathname.slice('/api/vintorent/source/'.length),req,res);
+    }
+    if (pathname === '/api/vintorent/youtube') {
+      if (req.method !== 'POST') throw new HttpError(405,'Method not allowed.');
+      rateLimit(req,'youtube-inspect',12);
+      return send(res,200,await inspectYoutube((await readJson(req))?.url));
+    }
+    if (pathname.startsWith('/api/vintorent/youtube/')) {
+      if (req.method !== 'GET') throw new HttpError(405,'Method not allowed.');
+      rateLimit(req,'youtube-download',10);
+      const [,id,quality] = pathname.match(/^\/api\/vintorent\/youtube\/([\w-]+)\/(\w+)$/) || [];
+      if (!id) throw new HttpError(400,'Invalid download link.');
+      return await youtubeFile(id,quality,res);
+    }
+    if (pathname === '/api/vintorent/profile') {
+      if (req.method !== 'POST') throw new HttpError(405, 'Method not allowed.');
+      rateLimit(req, 'social-profile', 60);
+      const {url, list, cursor} = await readJson(req);
+      return send(res, 200, await socialProfile(url, list, cursor));
+    }
+    if (pathname === '/api/vintorent') {
+      if (req.method !== 'POST') throw new HttpError(405, 'Method not allowed.');
+      rateLimit(req, 'vintorent', 20);
+      return send(res, 200, await resolvePost((await readJson(req))?.url));
+    }
+    if (pathname.startsWith('/api/vintorent/file/')) {
+      if (req.method !== 'GET') throw new HttpError(405, 'Method not allowed.');
+      rateLimit(req, 'vintorent-files', 60);
+      return await downloadFile(pathname.slice('/api/vintorent/file/'.length), res);
+    }
     if (pathname.startsWith('/api/auth/')) return send(res, 200, await Store.authRoute(req, res, pathname.slice(10), req.method === 'GET' ? {} : await readJson(req), { limit: req => rateLimit(req, 'auth', 20), firebaseIdentity: identity }));
     if (pathname === '/api/store') {
       if (req.method === 'GET') return send(res, 200, Store.snapshot(Store.sessionUser(req)));

@@ -169,6 +169,15 @@ export function home() {
       <div class="stat-card"><span class="stat-ic">${icon('receipt')}</span><div><b>18% GST</b><span>Compliant Tax Invoicing</span></div></div>
     </section>
 
+    <section class="shell section" aria-labelledby="vintorent-heading">
+      <div class="card vintorent-feature">
+        <img src="/images/vintorent-logo.svg" width="72" height="72" alt="">
+        <div><p class="eyebrow">Public project</p><h2 id="vintorent-heading">Vintorent download manager</h2>
+        <p>Save files from direct links, find media on supported pages, and manage browser-compatible torrents in one place.</p></div>
+        <a class="btn primary" href="/vintorent">Open Vintorent ${icon('arrow')}</a>
+      </div>
+    </section>
+
     <section class="shell section">
       <div class="sec-head"><div><h2>Everything you need to grow online</h2><p class="muted">Fixed scopes, published packages and transparent delivery timelines.</p></div><a href="/services/" class="link">All ${c.services.length} services ${icon('arrow')}</a></div>
       <div class="cards3 svc-grid">${featured.map((s, i) => serviceCard(s, i)).join('')}</div>
