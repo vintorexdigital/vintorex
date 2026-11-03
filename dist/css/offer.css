@@ -1,0 +1,27 @@
+.offer-hero, .offer-enquire { display:grid; grid-template-columns:1fr 1fr; gap:clamp(24px,5vw,80px); align-items:center; }
+.offer-hero { padding-block:clamp(40px,7vw,96px); }
+.offer-hero h1 { font-size:clamp(2.6rem,5vw,5rem); max-width:14ch; }
+.offer-hero figure { margin:0; border-radius:20px; overflow:hidden; background:#242039; color:white; }
+.offer-hero figcaption { padding:12px 18px; }
+.offer-grid,.offer-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space); margin-block:24px; }
+.offer-service,.offer-project div,.offer-steps li,.offer-form { padding:clamp(16px,2vw,28px); }
+.offer-service { display:flex; flex-direction:column; color:var(--ink); }
+.offer-service strong { margin-top:auto; color:var(--brand); }
+.offer-project { overflow:hidden; padding:0; }
+.offer-project img { width:100%; }
+.offer-steps { padding-left:1.5rem; }
+.offer-steps li::marker { color:var(--brand); font-weight:700; }
+.offer-enquire { align-items:start; }
+.offer-page [id] { scroll-margin-top:calc(var(--head-bottom) + 16px); }
+.offer-form fieldset { margin:0; padding:0; border:0; min-width:0; }
+.offer-form legend { font-size:1.25rem; font-weight:700; margin-bottom:1rem; }
+.offer-form label { display:grid; gap:4px; margin-bottom:16px; }
+.offer-form :is(input,select,textarea) { width:100%; padding:10px; border:1px solid var(--line); border-radius:8px; background:white; }
+.offer-form [data-preview] { white-space:pre-line; overflow-wrap:anywhere; }
+.offer-page details { padding:14px 0; border-bottom:1px solid var(--line); }
+.offer-page summary { cursor:pointer; font-weight:600; }
+.offer-page details p { margin:12px 0 0; }
+@media(max-width:760px) {
+  .offer-hero,.offer-enquire,.offer-steps,.offer-grid { grid-template-columns:minmax(0,1fr); }
+  .offer-steps { gap:0; }
+}

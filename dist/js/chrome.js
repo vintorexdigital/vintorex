@@ -29,7 +29,7 @@ export function siteHeader({ here = '', cart = 0, account = '' } = {}) {
   return `<a class="skip" href="#main">Skip to content</a>
   <div class="announce"><div class="shell announce-row">
     <p><span class="live-dot" aria-hidden="true"></span>Free 15-point website &amp; SEO audit<span class="announce-more"> · fixed-price action plan</span></p>
-    <a class="announce-cta" href="${to('/#audit')}">Request my free audit <span aria-hidden="true">→</span></a>
+    <a class="announce-cta" href="${to('/offer/#enquire')}">Request my free audit <span aria-hidden="true">→</span></a>
   </div></div>
   <header class="topbar"><div class="nav">
     <a class="logo" href="${to('/')}">${brandLogo()}</a>

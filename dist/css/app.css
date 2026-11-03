@@ -1916,7 +1916,7 @@ body:not(:has(.dash)) {
 
   /* aurora: two drifting layers of soft colour fields behind everything */
   &::before, &::after {
-    content: ""; position: fixed; inset: -25%; z-index: -1; pointer-events: none;
+    content: ""; position: fixed; inset: -8%; z-index: -1; pointer-events: none;
     will-change: transform;
   }
   &::before {
@@ -2008,10 +2008,21 @@ body:not(:has(.dash)) {
   .pager .chip.on { color: #fff; background: linear-gradient(180deg, rgb(255 255 255 / .28), rgb(255 255 255 / 0) 52%), var(--brand); border-color: transparent; }
 }
 
-/* phones: lighter blur keeps scrolling smooth */
-@media (max-width: 700px) {
-  body:not(:has(.dash)) { --glass-blur: blur(14px) saturate(160%); }
-  body:not(:has(.dash))::before { filter: blur(28px); }
+/* A single viewport-sized colour field on tablets and phones, including landscape. */
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) {
+  body:not(:has(.dash)) { --glass-blur: blur(12px) saturate(150%); }
+  body:not(:has(.dash))::before {
+    inset: 0;
+    animation: none;
+    will-change: auto;
+    filter: none;
+    background:
+      radial-gradient(ellipse 82% 46% at 4% 12%, rgb(150 120 255 / .44), transparent 85%),
+      radial-gradient(ellipse 72% 44% at 100% 25%, rgb(255 160 130 / .36), transparent 85%),
+      radial-gradient(ellipse 85% 52% at 85% 94%, rgb(90 210 200 / .34), transparent 85%),
+      radial-gradient(ellipse 65% 45% at 8% 82%, rgb(120 160 255 / .32), transparent 85%);
+  }
+  body:not(:has(.dash))::after { content: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   body:not(:has(.dash))::before, body:not(:has(.dash))::after { animation: none; }
