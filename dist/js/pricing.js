@@ -24,11 +24,11 @@ export function lineInfo(item, cat) {
     return { title: a.name, unit: a.price, billing: a.billing, kind: 'Add-on' };
   }
   if (item.type === 'product') {
-    const p = cat.products.find(p => p.id === item.ref); if (!p) return null;
+    const p = cat.products.find(p => p.id === item.ref); if (!p || p.active === false) return null;
     return { title: p.name, unit: p.price, billing: 'once', kind: 'Download' };
   }
   if (item.type === 'plan') {
-    const p = cat.plans.find(p => p.id === item.ref); if (!p) return null;
+    const p = cat.plans.find(p => p.id === item.ref); if (!p || p.active === false) return null;
     const annual = item.cycle === 'year';
     return { title: `${p.name} plan (${annual ? 'annual' : 'monthly'})`, unit: annual ? p.price * ANNUAL_MONTHS_PAID : p.price, billing: annual ? 'year' : 'month', kind: 'Membership' };
   }

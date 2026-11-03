@@ -7,7 +7,7 @@ import * as Pay from './pay.js';
 import * as Auth from './auth.js';
 import { BUSINESS } from './data.js';
 import { siteHeader, siteFooter, brandLogo } from './chrome.js';
-import { esc, icon, initials, responsiveTables, $, $$ } from './ui.js';
+import { toast, esc, icon, initials, responsiveTables, $, $$ } from './ui.js';
 import { matchRoute, trimPath, isPrivate, canonicalPath, ROBOTS_INDEX } from './routes.js';
 import { navigate, interceptLinks, legacyUrl, NAVIGATE } from './router.js';
 
@@ -15,7 +15,7 @@ import { navigate, interceptLinks, legacyUrl, NAVIGATE } from './router.js';
 const views = {
   '/': Pub.home, '/pricing': Pub.pricing, '/compare': Pub.compare, '/shop': Pub.shop, '/cart': Pub.cart, '/checkout': Pub.checkout,
   '/contact': Pub.contact, '/about': Pub.about, '/login': Pub.login, '/register': Pub.register, '/connect-whatsapp': async (params, query) => (await import('./connect-whatsapp.js')).connectWhatsapp(params, query),
-  '/services/:id/packages': Pub.serviceDetail, '/order/:id': Pub.orderDone, '/invoice/:id': Pub.invoice,
+  '/services/:id': Pub.serviceDetail, '/services/:id/packages': Pub.serviceDetail, '/order/:id': Pub.orderDone, '/invoice/:id': Pub.invoice,
   '/account': guard('customer', () => import('./account.js')), '/account/:tab': guard('customer', () => import('./account.js')),
   '/admin': guard('admin', () => import('./admin.js')), '/admin/:tab': guard('admin', () => import('./admin.js')), '/admin/:tab/:id': guard('admin', () => import('./admin.js')),
 };
@@ -152,7 +152,7 @@ function bindChrome() {
   menu?.addEventListener('click', e => { if (e.target.closest('a')) setMenu(false); });
   const st = $('.side-toggle');
   st?.addEventListener('click', () => { const open = $('#side').classList.toggle('open'); st.setAttribute('aria-expanded', open); });
-  $('[data-logout]')?.addEventListener('click', () => { Auth.logout(); navigate('/'); });
+  $('[data-logout]')?.addEventListener('click', async () => { try { await Auth.logout(); navigate('/'); } catch (error) { toast(error.message, 'err'); } });
   markScrolled();
 }
 
@@ -201,3 +201,6 @@ if (legacy) location.replace(legacy);
 else D.init().then(safeRender).then(() => {
   window.setTimeout(() => import('./firebase/analytics.js').catch(() => {}), 0);
 }).catch(showError);
+
+document.addEventListener('vx:save-error', event => { toast(event.detail, 'err'); safeRender(); });
+window.addEventListener('focus', () => D.refresh().then(safeRender).catch(error => toast(error.message, 'err')));

@@ -2,7 +2,7 @@
 import { createHmac, randomBytes, randomInt, timingSafeEqual, verify } from 'node:crypto';
 import { mkdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
-import { SERVICES, BUSINESS } from '../dist/js/data.js';
+import { sessionUser, checkMutation, sharedCatalog, sharedSettings } from './store.mjs';
 
 function fail(status, message) { throw Object.assign(new Error(message), { status }); }
 let opening;
@@ -28,7 +28,7 @@ async function database() {
 }
 const project = 'vintorex-digital-solutions-024';
 let certs, expires = 0;
-async function identity(req) {
+export async function identity(req) {
   try {
     const token = (req.headers.authorization || '').match(/^Bearer ([\w.-]+)$/)?.[1] || '';
     const [head, data, signature, extra] = token.split('.');
@@ -47,7 +47,7 @@ async function identity(req) {
       expires = Date.now() + Number(res.headers.get('cache-control')?.match(/max-age=(\d+)/)?.[1] || 60)*1000;
     }
     if (!Object.hasOwn(certs, header.kid) || !verify('RSA-SHA256', Buffer.from(head+'.'+data), certs[header.kid], Buffer.from(signature,'base64url'))) throw Error();
-    return { uid: claims.sub, email: claims.email };
+    return { uid: claims.sub, email: claims.email, emailVerified: claims.email_verified === true };
   } catch { fail(401, 'Sign in with your registered Firebase account to claim or pay.'); }
 }
 const own = (db, uid) => db.prepare('SELECT * FROM claims WHERE uid=?').get(uid);
@@ -65,13 +65,13 @@ export function claimOffer(db, user, body) {
   // Honour previously signed draws from the original ₹5,000 minimum.
   if (!/^VX-[A-F0-9]{20}$/.test(code) || !Number.isInteger(amount) || amount < 5000 || amount > 9999 ||
       !secretEqual(proof,tag(db,code+':'+amount))) fail(400,'Reveal a valid coupon first.');
-  const service = SERVICES.find(s => s.id === body.service);
+  const service = sharedCatalog().services.find(s => s.id === body.service);
   const tier = service?.tiers.find(t => t.name === body.tier);
   const clean = (x,n) => typeof x === 'string' ? x.trim().slice(0,n) : '';
   const name = clean(body.name,90), goal = clean(body.goal,600);
   if (!tier || !name || !goal) fail(400,'Choose a service tier and enter your name and project goal.');
   const net = Math.max(0,tier.price-amount);
-  const total = net + Math.round(net*BUSINESS.gst/100);
+  const total = net + Math.round(net*sharedSettings().gst/100);
   db.prepare('INSERT OR IGNORE INTO claims (uid,code,email,name,business,goal,service,tier,amount,price,total,created,followup,paid) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)')
     .run(user.uid,code,user.email,name,clean(body.business,100),goal,service.id,tier.name,amount,tier.price,total,new Date().toISOString(),new Date(Date.now()+86400000).toISOString().slice(0,10),Number(total===0));
   const row = own(db,user.uid);
@@ -86,10 +86,27 @@ export async function offers(req, path, { readJson, razorpay, sign, keyId, payme
   const db = await database();
   if (path === '/api/offers/draw' && req.method === 'POST') { limit(req); return draw(db); }
   if (path === '/api/offers/admin') {
-    if (!process.env.OFFER_ADMIN_KEY || !secretEqual(req.headers['x-offer-admin-key'],process.env.OFFER_ADMIN_KEY)) fail(403,'An offer admin key is required.');
+    const administrator = sessionUser(req)?.role === 'admin';
+    if (!administrator && (!process.env.OFFER_ADMIN_KEY || !secretEqual(req.headers['x-offer-admin-key'],process.env.OFFER_ADMIN_KEY))) fail(403,'Administrator access is required.');
     if (req.method === 'GET') return db.prepare('SELECT * FROM claims ORDER BY followup,created DESC').all();
     if (req.method === 'POST') {
-      const {uid,followup,note} = await readJson(req);
+      if (administrator) checkMutation(req);
+      const body = await readJson(req);
+      const {uid,followup,note} = body;
+      if (body.action === 'create') {
+        if (!administrator) fail(403, 'Sign in as an administrator.');
+        if (typeof uid !== 'string' || !/^[a-zA-Z0-9_-]{1,128}$/.test(uid) || typeof body.email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) fail(400, 'Enter a Firebase account UID and valid email.');
+        if (own(db, uid)) fail(409, 'This account already has an offer.');
+        return claimOffer(db, { uid, email: body.email }, { ...body, ...draw(db) });
+      }
+      if (body.action === 'delete') {
+        if (!administrator) fail(403, 'Sign in as an administrator.');
+        const row = own(db, uid);
+        if (!row) fail(404, 'Offer not found.');
+        if (row.orderId || row.paid) fail(409, 'An offer linked to a payment must be retained.');
+        db.prepare('DELETE FROM claims WHERE uid=?').run(uid);
+        return { ok:true };
+      }
       if (typeof uid !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(followup) || typeof note !== 'string' || note.length>2000) fail(400,'Enter a follow-up date and a note of up to 2000 characters.');
       if (!db.prepare('UPDATE claims SET followup=?, note=? WHERE uid=?').run(followup,note,uid).changes) fail(404,'Lead not found.');
       return { ok:true };

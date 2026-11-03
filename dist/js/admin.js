@@ -1,3 +1,4 @@
+import { recordManager } from './records.js';
 // Admin panel: dashboard, lead CRM + pipeline, customers, orders, subscriptions,
 // catalog & pricing editor, support tickets and settings.
 import { offerLeads } from './offer-leads.js';
@@ -19,6 +20,7 @@ export const NAV = [
   ['customers', 'Customers', 'users'],
   ['orders', 'Orders', 'bag'],
   ['subscriptions', 'Subscriptions', 'repeat'],
+  ['records', 'Manage records', 'board'],
   ['catalog', 'Services & pricing', 'tag'],
   ['tickets', 'Support', 'help'],
   ['settings', 'Settings', 'settings'],
@@ -31,7 +33,7 @@ const customers = () => D.db().users.filter(u => u.role === 'customer');
 const userById = id => D.db().users.find(u => u.id === id);
 
 export function view({ tab = '', id }, query, user) {
-  const tabs = { '': dashboard, leads: id ? leadDetail : leads, offers: offerLeads, pipeline, customers: id ? customerDetail : customerList, orders, subscriptions, catalog, tickets, settings };
+  const tabs = { records: (user, query) => recordManager(query, rerender), '': dashboard, leads: id ? leadDetail : leads, offers: offerLeads, pipeline, customers: id ? customerDetail : customerList, orders, subscriptions, catalog, tickets, settings };
   const fn = Object.hasOwn(tabs, tab) && tabs[tab];
   if (!fn) return { redirect: '/admin' };
   return { shell: 'admin', tab, ...fn(user, query, id) };
@@ -206,13 +208,15 @@ function setStage(l, stage, user) {
 
 async function convert(l) {
   const f = await modal({ title: 'Convert to customer', submit: 'Create customer', body: `<p>Creates a customer account for <b>${esc(l.name)}</b> (${esc(l.email)}) and marks the lead as Won.</p>
-    ${field('Temporary password', 'pw', { value: D.uid('tmp'), required: true, attrs: 'minlength="8" autocomplete="new-password"' })}
+    ${field('Temporary password', 'pw', { value: D.uid('temporary_'), required: true, attrs: 'minlength="12" autocomplete="new-password"' })}
     <p class="hint">Share this one-time password with the customer, then ask them to change it. They can subscribe from their dashboard, or you can set a plan from the customer page.</p>` });
   if (!f) return;
   let u = D.db().users.find(u => u.email.toLowerCase() === l.email.toLowerCase());
   if (!u) {
-    u = { id: D.uid('u_'), role: 'customer', name: l.name, email: l.email, phone: l.phone, company: l.company, pass: await D.hash(f.get('pw')), plan: 'free', status: 'Active', createdAt: new Date().toISOString(), tags: [] };
-    D.db().users.push(u);
+    const leadId = l.id;
+    try { u = await D.register({ name: l.name, email: l.email, phone: l.phone, company: l.company, password: f.get('pw') }); }
+    catch (error) { return toast(error.message, 'err'); }
+    l = D.db().leads.find(row => row.id === leadId);
   }
   l.customerId = u.id; l.stage = 'Won'; l.followUp = null;
   l.notes.unshift({ at: new Date().toISOString(), by: 'System', text: 'Converted to customer account' });
@@ -276,14 +280,12 @@ function customerList(user, query) {
     bind: root => {
       $('#cf', root).addEventListener('submit', e => { e.preventDefault(); const v = e.target.q.value; history.replaceState(null, '', '/admin/customers' + (v ? '?q=' + encodeURIComponent(v) : '')); rerender(); });
       $('[data-new]', root).addEventListener('click', async () => {
-        const f = await modal({ title: 'Add customer', submit: 'Create', body: `${field('Name', 'name', { required: true })}${field('Email', 'email', { type: 'email', required: true })}${field('Phone', 'phone', { type: 'tel' })}${field('Company', 'company')}${field('Temporary password', 'password', { value: D.uid('tmp'), required: true, attrs: 'minlength="8" autocomplete="new-password"' })}` });
+        const f = await modal({ title: 'Add customer', submit: 'Create', body: `${field('Name', 'name', { required: true })}${field('Email', 'email', { type: 'email', required: true })}${field('Phone', 'phone', { type: 'tel' })}${field('Company', 'company')}${field('Temporary password', 'password', { value: D.uid('temporary_'), required: true, attrs: 'minlength="12" autocomplete="new-password"' })}` });
         if (!f) return;
-        const sess = D.currentUser();
         try {
           const u = await D.register(Object.fromEntries(f));
-          await D.resumeSession(sess.id); // register signs the new customer in; keep the admin session
           toast('Customer created'); navigate('/admin/customers/' + u.id);
-        } catch (err) { await D.resumeSession(sess.id); toast(err.message, 'err'); }
+        } catch (err) { toast(err.message, 'err'); }
       });
       bindRows(root);
     },
@@ -355,7 +357,8 @@ function bindOrderControls(root) {
       <p><b>${esc(next.label)}</b> · ${inr(next.amount)} (balance ${inr(D.orderBalance(o))})</p>
       ${field('Received via', 'method', { options: ['UPI', 'Bank transfer', 'Cash', 'Cheque', 'Card'] })}` });
     if (!f) return;
-    D.payNext(o, f.get('method'), D.currentUser().name);
+    try { await D.payNext(o, f.get('method'), D.currentUser().name); }
+    catch (error) { return toast(error.message, 'err'); }
     toast('Payment recorded'); rerender();
   }));
   $$('[data-status]', root).forEach(s => s.addEventListener('change', () => {
@@ -510,16 +513,29 @@ function settings() {
         <p class="muted">${Pay.live() ? 'Checkout takes real Razorpay payments. The server prices each order and verifies every payment signature.' : D.isLocalHost() ? 'Local demo mode simulates payments. Run with <code>npm start</code> and set Razorpay keys plus <code>PAYMENT_TOKEN_SECRET</code> for real checkout.' : 'Online payments are disabled until the payment server is connected with Razorpay keys and <code>PAYMENT_TOKEN_SECRET</code>.'}</p>
         <ul class="ticks col"><li>${icon('check')}Razorpay / UPI — ${Pay.live() ? 'live' : 'needs the payment server'}</li><li>${icon('check')}WhatsApp Business API — for lead alerts</li><li>${icon('check')}Email (SMTP / Brevo) — for order mails</li></ul>
         <h3>Data</h3>
-        <div class="row gap wrap"><button class="btn ghost" data-backup>${icon('download')} Backup JSON</button><button class="btn danger-ghost" data-reset>Reset demo data</button></div>
+        <div class="row gap wrap"><label class="btn ghost">Import backup<input type="file" accept=".json,application/json" data-import hidden></label><button class="btn ghost" data-import-browser>Import browser records</button><button class="btn ghost" data-backup>${icon('download')} Backup JSON</button></div>
       </div>
     </div>`,
     bind: root => {
       $('#biz', root).addEventListener('submit', e => { e.preventDefault(); const f = Object.fromEntries(new FormData(e.target)); f.gst = Number(f.gst); Object.assign(s, f); D.save(); toast('Settings saved'); });
-      $('[data-backup]', root).addEventListener('click', () => download('vintorex-backup.json', JSON.stringify(D.db(), (k, v) => k === 'pass' ? undefined : v, 2), 'application/json'));
-      $('[data-reset]', root).addEventListener('click', async () => {
-        if (!await confirmBox('Reset all data?', 'Every lead, order and customer is replaced with demo data.', 'Reset')) return;
-        await D.resetDemo(); localStorage.setItem('vx_session', 'u_admin'); toast('Demo data restored'); rerender();
+      $('[data-import]', root).addEventListener('change', async event => {
+        const file = event.target.files[0];
+        if (!file) return;
+        if (file.size > 2000000) return toast('Choose a backup smaller than 2 MB.', 'err');
+        if (!await confirmBox('Import these records?', 'Matching identifiers will be updated. Imported accounts need a new password set under Manage records.', 'Import')) return;
+        try { await D.importBackup(JSON.parse(await file.text())); toast('Records imported'); rerender(); }
+        catch (error) { toast(error.message, 'err'); }
       });
+      $('[data-import-browser]', root).addEventListener('click', async () => {
+        if (!await confirmBox('Import records from this browser?', 'Existing browser records will be merged into the shared database. Matching identifiers will be updated.', 'Import')) return;
+        try {
+          const backup = JSON.parse(localStorage.getItem('vx_db_v1'));
+          if (!backup) throw Error('No older records were found in this browser.');
+          await D.importBackup(backup); toast('Records imported'); rerender();
+        } catch (error) { toast(error.message, 'err'); }
+      });
+      $('[data-backup]', root).addEventListener('click', () => download('vintorex-backup.json', JSON.stringify(D.db(), (k, v) => k === 'pass' ? undefined : v, 2), 'application/json'));
+
     },
   };
 }

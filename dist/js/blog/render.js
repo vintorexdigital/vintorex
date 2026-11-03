@@ -5,21 +5,21 @@ import { BUSINESS } from '../data.js';
 import { esc, icon, per } from '../ui.js';
 import { cover, postCard } from './cards.js';
 export { cover, postCard, postUrl } from './cards.js';
-import { POSTS, postsFor, md, toc } from './index.js';
+import { POSTS, md, toc } from './index.js';
 
 const inr = n => '₹' + Math.round(n).toLocaleString('en-IN');
 
 // Up to three related guides: the other guide for the same service first,
 // then guides from the same category.
-export function relatedPosts(p, svc) {
+export function relatedPosts(p, svc, posts = POSTS) {
   const cat = svc(p.service)?.cat;
-  const same = postsFor(p.service).filter(x => x !== p);
-  const near = POSTS.filter(x => x !== p && x.service !== p.service && svc(x.service)?.cat === cat);
+  const same = posts.filter(x => x.service === p.service).filter(x => x !== p);
+  const near = posts.filter(x => x !== p && x.service !== p.service && svc(x.service)?.cat === cat);
   return [...same, ...near].slice(0, 3);
 }
 
 // Full article page body. `url` is the article's absolute address for sharing.
-export function articleHtml(p, svc, { url = '' } = {}) {
+export function articleHtml(p, svc, { url = '', posts = POSTS } = {}) {
   const s = svc(p.service);
   const share = encodeURIComponent(url);
   return `<article class="shell section post">
@@ -50,7 +50,7 @@ export function articleHtml(p, svc, { url = '' } = {}) {
       </div>
     </article>
     <section class="band"><div class="shell section"><div class="sec-head"><h2>Keep reading</h2><a class="link" href="/blog/">All guides ${icon('arrow')}</a></div>
-      <div class="cards3">${relatedPosts(p, svc).map(x => postCard(x, svc(x.service))).join('')}</div></div></section>
+      <div class="cards3">${relatedPosts(p, svc, posts).map(x => postCard(x, svc(x.service))).join('')}</div></div></section>
     <section class="shell section"><div class="card cta-band"><div><h2>Want us to do this for you?</h2><p class="muted">Talk to the Vintorex team about ${esc(s?.name.toLowerCase() || 'your project')}. Free consultation, reply within 2 working hours.</p></div>
       <div class="row gap wrap"><a class="btn primary" href="/contact">Get a free proposal</a><a class="btn ghost" href="${BUSINESS.whatsapp}" target="_blank" rel="noopener">${icon('wa')} WhatsApp</a></div></div></section>`;
 }

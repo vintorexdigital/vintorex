@@ -746,6 +746,8 @@ export function checkout() {
         e.preventDefault();
         const f = Object.fromEntries(new FormData(form));
         Object.assign(user, { name: f.name, phone: f.phone, company: f.company, gstin: f.gstin, city: f.city });
+        try { await D.save(); await D.flush(); }
+        catch (error) { return toast(error.message, 'err'); }
         const btn = $('#pay-btn', form), label = btn.textContent, plan = f.plan || 'full';
         const reset = () => { btn.disabled = false; btn.textContent = label; };
         btn.disabled = true;
@@ -756,11 +758,11 @@ export function checkout() {
             return toast('Online payments are not available right now. Please try again later or contact us on WhatsApp.', 'err');
           }
           btn.textContent = 'Processing payment…';
-          setTimeout(() => {
-            const order = D.placeOrder(user, D.getCart(), coupon, f.method, plan);
+          try {
+            const order = await D.placeOrder(user, D.getCart(), coupon, f.method, plan);
             coupon = ''; D.setCart([]);
             go('/order/' + order.id);
-          }, 900);
+          } catch (error) { toast(error.message, 'err'); reset(); }
           return;
         }
         btn.textContent = 'Opening secure payment…';
@@ -772,7 +774,7 @@ export function checkout() {
           if (order.due !== shown && !await modal({ title: 'Amount updated', body: `<p>The amount due is <b>${inr(order.due)}</b>, not ${inr(shown)}, because prices or discounts have changed.</p>`, submit: `Pay ${inr(order.due)}` })) return reset();
           const paid = await Pay.pay(order, { name: f.name, email: f.email, phone: f.phone, description: q.lines.length === 1 ? q.lines[0].info.title : `${q.lines.length} items` });
           if (!paid) return reset();
-          const placed = D.placeOrder(user, cart, coupon, 'Razorpay', plan, { priced: order.quote, paymentId: paid.paymentId, memberToken: paid.memberToken, balanceToken: paid.balanceToken });
+          const placed = await D.placeOrder(user, cart, coupon, 'Razorpay', plan, { priced: order.quote, paymentId: paid.paymentId, memberToken: paid.memberToken, balanceToken: paid.balanceToken });
           coupon = ''; D.setCart([]);
           go('/order/' + placed.id);
         } catch (err) {
@@ -1051,7 +1053,7 @@ export function register(params, query) {
         ${field('Email', 'email', { type: 'email', required: true, attrs: 'autocomplete="email"' })}
         ${field('Phone', 'phone', { type: 'tel', required: true, attrs: 'autocomplete="tel"' })}
         ${field('Business name', 'company', { attrs: 'autocomplete="organization"' })}
-        ${field('Password', 'password', { type: 'password', required: true, attrs: 'minlength="6" autocomplete="new-password"' })}
+        ${field('Password', 'password', { type: 'password', required: true, attrs: 'minlength="12" autocomplete="new-password"' })}
         <p class="err" hidden></p>
         <button class="btn primary block lg">Create account</button>
         <button type="button" class="btn ghost block" data-google>Sign up with Google</button>

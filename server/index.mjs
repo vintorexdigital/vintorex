@@ -7,11 +7,12 @@
 //   GET  /api/chat             chat assistant status; POST streams an answer (see chat.mjs)
 //   /api/whatsapp/*            WhatsApp Cloud API: webhook, send, templates, partner onboarding (see whatsapp/routes.mjs)
 //
-// Accounts and orders live in each browser, so the server keeps no database. What it
-// must remember later (a paid membership, the instalments still due) goes back to the
-// browser as a token signed with PAYMENT_TOKEN_SECRET that the browser cannot alter.
+// Application records and sessions are stored in a private SQLite database.
+// Payment tokens carry verified entitlements between checkout requests.
 import './env.mjs';
-import { offers, markOfferPaid } from './offers.mjs';
+import { offers, markOfferPaid, identity } from './offers.mjs';
+import { contentPage, sitemap } from './pages.mjs';
+import * as Store from './store.mjs';
 import { clientIp } from './client-ip.mjs';
 import { createServer } from 'node:http';
 import { Readable, pipeline } from 'node:stream';
@@ -21,7 +22,7 @@ import { readFile, stat } from 'node:fs/promises';
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { extname, join, normalize, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SERVICES, ADDONS, PLANS, PRODUCTS, COUPONS, BUSINESS } from '../dist/js/data.js';
+import { BUSINESS } from '../dist/js/data.js';
 import { priceCart, amountDue } from '../dist/js/pricing.js';
 import { matchRoute, trimPath, isPrivate, canonicalPath, pageMeta } from '../dist/js/routes.js';
 import { chat, chatStatus, AI_ON } from './chat.mjs';
@@ -31,7 +32,6 @@ import { missing as whatsappMissing } from './whatsapp/config.mjs';
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const DIST = join(ROOT, 'dist');
 const SITE = (process.env.SITE_URL || 'https://vintorex.com').replace(/\/$/, '');
-const SERVICE_IDS = new Set(SERVICES.map(s => s.id));
 
 const { RAZORPAY_KEY_ID: KEY_ID, RAZORPAY_KEY_SECRET: KEY_SECRET } = process.env;
 const RAZORPAY_API = process.env.RAZORPAY_API_BASE || 'https://api.razorpay.com/v1';
@@ -46,8 +46,6 @@ const PAYMENTS = Boolean(KEY_ID && KEY_SECRET);
 const TOKEN_KEY = process.env.PAYMENT_TOKEN_SECRET
   || (!PAYMENTS ? '' : (console.error('PAYMENT_TOKEN_SECRET is not set. Online payments are disabled until you add one (openssl rand -hex 32). Do not reuse RAZORPAY_KEY_SECRET.'), ''));
 const PAYMENTS_READY = PAYMENTS && Boolean(TOKEN_KEY);
-// Prices come from the shipped catalog, never from the browser.
-const CATALOG = { services: SERVICES, addons: ADDONS, plans: PLANS, products: PRODUCTS, coupons: COUPONS };
 const DAY = 864e5;
 
 class HttpError extends Error {
@@ -77,7 +75,7 @@ const str = (v, max = 100) => typeof v === 'string' ? v.trim().slice(0, max) : '
 function cartItems(items) {
   if (!Array.isArray(items) || !items.length || items.length > 50) return null;
   return items.map(i => ({
-    type: str(i?.type, 20), ref: str(i?.ref, 80), tier: str(i?.tier, 80) || undefined,
+    type: str(i?.type, 20), ref: str(i?.ref, 100), tier: str(i?.tier, 150) || undefined,
     cycle: ['month', 'year'].includes(i?.cycle) ? i.cycle : undefined,
     qty: Number.isInteger(i?.qty) && i.qty > 0 && i.qty <= 20 ? i.qty : 1,
   }));
@@ -105,27 +103,29 @@ async function razorpay(path, body) {
 // Body: { customer: { name, email, phone }, account, and either
 //   items, coupon, payPlan ('full' | 'milestone'), memberToken   (a cart), or
 //   balanceToken                                                 (the next instalment) }
-async function createOrder(body) {
+async function createOrder(body, user) {
+  if (!user) throw new HttpError(401, 'Sign in before starting checkout.');
   const customer = { name: str(body.customer?.name), email: str(body.customer?.email, 120), phone: str(body.customer?.phone, 20) };
-  const account = str(body.account, 120).toLowerCase();
+  const account = user.email.toLowerCase();
   let due, quote = null, ticket, notes;
   if (body.balanceToken) {
     const bal = unsign(body.balanceToken, 'balance');
-    if (!bal?.rest.length || (bal.account !== undefined && bal.account !== account)) throw new HttpError(400, 'This instalment can’t be paid online. Please contact us to pay it.');
+    if (!bal?.rest.length || (bal.userId ? bal.userId !== user.id : bal.account !== undefined && bal.account !== account)) throw new HttpError(400, 'This instalment can’t be paid online. Please contact us to pay it.');
     due = bal.rest[0].amount;
-    ticket = { first: bal.first, rest: bal.rest.slice(1) };
+    ticket = { due, userId: user.id, first: bal.first, rest: bal.rest.slice(1) };
     notes = { type: 'instalment', instalment: bal.rest[0].label, first_order: bal.first };
   } else {
     const items = cartItems(body.items);
     if (!items) throw new HttpError(400, 'Your cart is empty.');
     // The member discount needs proof of a paid membership on this account.
     const member = unsign(body.memberToken, 'member');
-    quote = priceCart(items, { catalog: CATALOG, gstPct: BUSINESS.gst, memberPlanId: member && member.email === account ? member.plan : 'free', couponCode: str(body.coupon, 40) });
+    quote = priceCart(items, { catalog: Store.sharedCatalog(), gstPct: Store.sharedSettings().gst, memberPlanId: user.plan || (member && member.email === account ? member.plan : 'free'), couponCode: str(body.coupon, 100) });
     if (quote.lines.length !== items.length) throw new HttpError(400, 'Some items in your cart are no longer sold. Remove them and try again.');
     const payPlan = body.payPlan === 'milestone' && quote.milestones ? 'milestone' : 'full';
     due = amountDue(quote, payPlan);
     const plan = quote.lines.find(l => l.type === 'plan');
     ticket = {
+      quote, items, payPlan, due, userId: user.id,
       plan: plan && { id: plan.ref, cycle: plan.cycle === 'year' ? 'year' : 'month' },
       rest: payPlan === 'milestone' ? quote.milestones.slice(1).map(({ label, amount }) => ({ label, amount })) : [],
     };
@@ -155,12 +155,13 @@ async function verifyPayment(body) {
   const issued = t.exp - 7 * DAY;
   const out = { ok: true, paymentId };
   if (t.plan) out.memberToken = sign({ k: 'member', email: t.account, plan: t.plan.id, exp: issued + (t.plan.cycle === 'year' ? 372 : 38) * DAY });
-  if (t.rest.length) out.balanceToken = sign({ k: 'balance', account: t.account, first: t.first || orderId, rest: t.rest, exp: issued + 730 * DAY });
+  if (t.rest.length) out.balanceToken = sign({ k: 'balance', userId: t.userId, account: t.account, first: t.first || orderId, rest: t.rest, exp: issued + 730 * DAY });
   if (t.offerUid) {
     const order = await razorpay('/orders/' + encodeURIComponent(orderId));
     if (order.status !== 'paid') throw new HttpError(409, 'Payment is processing. Return to your saved offer to check its status.');
     await markOfferPaid(t.offerUid, orderId);
   }
+  if (!t.offerUid) Store.paymentReceipt(paymentId, { userId: t.userId, account: t.account, orderId, first: t.first, quote: t.quote, items: t.items, payPlan: t.payPlan, due: t.due, memberToken: out.memberToken, balanceToken: out.balanceToken });
   return out;
 }
 
@@ -177,12 +178,12 @@ async function checkRazorpay() {
 
 // At most 30 new orders per visitor every 10 minutes.
 const hits = new Map();
-function rateLimit(req) {
-  const ip = clientIp(req);
+function rateLimit(req, group = 'payments', maximum = 30) {
+  const ip = group + ':' + clientIp(req);
   const now = Date.now(), h = hits.get(ip);
   if (hits.size > 10000) hits.clear();
   if (!h || now - h.start > 10 * 60e3) hits.set(ip, { start: now, n: 1 });
-  else if (++h.n > 30) throw new HttpError(429, 'Too many payment attempts. Please wait a few minutes.');
+  else if (++h.n > maximum) throw new HttpError(429, 'Too many requests. Please wait a few minutes.');
 }
 
 async function readJson(req) {
@@ -190,7 +191,7 @@ async function readJson(req) {
   const chunks = []; let size = 0;
   for await (const c of req) {
     size += c.length;
-    if (size > 32768) throw new HttpError(413, 'Request too large.');
+    if (size > (req.url.startsWith('/api/store') ? 2097152 : 32768)) throw new HttpError(413, 'Request too large.');
     chunks.push(c);
   }
   let body;
@@ -205,7 +206,7 @@ async function api(req, pathname) {
   if (!route) throw new HttpError(404, 'Not found.');
   if (req.method !== 'POST') throw new HttpError(405, 'Method not allowed.');
   if (!PAYMENTS_READY) throw new HttpError(503, 'Online payments are not set up.');
-  if (route === 'order') { rateLimit(req); return createOrder(await readJson(req)); }
+  if (route === 'order') { rateLimit(req); return createOrder(await readJson(req), Store.sessionUser(req)); }
   return verifyPayment(await readJson(req));
 }
 
@@ -242,7 +243,7 @@ function shellFor(html, path) {
   set(/(<link rel="canonical" href=")[^"]*(")/, canonical);
   set(/(<link rel="alternate" hreflang="[^"]*" href=")[^"]*(")/g, canonical);
   set(/(<meta property="og:url" content=")[^"]*(")/, canonical);
-  const meta = pageMeta(path, SERVICES);
+  const meta = pageMeta(path, Store.sharedCatalog().services);
   if (meta) {
     const title = `${meta.title} · ${BUSINESS.short}`;
     set(/(<title>)[^<]*(<\/title>)/, title);
@@ -284,7 +285,7 @@ async function serveApp(req, res, pathname, search) {
   const path = trimPath(pathname);
   const route = matchRoute(path);
   if (route && path !== pathname) { res.writeHead(301, { Location: path + search }); return res.end(); }
-  const known = Boolean(route) && (route.pattern !== '/services/:id/packages' || SERVICE_IDS.has(route.params.id));
+  const known = Boolean(route) && (!route.pattern.startsWith('/services/:id') || Store.sharedCatalog().services.some(s => s.id === route.params.id));
   if (!known && !(req.headers.accept || '').includes('text/html')) throw new HttpError(404, 'Not found.');
   const html = Buffer.from(shellFor(await readFile(join(DIST, 'index.html'), 'utf8'), known ? path : null));
   sendAsset(req, res, known ? 200 : 404, {
@@ -294,6 +295,16 @@ async function serveApp(req, res, pathname, search) {
 }
 
 async function serveStatic(req, res, pathname, search) {
+  if (pathname === '/sitemap.xml') {
+    const xml = Buffer.from(await sitemap(SITE, join(DIST, 'sitemap.xml')));
+    return sendAsset(req, res, 200, { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'no-cache' }, xml.length, () => Readable.from([xml]));
+  }
+  const content = await contentPage(pathname, SITE, join(DIST, 'index.html'));
+  if (content) {
+    const html = Buffer.from(content.html);
+    return sendAsset(req, res, content.status, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' }, html.length, () => Readable.from([html]));
+  }
+  if (/^\/services\/[^/]+\/?$/.test(pathname)) return serveApp(req, res, pathname, search);
   if (pathname === '/offer/' || pathname === '/offer/index.html') {
     res.writeHead(301, { Location: '/offer' + search });
     return res.end();
@@ -334,6 +345,19 @@ createServer(async (req, res) => {
     if (!req.url.startsWith('/') || req.url.startsWith('//')) throw new HttpError(400, 'Invalid request target.');
     const url = new URL(req.url, 'http://localhost');
     const { pathname, search } = url;
+    if (pathname.startsWith('/api/auth/')) return send(res, 200, await Store.authRoute(req, res, pathname.slice(10), req.method === 'GET' ? {} : await readJson(req), { limit: req => rateLimit(req, 'auth', 20), firebaseIdentity: identity }));
+    if (pathname === '/api/store') {
+      if (req.method === 'GET') return send(res, 200, Store.snapshot(Store.sessionUser(req)));
+      if (req.method !== 'POST') throw new HttpError(405, 'Method not allowed.');
+      rateLimit(req, 'records', Store.sessionUser(req)?.role === 'admin' ? 300 : 40);
+      return send(res, 200, Store.commitChanges(req, await readJson(req)));
+    }
+    if (pathname === '/api/store/checkout') {
+      if (req.method !== 'POST') throw new HttpError(405, 'Method not allowed.');
+      rateLimit(req);
+      return send(res, 200, Store.checkout(req, await readJson(req), { priceCart,
+        demo: process.env.ALLOW_DEMO_CHECKOUT === '1' && ['localhost', '127.0.0.1', '[::1]'].includes(new URL('http://' + req.headers.host).hostname) && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress) }));
+    }
     if (pathname.startsWith('/api/offers/')) return send(res, 200, await offers(req, pathname, {readJson, razorpay, sign, keyId:KEY_ID, payments:PAYMENTS_READY, limit:rateLimit}));
     if (pathname === '/api/chat') return await chatRoute(req, res);
     if (pathname === '/api/whatsapp' || pathname.startsWith('/api/whatsapp/')) return await whatsappRoute(req, res, pathname, url.searchParams);

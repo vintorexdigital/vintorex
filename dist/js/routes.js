@@ -3,7 +3,7 @@
 // Everything else under dist/ (guides, service pages, the FAQ, policies and files) is a static page that loads on its own.
 export const ROUTES = [
   '/', '/pricing', '/compare', '/shop', '/cart', '/checkout', '/contact', '/about', '/login', '/register', '/connect-whatsapp',
-  '/services/:id/packages', '/order/:id', '/invoice/:id',
+  '/services/:id', '/services/:id/packages', '/order/:id', '/invoice/:id',
   '/account', '/account/:tab', '/admin', '/admin/:tab', '/admin/:tab/:id',
 ];
 
@@ -51,7 +51,7 @@ export function pageMeta(path, services = []) {
   if (path === '/compare') {
     return { title: 'Competitor analysis', description: `We benchmarked Vintorex pricing against ${competitorNames(services).length} competitors across Coimbatore agencies, national agencies and DIY platforms. 100% transparent rate cards with milestone billing.` };
   }
-  const id = path.match(/^\/services\/([\w-]+)\/packages$/)?.[1];
+  const id = path.match(/^\/services\/([\w-]+)(?:\/packages)?$/)?.[1];
   if (id) { const s = services.find(x => x.id === id); return s && { title: s.name, description: s.summary || s.overview }; }
   return META[path];
 }

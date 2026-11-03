@@ -2137,3 +2137,10 @@ body:not(:has(.dash)) {
 @media (prefers-reduced-motion: reduce) { .vxc-panel, .vxc-typing i { animation: none; } }
 body:has(.dash.is-admin) :is(.vxc-launch, .vxc-panel) { display: none; }
 @media print { .vxc-launch, .vxc-panel { display: none !important; } }
+
+.record-editor .record-group { padding: 14px; margin: 12px 0; border: 1px solid var(--line); border-radius: 12px; min-width: 0; }
+.record-editor .record-group > summary { cursor: pointer; font-weight: 600; margin-bottom: 12px; }
+.record-editor .record-item { padding: 12px; margin: 10px 0; background: rgb(109 77 255 / .04); border-radius: 10px; }
+.record-editor textarea { width: 100%; resize: vertical; }
+.record-editor .field input[type=checkbox] { width: auto; align-self: start; }
+@media (max-width: 600px) { .record-editor .record-group, .record-editor .record-item { padding: 8px; } }

@@ -1,6 +1,7 @@
 {
   "name": "vintorex",
   "private": true,
+  "engines": { "node": ">=22.13.0" },
   "type": "module",
   "scripts": {
     "start": "node server/index.mjs",

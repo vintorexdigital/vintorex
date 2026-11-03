@@ -142,7 +142,7 @@ function subscription(user, query) {
       $$('[data-cancel]', root).forEach(b => b.addEventListener('click', async () => {
         if (!await confirmBox('Cancel subscription?', 'It stays active until the end of the current billing period.', 'Cancel subscription')) return;
         const s = D.db().subscriptions.find(s => s.id === b.dataset.cancel);
-        s.status = 'Cancelled'; if (s.plan) user.plan = 'free';
+        s.status = 'Cancelled';
         D.logActivity(`${user.name} cancelled ${D.subscriptionTitle(s)}`);
         D.save(); toast('Subscription cancelled'); rerender();
       }));
@@ -179,7 +179,8 @@ function bindPayNext(root) {
       ${field('Payment method', 'method', { options: ['UPI', 'Card', 'Net banking', 'Bank transfer'] })}
       <p class="hint">${icon('shield')} Local demo mode: payment is simulated.</p>` });
     if (!f) return;
-    D.payNext(o, f.get('method'));
+    try { await D.payNext(o, f.get('method')); }
+    catch (error) { return toast(error.message, 'err'); }
     toast(`Paid ${inr(next.amount)} — thank you!`); rerender();
   }));
 }
@@ -193,7 +194,7 @@ async function payInstalment(o, next) {
     if (order.due !== next.amount && !await modal({ title: 'Amount updated', body: `<p>The instalment due is <b>${inr(order.due)}</b>, not ${inr(next.amount)}.</p>`, submit: `Pay ${inr(order.due)}` })) return;
     const paid = await Pay.pay(order, { name: user.name, email: user.email, phone: user.phone || '', description: `${o.invoice} · ${next.label}` });
     if (!paid) return;
-    D.payNext(o, 'Razorpay', null, { paymentId: paid.paymentId, balanceToken: paid.balanceToken });
+    await D.payNext(o, 'Razorpay', null, { paymentId: paid.paymentId, balanceToken: paid.balanceToken });
     toast(`Paid ${inr(order.due)} — thank you!`); rerender();
   } catch (err) {
     if (err.paymentId) modal({ title: 'Payment not confirmed', body: `<p>${esc(err.message)}</p>`, submit: '' });
@@ -292,7 +293,7 @@ function profile(user) {
         ${field('City', 'city', { value: user.city || '' })}
         <button class="btn primary">Save changes</button></form>
       <form class="card" id="pw"><h3>Change password</h3>
-        ${field('New password', 'pw', { type: 'password', required: true, attrs: 'minlength="6" autocomplete="new-password"' })}
+        ${field('New password', 'pw', { type: 'password', required: true, attrs: 'minlength="12" autocomplete="new-password"' })}
         <button class="btn ghost">Update password</button></form>
     </div>`,
     bind: root => {
