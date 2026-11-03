@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { siteHeader, siteFooter } from '../dist/js/chrome.js';
 import { articleHtml, postCard } from '../dist/js/blog/render.js';
+import { servicesIndexBody } from '../dist/js/seo.js';
 import { esc } from '../dist/js/ui.js';
 import { readStore } from './store.mjs';
 
@@ -14,7 +15,7 @@ export async function contentPage(pathname, site, indexFile) {
   let title, description, body, status = 200;
   if (path === '/services') {
     title = 'Services'; description = 'Explore our services and current packages.';
-    body = `<section class="shell section"><h1>Services</h1><p class="lead">${description}</p><div class="grid3">${services.map(s => `<a class="card pad" href="/services/${encodeURIComponent(s.id)}/"><h2>${esc(s.name)}</h2><p>${esc(s.summary)}</p><b>From ₹${Math.min(...s.tiers.map(t => t.price)).toLocaleString('en-IN')}</b></a>`).join('')}</div></section>`;
+    body = servicesIndexBody(services);
   } else if (path === '/blog') {
     title = 'Guides from our blog'; description = 'Guides for building and growing your business.';
     body = `<section class="shell section"><h1>${title}</h1><p class="lead">${description}</p><div class="grid3">${state.posts.filter(p => p.published !== false).map(p => postCard(p, service(p.service))).join('')}</div></section>`;

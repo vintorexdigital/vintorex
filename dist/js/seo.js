@@ -170,7 +170,7 @@ export function servicesIndexBody(services) {
       <h1>Digital services and prices in Coimbatore</h1>
       <p class="lead">${esc(`${services.length} services in ${CATEGORIES.length} categories, each with three published packages. Prices start from ${inr(Math.min(...services.map(fromPrice)))}, excluding 18% GST. Reviewed ${REVIEWED.label}.`)}</p>
     </div></section>
-    <section class="shell section">
+    <section class="shell section service-directory">
       ${CATEGORIES.map(c => `<h2 class="cat-head" id="${c.id}">${esc(c.name)} <small class="muted">${esc(c.blurb)}</small></h2>
         <div class="cards3">${services.filter(s => s.cat === c.id).map(s => `<a class="card post-card" href="${servicePath(s.id)}">
           <div class="cover" style="--h:${{ build: 255, grow: 155, brand: 18, tech: 205, ai: 285 }[s.cat]}"><img class="cover-art-img" src="${serviceImagePath(s.id)}" alt="${esc(ART[s.id]?.alt || s.name)}" width="1600" height="900" loading="lazy"><div class="cover-overlay" aria-hidden="true"></div><span class="cover-ic">${icon(s.icon)}</span></div>
