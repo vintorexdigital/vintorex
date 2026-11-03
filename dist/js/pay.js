@@ -18,7 +18,7 @@ export async function load() {
 async function post(path, body) {
   const res = await fetch('/api/payments/' + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || 'Payment failed. Please try again.');
+  if (!res.ok) throw new Error(data.error || `Payment could not be started (error ${res.status}). Please try again, or contact us on WhatsApp.`);
   return data;
 }
 

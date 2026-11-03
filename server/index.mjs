@@ -88,7 +88,8 @@ async function razorpay(path, body) {
   } catch (err) { console.error('Razorpay', err.message); }
   if (!res?.ok) {
     if (res) console.error('Razorpay', res.status, data.error?.description || data);
-    throw new HttpError(502, 'The payment service is unavailable. Please try again in a moment.');
+    // 503, not 502: Cloudflare replaces a 502 from the origin with its own page, which hid this message from customers.
+    throw new HttpError(503, 'The payment service is unavailable. Please try again in a moment, or contact us on WhatsApp.');
   }
   return data;
 }
@@ -146,6 +147,17 @@ function verifyPayment(body) {
   if (t.plan) out.memberToken = sign({ k: 'member', email: t.account, plan: t.plan.id, exp: Date.now() + (t.plan.cycle === 'year' ? 372 : 38) * DAY });
   if (t.rest.length) out.balanceToken = sign({ k: 'balance', first: t.first || orderId, rest: t.rest, exp: Date.now() + 730 * DAY });
   return out;
+}
+
+// At start-up, a read-only call that tells whether Razorpay accepts the keys, so a wrong or rotated secret shows
+// in the log (journalctl -u vintorex) instead of only as failed checkouts.
+async function checkRazorpay() {
+  try {
+    const res = await fetch(RAZORPAY_API + '/orders?count=1', { headers: { Authorization: 'Basic ' + Buffer.from(`${KEY_ID}:${KEY_SECRET}`).toString('base64') }, signal: AbortSignal.timeout(15000) });
+    if (res.ok) return console.log('Razorpay accepted the API keys.');
+    const data = await res.json().catch(() => ({}));
+    console.error(`Razorpay REJECTED the API keys (${res.status}: ${data.error?.description || 'no detail'}). Checkout will fail until RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET on this server match a key pair in the Razorpay Dashboard.`);
+  } catch (err) { console.error('Razorpay could not be reached to check the keys:', err.message); }
 }
 
 const clientIp = req => req.headers['x-forwarded-for']?.split(',').pop().trim() || req.socket.remoteAddress;
@@ -291,6 +303,7 @@ createServer(async (req, res) => {
     send(res, err.status || 500, { error: err.status ? err.message : 'Something went wrong. Please try again.' });
   }
 }).listen(PORT, HOST, () => {
+  if (PAYMENTS) checkRazorpay();
   const mode = PAYMENTS ? `on, ${KEY_ID.startsWith('rzp_live_') ? 'LIVE' : 'test'} key` : 'off (set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)';
   const assistant = AI_ON ? 'on (Cloudflare Workers AI)' : 'search-only (set CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN)';
   const wa = whatsappMissing();
