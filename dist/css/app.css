@@ -2155,3 +2155,34 @@ body:has(.dash.is-admin) :is(.vxc-launch, .vxc-panel) { display: none; }
 @media (min-width: 64rem) {
   .service-directory .cards3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+
+.topbar, .topbar.scrolled {
+  background: linear-gradient(0deg, rgb(185 222 218 / .48), rgb(255 255 255 / .35)),
+    url("/images/header-waves.png") center / cover, #e7e2d8;
+}
+.topbar::before {
+  content: "";
+  position: absolute;
+  width: clamp(32px, 5vw, 68px);
+  aspect-ratio: 76 / 36;
+  top: 50%;
+  left: 18%;
+  background: url("/images/header-fish.svg") center / contain no-repeat;
+  opacity: .65;
+  filter: blur(.65px);
+  pointer-events: none;
+  animation: header-fish-swim 11s linear infinite;
+}
+@keyframes header-fish-swim {
+  0% { left: 8%; transform: translateY(0) rotate(-4deg); opacity: 0; }
+  8%, 88% { opacity: .65; }
+  33% { left: 34%; transform: translateY(5%) rotate(3deg); }
+  45% { left: 44%; transform: translateY(-48%) rotate(-18deg); }
+  51% { left: 49%; transform: translateY(-78%) rotate(0); }
+  59% { left: 56%; transform: translateY(-10%) rotate(16deg); }
+  74% { left: 68%; transform: translateY(5%) rotate(-3deg); }
+  100% { left: 84%; transform: translateY(-8%) rotate(2deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .topbar::before { left: 64%; animation: none; }
+}
