@@ -161,7 +161,17 @@ An invite can be reused until it expires, though each Meta code works once. Not 
 
 ## Firebase
 
-Project `vintorex-digital-solutions-024`, with Google Analytics (`G-TMWF3S1YEZ`) switched on for the live site only (never on localhost). The site has no bundler, so `scripts/firebase-entry.mjs` holds the config and initialisation, and `npm run build:firebase` bundles it with the `firebase` package into `dist/js/firebase.js`, which `js/main.js` loads after the page is up. Commit that file; the server does not need `node_modules`. The web config is public by design, so restrict the API key to vintorex.com in Google Cloud Console → Credentials, and keep Firebase security in its rules. The app page's CSP allows Google Tag Manager, Analytics and Firebase for this. Only the app pages load it; the static guides and service pages do not. Analytics sets cookies, so mention it in the privacy policy (`js/policies.js`, then `npm run build:blog`).
+Project `vintorex-digital-solutions-024`. The site has no bundler, so `scripts/firebase/` holds the Firebase code and `npm run build:firebase` bundles it with the `firebase` package into `dist/js/firebase/` (commit the output; the server does not need `node_modules`). Run it again after editing `scripts/firebase/*` or upgrading `firebase`. The web config in `scripts/firebase/app.mjs` is public by design: restrict the API key to vintorex.com in Google Cloud Console → Credentials, and keep security in Firebase's rules and authorised domains. The app page's CSP allows Firebase, Google Analytics and Google sign-in. Only the app pages load Firebase; the static guides and service pages do not.
+
+**Analytics** (`G-TMWF3S1YEZ`) runs on the live site only, never on localhost, and sets cookies, so mention it in the privacy policy (`js/policies.js`, then `npm run build:blog`).
+
+**Authentication** (`js/auth.js`, `js/db.js`) signs customers in with email and password, Google, and password-reset emails; new accounts get a verification email (not enforced). Passwords live with Firebase, and the customer's record (plan, orders, tickets) stays in the browser store as before, linked by email. Old accounts made before Firebase keep working: the first correct sign-in creates their Firebase account. The admin account stays local and is never signed in through Firebase. If Firebase can't load, or Authentication is not switched on for the project, the forms fall back to the old local sign-in, so nobody is locked out. Switch it on in the Firebase console → Build → Authentication → Get started:
+
+1. **Sign-in method:** enable **Email/Password** and **Google** (choose a support email).
+2. **Settings → Authorized domains:** add `vintorex.com` (and `www.vintorex.com` if used). `localhost` is there by default.
+3. **Templates:** set the sender name and wording of the verification and reset emails.
+
+Honest limit: accounts, orders and plans still live in each browser (see **Before going live**), so signing in on another device creates a fresh empty record. Firebase proves who someone is; moving the data to a server database is the next step.
 
 ## URLs
 

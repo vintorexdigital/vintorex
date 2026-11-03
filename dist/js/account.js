@@ -3,6 +3,7 @@ import * as D from './db.js';
 import { esc, icon, toast, field, per, date, dateTime, ago, badge, empty, modal, confirmBox, $, $$ } from './ui.js';
 import { paymentSchedule } from './public.js';
 import * as Pay from './pay.js';
+import * as Auth from './auth.js';
 import { navigate } from './router.js';
 
 const inr = D.inr;
@@ -299,7 +300,7 @@ function profile(user) {
         if (D.db().users.some(u => u !== user && u.email.toLowerCase() === f.email.toLowerCase())) return toast('That email is used by another account', 'err');
         Object.assign(user, f); D.save(); toast('Profile saved'); rerender();
       });
-      $('#pw', root).addEventListener('submit', async e => { e.preventDefault(); await D.changePassword(user, e.target.pw.value); e.target.reset(); toast('Password updated'); });
+      $('#pw', root).addEventListener('submit', async e => { e.preventDefault(); try { await Auth.changePassword(user, e.target.pw.value); e.target.reset(); toast('Password updated'); } catch (err) { toast(err.message, 'err'); } });
     },
   };
 }

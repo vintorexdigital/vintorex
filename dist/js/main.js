@@ -5,6 +5,7 @@ import * as Pub from './public.js';
 import * as Acc from './account.js';
 import * as Adm from './admin.js';
 import * as Pay from './pay.js';
+import * as Auth from './auth.js';
 import { connectWhatsapp } from './connect-whatsapp.js';
 import { BUSINESS } from './data.js';
 import { siteHeader, siteFooter, brandLogo } from './chrome.js';
@@ -148,7 +149,7 @@ function bindChrome() {
   menu?.addEventListener('click', e => { if (e.target.closest('a')) setMenu(false); });
   const st = $('.side-toggle');
   st?.addEventListener('click', () => { const open = $('#side').classList.toggle('open'); st.setAttribute('aria-expanded', open); });
-  $('[data-logout]')?.addEventListener('click', () => { D.logout(); navigate('/'); });
+  $('[data-logout]')?.addEventListener('click', () => { Auth.logout(); navigate('/'); });
   markScrolled();
 }
 
@@ -190,4 +191,4 @@ if (legacy) location.replace(legacy);
 else Promise.all([D.init(), Pay.load()]).then(safeRender).catch(showError);
 
 // Firebase (Analytics) loads after the page is up and never blocks it; a failure, such as an ad blocker, is ignored.
-import('./firebase.js').catch(() => {});
+import('./firebase/analytics.js').catch(() => {});

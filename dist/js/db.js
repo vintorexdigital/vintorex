@@ -99,14 +99,38 @@ export async function login(email, password) {
   return u;
 }
 export function logout() { safe(() => localStorage.removeItem(SESSION)); }
-export async function register({ name, email, phone, company, password }) {
+const findUser = email => db().users.find(u => u.email.toLowerCase() === String(email).trim().toLowerCase());
+export const userByEmail = findUser;
+// True when the password matches the one stored in this browser (accounts made before Firebase Auth).
+export async function checkPassword(email, password) {
+  const u = findUser(email);
+  return Boolean(u && await verify(password, u.pass));
+}
+function createCustomer({ name, email, phone, company, pass }) {
   const d = db();
-  if (d.users.some(u => u.email.toLowerCase() === email.trim().toLowerCase())) throw new Error('An account with this email already exists.');
-  const u = { id: uid('u_'), role: 'customer', name: name.trim(), email: email.trim(), phone, company, pass: await hash(password), plan: 'free', status: 'Active', createdAt: new Date().toISOString(), tags: [] };
+  const u = { id: uid('u_'), role: 'customer', name: name.trim(), email: email.trim(), phone, company, pass, plan: 'free', status: 'Active', createdAt: new Date().toISOString(), tags: [] };
   d.users.push(u);
   // every signup lands in the CRM as a lead too
   addLead({ name: u.name, email: u.email, phone, company, source: 'Website form', service: '', message: 'Created a customer account', stage: 'Qualified', customerId: u.id }, false);
   logActivity(`New customer signup: ${u.name}`);
+  return u;
+}
+// Signs in the customer record for an email that Firebase has just authenticated, creating it on first use.
+// Their password lives with Firebase, so none is kept here. The admin account is never reached this way.
+export function adoptUser({ name, email, phone, company }) {
+  let u = findUser(email);
+  if (u?.role === 'admin') throw new Error('Use the admin sign-in for this account.');
+  if (u?.status === 'Blocked') throw new Error('This account is blocked. Contact support.');
+  if (!u) u = createCustomer({ name: name || String(email).split('@')[0], email, phone, company, pass: '' });
+  else if (!u.pass.startsWith('pbkdf2$')) u.pass = '';
+  save();
+  safe(() => localStorage.setItem(SESSION, u.id));
+  return u;
+}
+// Local-only sign-up, used when Firebase is unavailable.
+export async function register({ name, email, phone, company, password }) {
+  if (findUser(email)) throw new Error('An account with this email already exists.');
+  const u = createCustomer({ name, email, phone, company, pass: await hash(password) });
   save();
   safe(() => localStorage.setItem(SESSION, u.id));
   return u;

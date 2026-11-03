@@ -1,6 +1,7 @@
 // Public storefront: home, services, pricing, shop, cart, checkout, contact, auth.
 import { BUSINESS, CATEGORIES, ANNUAL_MONTHS_PAID, SOURCES, LEAD_SOURCES, COMPETITOR_SOURCES, MILESTONE_MIN, pricingFaqs } from './data.js';
 import * as D from './db.js';
+import * as Auth from './auth.js';
 import { esc, icon, toast, field, per, date, empty, modal, $, $$ } from './ui.js';
 import { amountDue } from './pricing.js';
 import * as Pay from './pay.js';
@@ -980,6 +981,20 @@ const afterSignIn = (query, fallback) => {
   const next = query.get('next');
   return next && /^[\w%-][\w\-./%]*$/.test(next) && !next.includes('//') ? '/' + next : fallback;
 };
+// "Continue with Google" on the sign-in and sign-up forms. Google users skip the phone and password fields.
+function bindGoogle(f, query) {
+  const btn = $('[data-google]', f);
+  btn.addEventListener('click', async () => {
+    const p = $('.err', f);
+    p.hidden = true; btn.disabled = true;
+    try {
+      const u = await Auth.google();
+      if (u) { toast(`Welcome, ${u.name.split(' ')[0]}`); go(afterSignIn(query, '/account')); }
+    } catch (err) { p.hidden = false; p.textContent = err.message; }
+    btn.disabled = false;
+  });
+}
+
 export function login(params, query) {
   return {
     title: 'Sign in',
@@ -991,6 +1006,8 @@ export function login(params, query) {
         ${field('Password', 'password', { type: 'password', required: true, attrs: 'autocomplete="current-password"' })}
         <p class="err" hidden></p>
         <button class="btn primary block lg">Sign in</button>
+        <button type="button" class="btn ghost block" data-google>Continue with Google</button>
+        <p class="center muted"><button type="button" class="text-btn" data-reset>Forgot your password?</button></p>
         <p class="center muted">New here? <a href="/register${query.get('next') ? '?next=' + esc(query.get('next')) : ''}">Create an account</a></p>
       </form>
     </section>`,
@@ -999,10 +1016,17 @@ export function login(params, query) {
       f.addEventListener('submit', async e => {
         e.preventDefault();
         try {
-          const u = await D.login(f.email.value, f.password.value);
+          const u = await Auth.login(f.email.value, f.password.value);
           toast(`Welcome, ${u.name.split(' ')[0]}`);
           go(afterSignIn(query, u.role === 'admin' ? '/admin' : '/account'));
         } catch (err) { const p = $('.err', f); p.hidden = false; p.textContent = err.message; }
+      });
+      bindGoogle(f, query);
+      $('[data-reset]', f).addEventListener('click', async () => {
+        const p = $('.err', f);
+        if (!f.email.value.trim()) { p.hidden = false; p.textContent = 'Enter your email above first, then choose Forgot your password.'; return f.email.focus(); }
+        try { await Auth.resetPassword(f.email.value); p.hidden = true; toast('If that email has an account, a reset link is on its way.'); }
+        catch (err) { p.hidden = false; p.textContent = err.message; }
       });
     },
   };
@@ -1022,6 +1046,7 @@ export function register(params, query) {
         ${field('Password', 'password', { type: 'password', required: true, attrs: 'minlength="6" autocomplete="new-password"' })}
         <p class="err" hidden></p>
         <button class="btn primary block lg">Create account</button>
+        <button type="button" class="btn ghost block" data-google>Sign up with Google</button>
         <p class="center muted">Already have an account? <a href="/login">Sign in</a></p>
       </form>
     </section>`,
@@ -1030,11 +1055,12 @@ export function register(params, query) {
       f.addEventListener('submit', async e => {
         e.preventDefault();
         try {
-          await D.register(Object.fromEntries(new FormData(f)));
+          await Auth.register(Object.fromEntries(new FormData(f)));
           toast('Account created');
           go(afterSignIn(query, '/account'));
         } catch (err) { const p = $('.err', f); p.hidden = false; p.textContent = err.message; }
       });
+      bindGoogle(f, query);
     },
   };
 }
