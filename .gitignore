@@ -1,6 +1,48 @@
-.DS_Store
-node_modules/
-__pycache__/
+# Secrets: keys and tokens live in .env on each machine, never in git. Only the template is committed.
 .env
 .env.*
 !.env.example
+
+# Dependencies. Only the firebase bundles built into dist/js/firebase/ and esbuild's build step use them; the
+# server needs none, and package-lock.json stays committed.
+node_modules/
+
+# Logs and debugging output
+*.log
+npm-debug.log*
+.npm/
+
+# macOS and Windows
+.DS_Store
+._*
+.AppleDouble
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+
+# Editors and IDEs (WebStorm / JetBrains, VS Code, Vim)
+.idea/
+.vscode/
+*.swp
+*~
+
+# Python (scripts/*.py)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Claude Code: per-machine settings and its checkouts. .claude/launch.json is committed.
+.claude/worktrees/
+.claude/settings.local.json
+
+# Local scratch: test coverage, temporary files and archives
+coverage/
+.nyc_output/
+tmp/
+*.tmp
+*.zip
+
+# Not ignored on purpose: dist/ (hosting serves the generated pages, bundles and images as committed),
+# package-lock.json, server/chat-vectors.json (npm run build:chat) and .env.example.
