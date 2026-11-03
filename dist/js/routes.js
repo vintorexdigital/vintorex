@@ -32,7 +32,7 @@ export function matchRoute(path) {
 export const isPrivate = path => /^\/(cart|checkout|order|invoice|login|register|connect-whatsapp|account|admin)(\/|$)/.test(path);
 
 // The page search engines should treat as the original: the package picker repeats its service page.
-export const canonicalPath = path => path.replace(/^(\/services\/[\w-]+)\/packages$/, '$1/');
+export const canonicalPath = path => path.replace(/^(\/services\/[\w-]+)(?:\/packages)?$/, '$1/');
 
 export const ROBOTS_INDEX = 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
 

@@ -115,9 +115,9 @@ export const breadcrumbSchema = (site, trail) => ({
 // ---------- page bodies ----------
 const tick = on => on === 1 ? `<span class="yes" aria-label="Included">✓</span>` : on === 0 ? `<span class="no" aria-label="Not included">—</span>` : esc(on);
 
-export function serviceBody(s) {
+export function serviceBody(s, publishedPosts) {
   const art = ART[s.id];
-  const posts = postsFor(s.id);
+  const posts = publishedPosts ? publishedPosts.filter(p => p.service === s.id) : postsFor(s.id);
   const faqs = serviceFaqs(s);
   const toc = [['overview', 'Overview'], ['packages', 'Packages and prices'], ['included', 'What is included'], ['process', 'How it works'], ['excluded', 'Not included'], ['compare', 'How we compare'], ['guides', 'Guides'], ['faqs', 'FAQs']];
   return `<article class="shell section post svc-page">

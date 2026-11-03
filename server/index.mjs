@@ -11,6 +11,7 @@
 // Payment tokens carry verified entitlements between checkout requests.
 import './env.mjs';
 import { offers, markOfferPaid, identity } from './offers.mjs';
+import { llmsTxt, llmsFullTxt } from '../dist/js/seo.js';
 import { contentPage, sitemap } from './pages.mjs';
 import * as Store from './store.mjs';
 import { clientIp } from './client-ip.mjs';
@@ -238,7 +239,9 @@ const escAttr = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').re
 function shellFor(html, path) {
   const set = (re, value) => { html = html.replace(re, (m, before, after) => before + escAttr(value) + after); };
   if (path === null || isPrivate(path)) set(/(<meta name="robots" content=")[^"]*(")/, 'noindex, nofollow');
-  if (path === null || path === '/') return html;
+  if (path === '/') return html;
+  html = html.replace(/<!-- seo-noscript -->[\s\S]*?<!-- \/seo-noscript -->/, '');
+  if (path === null) return html.replace(/<title>[^<]*<\/title>/, '<title>Page not found · Vintorex</title>');
   const canonical = SITE + canonicalPath(path);
   set(/(<link rel="canonical" href=")[^"]*(")/, canonical);
   set(/(<link rel="alternate" hreflang="[^"]*" href=")[^"]*(")/g, canonical);
@@ -253,6 +256,9 @@ function shellFor(html, path) {
     set(/(<meta name="twitter:description" content=")[^"]*(")/, meta.description);
     // The app falls back to the shared description (main.js), so keep it beside this page's own.
     html = html.replace(/<meta name="description" content="([^"]*)">/, (m, shared) => `<meta name="description" content="${escAttr(meta.description)}" data-default="${shared}">`);
+  }
+  if (meta && !isPrivate(path)) {
+    html = html.replace('<div id="toasts"', () => '<noscript><main><h1>' + escAttr(meta.title) + '</h1><p>' + escAttr(meta.description) + '</p><a href="/services/">Browse services and prices</a></main></noscript><div id="toasts"');
   }
   return html;
 }
@@ -295,6 +301,14 @@ async function serveApp(req, res, pathname, search) {
 }
 
 async function serveStatic(req, res, pathname, search) {
+  if (pathname === '/llms.txt' || pathname === '/llms-full.txt') {
+    const { state } = Store.readStore();
+    const services = state.catalog.services;
+    const summary = pathname === '/llms-full.txt' ? llmsFullTxt(SITE, services)
+      : llmsTxt(SITE, services, state.posts.filter(p => p.published !== false));
+    const body = Buffer.from(summary);
+    return sendAsset(req, res, 200, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-cache' }, body.length, () => Readable.from([body]));
+  }
   if (pathname === '/sitemap.xml') {
     const xml = Buffer.from(await sitemap(SITE, join(DIST, 'sitemap.xml')));
     return sendAsset(req, res, 200, { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'no-cache' }, xml.length, () => Readable.from([xml]));

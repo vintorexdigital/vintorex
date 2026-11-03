@@ -94,6 +94,8 @@ async function render(version) {
   setMeta('meta[name="twitter:image:alt"]', 'content', imgAlt);
   // Every page is its own address now: say which one it is, and keep private and missing pages out of search.
   const canonical = SITE + canonicalPath(path);
+  const pageSchema = $('script[data-page-url]');
+  if (pageSchema && pageSchema.dataset.pageUrl !== canonical) pageSchema.remove();
   setMeta('link[rel=canonical]', 'href', canonical);
   setMeta('meta[property="og:url"]', 'content', canonical);
   $$('link[rel=alternate][hreflang]').forEach(l => l.setAttribute('href', canonical));
