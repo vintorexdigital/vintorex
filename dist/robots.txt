@@ -5,6 +5,7 @@ User-agent: *
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -17,6 +18,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -29,6 +31,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -41,6 +44,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -53,6 +57,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -65,6 +70,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -77,6 +83,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -89,6 +96,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -101,6 +109,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -113,6 +122,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -125,6 +135,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -137,6 +148,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -149,6 +161,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -161,6 +174,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -173,6 +187,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -185,6 +200,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -197,6 +213,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -209,6 +226,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -221,6 +239,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -233,6 +252,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/
@@ -245,6 +265,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /register
+Disallow: /connect-whatsapp
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order/

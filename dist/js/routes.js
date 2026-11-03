@@ -2,7 +2,7 @@
 // (index.html) and the browser's router matches them, so one list serves both and they cannot drift apart.
 // Everything else under dist/ (guides, service pages, the FAQ, policies and files) is a static page that loads on its own.
 export const ROUTES = [
-  '/', '/pricing', '/compare', '/shop', '/cart', '/checkout', '/contact', '/about', '/login', '/register',
+  '/', '/pricing', '/compare', '/shop', '/cart', '/checkout', '/contact', '/about', '/login', '/register', '/connect-whatsapp',
   '/services/:id/packages', '/order/:id', '/invoice/:id',
   '/account', '/account/:tab', '/admin', '/admin/:tab', '/admin/:tab/:id',
 ];
@@ -29,7 +29,7 @@ export function matchRoute(path) {
 }
 
 // Sign-in, cart, checkout, orders and dashboards are for people, not for search results.
-export const isPrivate = path => /^\/(cart|checkout|order|invoice|login|register|account|admin)(\/|$)/.test(path);
+export const isPrivate = path => /^\/(cart|checkout|order|invoice|login|register|connect-whatsapp|account|admin)(\/|$)/.test(path);
 
 // The page search engines should treat as the original: the package picker repeats its service page.
 export const canonicalPath = path => path.replace(/^(\/services\/[\w-]+)\/packages$/, '$1/');

@@ -19,6 +19,8 @@ export const config = {
   get forwardUrl() { return env('FORWARD_WEBHOOK_URL'); },
   get bot() { return /^(on|true|1)$/i.test(env('WHATSAPP_BOT')); },
   // Partner (Tech Provider / Solution Partner) settings, only for onboarding client WABAs.
+  // Facebook Login for Business configuration with the WhatsApp Embedded Signup product (App dashboard → Facebook Login for Business).
+  get signupConfigId() { return env('WHATSAPP_SIGNUP_CONFIG_ID'); },
   get creditLineId() { return env('WHATSAPP_CREDIT_LINE_ID'); },
 };
 
@@ -29,6 +31,7 @@ export function missing() {
     webhook: ['appSecret', 'verifyToken'],
     api: ['apiKey'],
     partner: ['appId', 'appSecret', 'token'],
+    signup: ['appId', 'appSecret', 'token', 'signupConfigId', 'apiKey'],
   };
   return Object.fromEntries(Object.entries(need).map(([job, keys]) => [job, keys.filter(k => !config[k])]));
 }

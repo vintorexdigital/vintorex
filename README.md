@@ -143,11 +143,21 @@ The assets, in order (Step numbers are Meta's onboarding steps for Tech Provider
 
 ### Onboarding clients (Become a Partner)
 
-Once the app is a Tech Provider or Solution Partner, clients connect their own WhatsApp Business Account through **Embedded Signup**, which opens from a page on our domain. That page must have its domain listed under Allowed domains and Valid OAuth redirect URIs, over HTTPS. It needs a Facebook Login for Business configuration (its `config_id`) and calls `FB.login` with `extras: { version: 'v5' }`. When the client finishes, the browser gets a **code that lasts only 30 seconds**, plus the client's `waba_id` and `phone_number_id` from the `WA_EMBEDDED_SIGNUP` message event. The page posts these to our server, which does the rest:
+Once the app is a Tech Provider or Solution Partner, clients connect their own WhatsApp Business Account through **Embedded Signup** on `/connect-whatsapp`.
 
-`POST /api/whatsapp/partner/onboard` with `{ code, wabaId, phoneNumberId, pin, currency? }` exchanges the code for the client's token, subscribes our app to their WABA's webhooks, registers the number for Cloud API (the 6-digit `pin` becomes its two-step PIN) and, if `WHATSAPP_CREDIT_LINE_ID` is set, shares our credit line so Meta bills us rather than the client (INR, USD, EUR, GBP, AUD or IDR only; it can't be changed later). Without a credit line the client adds their own payment method in WhatsApp Manager. The client's token is used for that onboarding only and is not stored: afterwards the System User sends for them by passing `wabaId` or `phoneNumberId` on any call, as long as the client shared the WABA with us. Our webhook receives their events with `wabaId` and `phoneNumberId` set, so handlers can tell accounts apart.
+1. In the Meta app, create a **Facebook Login for Business** configuration with the WhatsApp Embedded Signup product and copy its ID into `WHATSAPP_SIGNUP_CONFIG_ID`. Add `vintorex.com` to the app's Allowed domains and Valid OAuth redirect URIs (HTTPS only). The page uses signup `version: 'v5'`.
+2. Make an invite for a client. It is a signed link that expires (7 days by default, at most 30) and names them; rotating `WHATSAPP_API_KEY` voids all open invites:
 
-The Embedded Signup page, client migration (moving numbers or templates between partners) and storing client records are not built yet. The signup page can't call `/partner/onboard` directly, because the API key must never be in browser code and the browser admin has no server-side login. It needs a small server step of its own, with the client's session or a one-time invite, that calls onboarding on the page's behalf.
+   ```bash
+   curl -X POST https://vintorex.com/api/whatsapp/partner/invite \
+     -H "x-api-key: $WHATSAPP_API_KEY" -H "Content-Type: application/json" \
+     -d '{"name":"Spark Dental","days":7}'
+   ```
+3. Send the client the returned `url`. They press **Connect with Facebook**, pick or create their WhatsApp number in Meta's popup and finish. Meta hands the page a **code that lasts only 30 seconds** plus the client's `waba_id` and `phone_number_id`; the page posts them to `POST /api/whatsapp/signup`, which checks the invite and onboards the client.
+
+Onboarding (`POST /api/whatsapp/partner/onboard` does the same with the API key) exchanges the code for the client's token, subscribes our app to their WABA's webhooks, registers the number for Cloud API with a random 6-digit two-step PIN that is not stored (set a new one in WhatsApp Manager if needed) and, if `WHATSAPP_CREDIT_LINE_ID` is set, shares our credit line so Meta bills us rather than the client (INR, USD, EUR, GBP, AUD or IDR only; it can't be changed later). Without a credit line the client adds their own payment method in WhatsApp Manager. The client's token is used for that onboarding only and is not stored: afterwards the System User sends for them by passing `wabaId` or `phoneNumberId` on any call, as long as the client shared the WABA with us. Our webhook receives their events with `wabaId` and `phoneNumberId` set, so handlers can tell accounts apart. Onboarding is logged on the server (`WhatsApp client "…" onboarded`), but client records are not kept: save the ids from the log or from `GET /api/whatsapp` calls you make.
+
+An invite can be reused until it expires, though each Meta code works once. Not built: moving numbers or templates between partners (client migration), and a client list.
 
 ## URLs
 

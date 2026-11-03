@@ -7,7 +7,7 @@ import { createHmac } from 'node:crypto';
 Object.assign(process.env, {
   WHATSAPP_TOKEN: 'test-token', WHATSAPP_PHONE_NUMBER_ID: '111', WHATSAPP_WABA_ID: '222', META_APP_ID: 'app-1',
   META_APP_SECRET: 'app-secret', WEBHOOK_VERIFY_TOKEN: 'verify-me', WHATSAPP_API_KEY: 'k'.repeat(32),
-  WHATSAPP_CREDIT_LINE_ID: 'credit-9', WHATSAPP_BOT: '',
+  WHATSAPP_CREDIT_LINE_ID: 'credit-9', WHATSAPP_SIGNUP_CONFIG_ID: 'cfg-1', WHATSAPP_BOT: '',
 });
 const { normalizePhone, WhatsAppClient, exchangeCode } = await import('../server/whatsapp/client.mjs');
 const { parseWebhook, verifySignature, bus } = await import('../server/whatsapp/webhook.mjs');
@@ -147,4 +147,28 @@ test('HTTP: API needs the key, validates input, and reports status', async () =>
   assert.equal(status.enabled, true);
   assert.equal(status.partner, true);
   assert.equal(status.bot, false);
+}));
+
+test('HTTP: client signup by invite', async () => serve(async base => {
+  const key = { 'x-api-key': 'k'.repeat(32) };
+  assert.equal((await post(`${base}/partner/invite`, {}, key)).status, 400);
+  const { url, expiresInDays } = await (await post(`${base}/partner/invite`, { name: 'Spark Dental' }, key)).json();
+  assert.equal(expiresInDays, 7);
+  const invite = new URL(url).searchParams.get('invite');
+  assert.match(url, /^https:\/\/vintorex\.com\/connect-whatsapp\?invite=/);
+
+  // The page reads its settings with the invite and no key.
+  const cfg = await (await fetch(`${base}/signup?invite=${invite}`)).json();
+  assert.deepEqual(cfg, { name: 'Spark Dental', appId: 'app-1', configId: 'cfg-1', graphVersion: 'v26.0' });
+  assert.equal((await fetch(`${base}/signup?invite=${invite}x`)).status, 403);
+  assert.equal((await fetch(`${base}/signup`)).status, 403);
+
+  const body = { code: 'c1', wabaId: 'W1', phoneNumberId: 'P1' };
+  assert.equal((await post(`${base}/signup`, { ...body, invite: 'forged.token' })).status, 403);
+  await withFetch(url => url.includes('oauth/access_token') ? json({ access_token: 'biz' }) : json({ success: true }), async calls => {
+    const r = await post(`${base}/signup`, { ...body, invite });
+    assert.equal(r.status, 200);
+    assert.equal((await r.json()).phone, 'registered');
+    assert.match(JSON.parse(calls[2].opts.body).pin, /^\d{6}$/); // chosen by the server
+  });
 }));

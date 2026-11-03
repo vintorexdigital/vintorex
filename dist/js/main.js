@@ -5,6 +5,7 @@ import * as Pub from './public.js';
 import * as Acc from './account.js';
 import * as Adm from './admin.js';
 import * as Pay from './pay.js';
+import { connectWhatsapp } from './connect-whatsapp.js';
 import { BUSINESS } from './data.js';
 import { siteHeader, siteFooter, brandLogo } from './chrome.js';
 import { esc, icon, initials, responsiveTables, $, $$ } from './ui.js';
@@ -14,7 +15,7 @@ import { navigate, interceptLinks, legacyUrl, NAVIGATE } from './router.js';
 // One view per pattern in routes.js.
 const views = {
   '/': Pub.home, '/pricing': Pub.pricing, '/compare': Pub.compare, '/shop': Pub.shop, '/cart': Pub.cart, '/checkout': Pub.checkout,
-  '/contact': Pub.contact, '/about': Pub.about, '/login': Pub.login, '/register': Pub.register,
+  '/contact': Pub.contact, '/about': Pub.about, '/login': Pub.login, '/register': Pub.register, '/connect-whatsapp': connectWhatsapp,
   '/services/:id/packages': Pub.serviceDetail, '/order/:id': Pub.orderDone, '/invoice/:id': Pub.invoice,
   '/account': guard('customer', Acc.view), '/account/:tab': guard('customer', Acc.view),
   '/admin': guard('admin', Adm.view), '/admin/:tab': guard('admin', Adm.view), '/admin/:tab/:id': guard('admin', Adm.view),

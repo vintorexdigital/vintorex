@@ -294,7 +294,7 @@ await writeFile(appIndex, html.replace(block, `<!-- business-jsonld -->\n  <link
 
 // Explicitly welcome search and AI crawlers; keep the payment API and the private pages of the app (sign-in, cart,
 // checkout, orders, dashboards) out of crawls. Those pages also say noindex themselves (server/index.mjs).
-const PRIVATE = ['/api/', '/login', '/register', '/cart', '/checkout', '/order/', '/invoice/', '/account', '/admin'];
+const PRIVATE = ['/api/', '/login', '/register', '/connect-whatsapp', '/cart', '/checkout', '/order/', '/invoice/', '/account', '/admin'];
 const disallow = PRIVATE.map(p => `Disallow: ${p}`).join('\n');
 const BOTS = ['Googlebot', 'Bingbot', 'GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-User', 'Claude-SearchBot', 'anthropic-ai', 'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot', 'Applebot-Extended', 'CCBot', 'Bytespider', 'Amazonbot', 'meta-externalagent', 'DuckAssistBot', 'cohere-ai'];
 await out('robots.txt', `# Vintorex Digital Solutions: public pages are open to search engines and AI assistants.
