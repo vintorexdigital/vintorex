@@ -154,7 +154,7 @@ export function home() {
           <div class="hero-photo-card">
             <div class="hero-float float-top"><span class="dot-live"></span><b>Google &amp; Meta Partner</b></div>
             <div class="hero-float float-bottom"><span class="h-spark">${icon('spark')}</span><b>3.4× Average Client ROI</b></div>
-            <img class="hero-photo" src="/images/hero-dashboard.jpg" alt="Studio monitor showing a client growth dashboard with rising coral and indigo campaign bars" width="1600" height="900" decoding="async">
+            <img class="hero-photo" src="/images/hero-dashboard-1024.webp" srcset="/images/hero-dashboard-640.webp 640w, /images/hero-dashboard-1024.webp 1024w, /images/hero-dashboard-1600.webp 1600w" sizes="(max-width: 900px) 94vw, 44vw" fetchpriority="high" alt="Studio monitor showing a client growth dashboard with rising coral and indigo campaign bars" width="1600" height="900" decoding="async">
           </div>
         </div>
       </div>

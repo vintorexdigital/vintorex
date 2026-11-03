@@ -34,6 +34,8 @@ export function interceptLinks() {
 export function legacyUrl(hash = location.hash) {
   if (!hash.startsWith('#/')) return null;
   const rest = hash.slice(1);
+  // Browsers treat a second slash or backslash as the start of an external host.
+  if (/^\/[/\\]/.test(rest) || /[\u0000-\u001f]/.test(rest)) return null;
   const cut = rest.search(/[?#]/);
   const path = trimPath(cut < 0 ? rest : rest.slice(0, cut));
   const tail = cut < 0 ? '' : rest.slice(cut);

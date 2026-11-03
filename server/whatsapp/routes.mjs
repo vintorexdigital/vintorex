@@ -22,6 +22,7 @@ import { config, missing } from './config.mjs';
 import { WhatsAppClient, WhatsAppError, exchangeCode, subscribeApp, registerPhone, shareCreditLine } from './client.mjs';
 import { verifySignature, parseWebhook, SeenCache, bus } from './webhook.mjs';
 import './handlers.mjs';
+import { clientIp } from '../client-ip.mjs';
 
 const seen = new SeenCache();
 
@@ -71,10 +72,11 @@ async function receive(req, res) {
   }
   let payload;
   try { payload = JSON.parse(raw.toString('utf8')); } catch { return reply(res, 400, 'Bad request', 'text/plain'); }
+  let events;
+  try { events = parseWebhook(payload); } catch { return reply(res, 400, 'Invalid webhook payload', 'text/plain'); }
   // Answer first: Meta retries when a 200 is slow.
   reply(res, 200, 'ok', 'text/plain');
   setImmediate(() => {
-    const events = parseWebhook(payload);
     for (const evt of events) {
       const key = evt.id ? `${evt.kind}:${evt.id}:${evt.status || ''}` : null;
       if (key && seen.has(key)) continue;
@@ -146,7 +148,7 @@ const badInvite = () => new WhatsAppError('This invite link is invalid or has ex
 // At most 20 signup requests per visitor every 10 minutes.
 const hits = new Map();
 function limit(req) {
-  const ip = req.headers['x-forwarded-for']?.split(',').pop().trim() || req.socket.remoteAddress;
+  const ip = clientIp(req);
   const now = Date.now(), h = hits.get(ip);
   if (hits.size > 10000) hits.clear();
   if (!h || now - h.start > 600e3) hits.set(ip, { start: now, n: 1 });
@@ -177,7 +179,7 @@ async function api(req, res, route, query) {
   if (!authorised(req)) return reply(res, 401, { error: 'Unauthorized' });
   const m = req.method;
   let out;
-  if (route.startsWith('send/') && m === 'POST' && SEND[route.slice(5)]) out = await SEND[route.slice(5)](await readJson(req));
+  if (route.startsWith('send/') && m === 'POST' && Object.hasOwn(SEND, route.slice(5))) out = await SEND[route.slice(5)](await readJson(req));
   else if (route === 'templates' && m === 'GET') out = await clientFor({ wabaId: query.get('wabaId') }).listTemplates({ status: query.get('status') || undefined });
   else if (route === 'templates' && m === 'POST') { const b = await readJson(req); out = await clientFor(b).createTemplate(b.template || b); }
   else if (route === 'templates' && m === 'DELETE') out = await clientFor({ wabaId: query.get('wabaId') }).deleteTemplate(query.get('name'));

@@ -3,13 +3,13 @@
 // the app links to those pages.
 import { CATEGORIES } from './data.js';
 import * as D from './db.js';
-import { POSTS, postsFor } from './blog/index.js';
-import { postCard as card } from './blog/render.js';
+import { POSTS } from './blog/card-index.js';
+import { postCard as card } from './blog/cards.js';
 
 const svcOf = p => D.service(p.service);
 export const postCard = p => card(p, svcOf(p));
 
 // Guides for one service, used on service pages.
-export const serviceGuides = serviceId => postsFor(serviceId).map(postCard).join('');
+export const serviceGuides = serviceId => POSTS.filter(p => p.service === serviceId).map(postCard).join('');
 // A spread of guides for the home page: one per category.
 export const featuredPosts = () => CATEGORIES.slice(0, 3).map(c => POSTS.find(p => svcOf(p)?.cat === c.id)).filter(Boolean);

@@ -4,9 +4,8 @@ import { EventEmitter } from 'node:events';
 
 // X-Hub-Signature-256 is an HMAC of the raw request body, so check it before parsing.
 export function verifySignature(rawBody, header, appSecret) {
-  if (!header || !appSecret || !rawBody) return false;
-  const [algo, received] = String(header).split('=');
-  if (algo !== 'sha256' || !received) return false;
+  if (!appSecret || !rawBody || !/^sha256=[0-9a-f]{64}$/i.test(header || '')) return false;
+  const received = header.slice(7);
   const a = Buffer.from(received, 'hex'), b = createHmac('sha256', appSecret).update(rawBody).digest();
   return a.length === b.length && timingSafeEqual(a, b);
 }

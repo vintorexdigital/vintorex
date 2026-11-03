@@ -11,7 +11,10 @@
 // must remember later (a paid membership, the instalments still due) goes back to the
 // browser as a token signed with PAYMENT_TOKEN_SECRET that the browser cannot alter.
 import './env.mjs';
+import { clientIp } from './client-ip.mjs';
 import { createServer } from 'node:http';
+import { Readable, pipeline } from 'node:stream';
+import { createGzip } from 'node:zlib';
 import { createReadStream } from 'node:fs';
 import { readFile, stat } from 'node:fs/promises';
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
@@ -107,7 +110,7 @@ async function createOrder(body) {
   let due, quote = null, ticket, notes;
   if (body.balanceToken) {
     const bal = unsign(body.balanceToken, 'balance');
-    if (!bal?.rest.length) throw new HttpError(400, 'This instalment can’t be paid online. Please contact us to pay it.');
+    if (!bal?.rest.length || (bal.account !== undefined && bal.account !== account)) throw new HttpError(400, 'This instalment can’t be paid online. Please contact us to pay it.');
     due = bal.rest[0].amount;
     ticket = { first: bal.first, rest: bal.rest.slice(1) };
     notes = { type: 'instalment', instalment: bal.rest[0].label, first_order: bal.first };
@@ -147,9 +150,11 @@ function verifyPayment(body) {
   if (typeof orderId !== 'string' || typeof paymentId !== 'string' || !same(signature, expected) || t?.o !== orderId) {
     throw new HttpError(400, 'The payment could not be verified.');
   }
+  // A replay of the same proof must yield the same entitlement expiry.
+  const issued = t.exp - 7 * DAY;
   const out = { ok: true, paymentId };
-  if (t.plan) out.memberToken = sign({ k: 'member', email: t.account, plan: t.plan.id, exp: Date.now() + (t.plan.cycle === 'year' ? 372 : 38) * DAY });
-  if (t.rest.length) out.balanceToken = sign({ k: 'balance', first: t.first || orderId, rest: t.rest, exp: Date.now() + 730 * DAY });
+  if (t.plan) out.memberToken = sign({ k: 'member', email: t.account, plan: t.plan.id, exp: issued + (t.plan.cycle === 'year' ? 372 : 38) * DAY });
+  if (t.rest.length) out.balanceToken = sign({ k: 'balance', account: t.account, first: t.first || orderId, rest: t.rest, exp: issued + 730 * DAY });
   return out;
 }
 
@@ -163,8 +168,6 @@ async function checkRazorpay() {
     console.error(`Razorpay REJECTED the API keys (${res.status}: ${data.error?.description || 'no detail'}). Checkout will fail until RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET on this server match a key pair in the Razorpay Dashboard.`);
   } catch (err) { console.error('Razorpay could not be reached to check the keys:', err.message); }
 }
-
-const clientIp = req => req.headers['x-forwarded-for']?.split(',').pop().trim() || req.socket.remoteAddress;
 
 // At most 30 new orders per visitor every 10 minutes.
 const hits = new Map();
@@ -250,6 +253,27 @@ function shellFor(html, path) {
 // Pages of the app (routes.js) are answered with the app shell, so any of them can be opened, shared or reloaded at its own
 // address. An address that is no page gets the shell too, with a 404 status and noindex, and the app shows its "not found"
 // page. Requests for files such as scripts and images still get a plain 404.
+function sendAsset(req, res, status, headers, size, openStream) {
+  const compressible = size >= 1024 && /^(text\/|application\/(json|xml|manifest\+json)|image\/svg)/.test(headers['Content-Type']);
+  const gzip = compressible && (req.headers['accept-encoding'] || '').split(',').some(entry => {
+    const [name, quality = 'q=1'] = entry.trim().toLowerCase().split(/\s*;\s*/);
+    return name === 'gzip' && Number(quality.slice(2)) > 0;
+  });
+  if (compressible) headers.Vary = 'Accept-Encoding';
+  if (gzip) headers['Content-Encoding'] = 'gzip';
+  else headers['Content-Length'] = size;
+  if (headers.ETag && req.headers['if-none-match']?.split(/\s*,\s*/).includes(headers.ETag)) {
+    delete headers['Content-Length'];
+    res.writeHead(304, headers);
+    return res.end();
+  }
+  res.writeHead(status, headers);
+  if (req.method === 'HEAD') return res.end();
+  const streams = [openStream()];
+  if (gzip) streams.push(createGzip({ level: 4 }));
+  pipeline(...streams, res, () => {});
+}
+
 async function serveApp(req, res, pathname, search) {
   const path = trimPath(pathname);
   const route = matchRoute(path);
@@ -257,11 +281,10 @@ async function serveApp(req, res, pathname, search) {
   const known = Boolean(route) && (route.pattern !== '/services/:id/packages' || SERVICE_IDS.has(route.params.id));
   if (!known && !(req.headers.accept || '').includes('text/html')) throw new HttpError(404, 'Not found.');
   const html = Buffer.from(shellFor(await readFile(join(DIST, 'index.html'), 'utf8'), known ? path : null));
-  res.writeHead(known ? 200 : 404, {
-    'Content-Type': 'text/html; charset=utf-8', 'Content-Length': html.length, 'Cache-Control': 'no-cache',
+  sendAsset(req, res, known ? 200 : 404, {
+    'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache',
     ...(!known || isPrivate(path) ? { 'X-Robots-Tag': 'noindex, nofollow' } : {}),
-  });
-  res.end(req.method === 'HEAD' ? undefined : html);
+  }, html.length, () => Readable.from([html]));
 }
 
 async function serveStatic(req, res, pathname, search) {
@@ -279,9 +302,11 @@ async function serveStatic(req, res, pathname, search) {
   }
   if (!info?.isFile()) return serveApp(req, res, pathname, search);
   const type = TYPES[extname(file).toLowerCase()] || 'application/octet-stream';
-  res.writeHead(200, { 'Content-Type': type, 'Content-Length': info.size, 'Cache-Control': type.startsWith('image/') || type.startsWith('font/') ? 'public, max-age=86400' : 'no-cache' });
-  if (req.method === 'HEAD') return res.end();
-  createReadStream(file).on('error', () => res.destroy()).pipe(res);
+  sendAsset(req, res, 200, {
+    'Content-Type': type,
+    'Cache-Control': type.startsWith('image/') || type.startsWith('font/') ? 'public, max-age=86400' : 'no-cache',
+    ETag: `W/"${info.size}-${info.mtimeMs}"`,
+  }, info.size, () => createReadStream(file));
 }
 
 const send = (res, status, body) => {
@@ -294,10 +319,12 @@ createServer(async (req, res) => {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('Content-Security-Policy', "frame-ancestors 'none'");
-  const { pathname, search } = new URL(req.url, 'http://localhost');
   try {
+    if (!req.url.startsWith('/') || req.url.startsWith('//')) throw new HttpError(400, 'Invalid request target.');
+    const url = new URL(req.url, 'http://localhost');
+    const { pathname, search } = url;
     if (pathname === '/api/chat') return await chatRoute(req, res);
-    if (pathname === '/api/whatsapp' || pathname.startsWith('/api/whatsapp/')) return await whatsappRoute(req, res, pathname, new URL(req.url, 'http://localhost').searchParams);
+    if (pathname === '/api/whatsapp' || pathname.startsWith('/api/whatsapp/')) return await whatsappRoute(req, res, pathname, url.searchParams);
     if (pathname.startsWith('/api/')) return send(res, 200, await api(req, pathname));
     if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Method not allowed.');
     await serveStatic(req, res, pathname, search);

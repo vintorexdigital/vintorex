@@ -17,5 +17,8 @@
   },
   "devDependencies": {
     "esbuild": "^0.28.2"
+  },
+  "overrides": {
+    "@grpc/grpc-js": "^1.14.0"
   }
 }

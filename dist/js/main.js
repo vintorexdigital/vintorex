@@ -2,11 +2,8 @@
 // /contact and /account/orders; routes.js lists them and router.js moves between them without a reload.
 import * as D from './db.js';
 import * as Pub from './public.js';
-import * as Acc from './account.js';
-import * as Adm from './admin.js';
 import * as Pay from './pay.js';
 import * as Auth from './auth.js';
-import { connectWhatsapp } from './connect-whatsapp.js';
 import { BUSINESS } from './data.js';
 import { siteHeader, siteFooter, brandLogo } from './chrome.js';
 import { esc, icon, initials, responsiveTables, $, $$ } from './ui.js';
@@ -16,18 +13,20 @@ import { navigate, interceptLinks, legacyUrl, NAVIGATE } from './router.js';
 // One view per pattern in routes.js.
 const views = {
   '/': Pub.home, '/pricing': Pub.pricing, '/compare': Pub.compare, '/shop': Pub.shop, '/cart': Pub.cart, '/checkout': Pub.checkout,
-  '/contact': Pub.contact, '/about': Pub.about, '/login': Pub.login, '/register': Pub.register, '/connect-whatsapp': connectWhatsapp,
+  '/contact': Pub.contact, '/about': Pub.about, '/login': Pub.login, '/register': Pub.register, '/connect-whatsapp': async (params, query) => (await import('./connect-whatsapp.js')).connectWhatsapp(params, query),
   '/services/:id/packages': Pub.serviceDetail, '/order/:id': Pub.orderDone, '/invoice/:id': Pub.invoice,
-  '/account': guard('customer', Acc.view), '/account/:tab': guard('customer', Acc.view),
-  '/admin': guard('admin', Adm.view), '/admin/:tab': guard('admin', Adm.view), '/admin/:tab/:id': guard('admin', Adm.view),
+  '/account': guard('customer', () => import('./account.js')), '/account/:tab': guard('customer', () => import('./account.js')),
+  '/admin': guard('admin', () => import('./admin.js')), '/admin/:tab': guard('admin', () => import('./admin.js')), '/admin/:tab/:id': guard('admin', () => import('./admin.js')),
 };
 
-function guard(role, fn) {
-  return (params, query) => {
+function guard(role, loadDashboard) {
+  return async (params, query) => {
     const u = D.currentUser();
     if (!u) return { redirect: '/login?next=' + location.pathname.slice(1) };
     if (u.role !== role) return { redirect: u.role === 'admin' ? '/admin' : '/account' };
-    return fn(params, query, u);
+    const [dashboard] = await Promise.all([loadDashboard(), Pay.load()]);
+    dashboard.setRerender(safeRender);
+    return { ...dashboard.view(params, query, u), nav: dashboard.NAV };
   };
 }
 
@@ -62,10 +61,13 @@ function scrollToFragment() {
   if (id) document.getElementById(id)?.scrollIntoView();
 }
 
-function render() {
+let renderVersion = 0;
+async function render(version) {
   const path = trimPath(location.pathname);
   const [fn, params] = match(path);
-  const v = fn(params, new URLSearchParams(location.search)) || Pub.notFound();
+  if (path === '/checkout') await Pay.load();
+  const v = await fn(params, new URLSearchParams(location.search)) || Pub.notFound();
+  if (version !== renderVersion) return;
   if (v.redirect) { navigate(v.redirect, { replace: true }); return; }
   shown = location.pathname + location.search;
   const pageTitle = `${v.title} · ${BUSINESS.short}`;
@@ -105,7 +107,7 @@ function render() {
   if (path !== lastPath) { window.scrollTo(0, 0); lastPath = path; }
   scrollToFragment();
 }
-[Pub, Acc, Adm].forEach(m => m.setRerender(safeRender));
+Pub.setRerender(safeRender);
 
 function cartCount() { return D.getCart().reduce((s, i) => s + (i.qty || 1), 0); }
 
@@ -119,7 +121,7 @@ const footer = () => siteFooter({ services: D.catalog().services });
 
 function dashShell(v, user) {
   const admin = v.shell === 'admin';
-  const nav = admin ? Adm.NAV : Acc.NAV;
+  const nav = v.nav;
   const base = admin ? '/admin' : '/account';
   const badges = admin ? { leads: D.db().leads.filter(l => l.stage === 'New').length, tickets: D.db().tickets.filter(t => t.status === 'Open').length } : {};
   return `<a class="skip" href="#main">Skip to content</a>
@@ -164,7 +166,11 @@ window.addEventListener('scroll', markScrolled, { passive: true });
 
 document.addEventListener('cart', () => $$('.cart-btn .count').forEach(c => { const n = cartCount(); c.textContent = n; c.hidden = !n; }));
 // Back and forward, links and redirects all land here. A change of #fragment alone keeps the view and scrolls.
-const onNavigate = () => (location.pathname + location.search === shown ? scrollToFragment() : safeRender());
+function onNavigate() {
+  if (location.pathname + location.search !== shown) return safeRender();
+  ++renderVersion;
+  scrollToFragment();
+}
 window.addEventListener('popstate', onNavigate);
 window.addEventListener(NAVIGATE, onNavigate);
 interceptLinks();
@@ -183,12 +189,14 @@ function showError(err) {
   app().innerHTML = `<div class="shell section"><h1>Something went wrong</h1><p>${esc(err.message)}</p><p><a class="btn primary" href="/">Go home</a></p></div>`;
 }
 // A broken view shows the error page instead of leaving the old page half-updated.
-function safeRender() { try { render(); } catch (err) { showError(err); } }
+async function safeRender() {
+  const version = ++renderVersion;
+  try { await render(version); } catch (err) { if (version === renderVersion) showError(err); }
+}
 
 // Old links such as /#/contact open the real address instead.
 const legacy = legacyUrl();
 if (legacy) location.replace(legacy);
-else Promise.all([D.init(), Pay.load()]).then(safeRender).catch(showError);
-
-// Firebase (Analytics) loads after the page is up and never blocks it; a failure, such as an ad blocker, is ignored.
-import('./firebase/analytics.js').catch(() => {});
+else D.init().then(safeRender).then(() => {
+  window.setTimeout(() => import('./firebase/analytics.js').catch(() => {}), 0);
+}).catch(showError);

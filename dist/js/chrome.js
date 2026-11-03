@@ -5,7 +5,7 @@ import { esc, icon } from './ui.js';
 import { POLICIES } from './policies.js';
 
 // Winged V emblem with the same gold/grey 3D echo as the wordmark (scripts/build-logo.py).
-export const logoMark = (alt = 'Vintorex brand logo') => `<img src="/images/vintorex-emblem-144.webp" srcset="/images/vintorex-emblem-144.webp 144w, /images/vintorex-emblem-288.webp 288w, /images/vintorex-emblem-480.webp 480w" sizes="(max-width: 640px) 52px, 72px" class="logo-mark" alt="${alt}" width="144" height="91" decoding="async">`;
+export const logoMark = (alt = 'Vintorex brand logo') => `<img src="/images/vintorex-emblem-144.webp" srcset="/images/vintorex-emblem-144.webp 144w, /images/vintorex-emblem-288.webp 288w, /images/vintorex-emblem-480.webp 480w" sizes="(max-width: 640px) 76px, 94px" class="logo-mark" alt="${alt}" width="144" height="91" decoding="async">`;
 
 // Gold script name from vintorex-name-3d-source.jpg (scripts/build-wordmark.py), plus -dark for footer/admin.
 const wordmarkImg = (part, alt, [w, h], sizes, dark) => {
@@ -14,7 +14,7 @@ const wordmarkImg = (part, alt, [w, h], sizes, dark) => {
 };
 // Emblem + gold script lockup. A label such as "Client portal" replaces the tagline.
 // Name box is the artwork ratio (800×225) so the script is not squeezed.
-export const brandLogo = ({ dark = false, label = '' } = {}) => `<span class="brand-lockup">${logoMark('')}<span class="wordmark">${wordmarkImg('name', 'Vintorex', [400, 113], '(max-width: 640px) 260px, 420px', dark)}${label ? `<small>${label}</small>` : wordmarkImg('tagline', 'Digital Solutions', [300, 15], '(max-width: 640px) 180px, 280px', dark)}</span></span>`;
+export const brandLogo = ({ dark = false, label = '' } = {}) => `<span class="brand-lockup">${logoMark('')}<span class="wordmark">${wordmarkImg('name', 'Vintorex', [400, 113], '(max-width: 640px) 120px, 180px', dark)}${label ? `<small>${label}</small>` : wordmarkImg('tagline', 'Digital Solutions', [300, 15], '(max-width: 640px) 70px, 104px', dark)}</span></span>`;
 
 const NAV = [['/services', 'Services'], ['/pricing', 'Pricing'], ['/compare', 'Compare'], ['/blog', 'Blog'], ['/shop', 'Shop'], ['/about', 'About'], ['/contact', 'Contact']];
 // The services index and the blog are static pages, which live at /services/ and /blog/.

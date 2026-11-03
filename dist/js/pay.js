@@ -7,8 +7,11 @@ import { toast } from './ui.js';
 let status = { enabled: false };
 export const live = () => status.enabled;
 
-// Asked once at start-up. Static hosting answers 404, which keeps demo mode.
-export async function load() {
+// Only payment-aware routes need the server status.
+let statusRequest;
+export function load() { return statusRequest ||= fetchStatus(); }
+
+async function fetchStatus() {
   try {
     const res = await fetch('/api/payments', { signal: AbortSignal.timeout(3000) });
     if (res.ok) status = await res.json();
