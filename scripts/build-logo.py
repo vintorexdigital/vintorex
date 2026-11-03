@@ -68,6 +68,38 @@ def trim(img: Image.Image, pad: int = 8) -> Image.Image:
     return canvas
 
 
+def echo3d(img: Image.Image) -> Image.Image:
+    """Stack the same gold + grey extrusion used on the Canva wordmark behind the mark."""
+    # Face sits top-left; echo steps walk bottom-right like vintorex-name-*.webp.
+    steps = [
+        (18, 18, (84, 84, 84), 0.4),
+        (15, 15, (150, 150, 150), 0.3),
+        (12, 12, (84, 84, 84), 0.5),
+        (9, 9, (130, 130, 130), 0.36),
+        (6, 6, (84, 84, 84), 0.58),
+        (4, 4, (120, 120, 120), 0.42),
+        (2, 2, (173, 131, 48), 0.5),  # gold rim under the face
+    ]
+    max_d = max(dx for dx, *_ in steps)
+    pad_tl = 4
+    W, H = img.width + max_d + pad_tl * 2, img.height + max_d + pad_tl * 2
+    face = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    face.paste(img, (pad_tl, pad_tl), img)
+    # Stamp-sized silhouette (not full canvas) so offsets are not clipped by paste().
+    stamp_a = Image.fromarray(
+        ((np.asarray(img.split()[-1]).astype(np.float32) > 18) * 255).astype(np.uint8), 'L'
+    )
+    stack = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    for dx, dy, rgb, opacity in reversed(steps):
+        a = stamp_a.point(lambda p, o=opacity: int(p * o))
+        stamp = Image.new('RGBA', img.size, (*rgb, 0))
+        stamp.putalpha(a)
+        layer = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+        layer.paste(stamp, (pad_tl + dx, pad_tl + dy), stamp)
+        stack = Image.alpha_composite(stack, layer)
+    return trim(Image.alpha_composite(stack, face), pad=6)
+
+
 def fit(img: Image.Image, size: tuple[int, int], bg=(0, 0, 0, 0), scale: float = 0.82) -> Image.Image:
     """Center the mark on a canvas at `scale` of the shorter side."""
     canvas = Image.new('RGBA', size, bg)
@@ -133,8 +165,8 @@ def main() -> None:
     # Preserve the supplied artwork as the new original.
     save_png(raw, IMAGES / 'vintorex-logo-original.png')
 
-    mark = trim(cutout(raw), pad=12)
-    # Emblem sizes used by header / footer / dashboards.
+    mark = echo3d(trim(cutout(raw), pad=4))
+    # Emblem sizes used by header / footer / dashboards (3D echo matches the wordmark).
     for width in (144, 288, 480):
         save_webp(mark, IMAGES / f'vintorex-emblem-{width}.webp', width)
 

@@ -213,7 +213,7 @@ The winged-V mark is built by `npm run build:logo` (`scripts/build-logo.py`, nee
 
 The SPA boot screen in `dist/index.html` is a responsive animated loader using the emblem. After replacing the source mark, run `npm run build:logo` then `npm run build:blog`.
 
-Next to the emblem, the header, footer and dashboards show the wordmark cut from `dist/images/vintorex-wordmark-original.png` via `scripts/build-wordmark.py` (`vintorex-name-*.webp` / `vintorex-tagline-*.webp`, plus `-dark` variants). `brandLogo()` in `js/chrome.js` writes the markup.
+Next to the emblem, the header, footer and dashboards show the gold script name cut from `dist/images/vintorex-name-3d-source.jpg` via `scripts/build-wordmark.py` (`vintorex-name-*.webp`, plus `-dark` for the footer and boot screen). The “DIGITAL SOLUTIONS” tagline sits under it (`vintorex-tagline-*.webp`). `brandLogo()` in `js/chrome.js` writes the markup.
 
 Browser metadata is shared through `dist/js/brand.js`. Run `npm run build:blog` after changing branding so every static page receives the same icons and metadata.
 

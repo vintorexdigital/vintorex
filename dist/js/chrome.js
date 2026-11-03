@@ -4,18 +4,17 @@ import { BUSINESS, SERVICES } from './data.js';
 import { esc, icon } from './ui.js';
 import { POLICIES } from './policies.js';
 
-// Winged V emblem (trimmed, transparent). Aspect ≈ 288×182 from scripts/build-logo.py.
-export const logoMark = (alt = 'Vintorex brand logo') => `<img src="/images/vintorex-emblem-144.webp" srcset="/images/vintorex-emblem-144.webp 144w, /images/vintorex-emblem-288.webp 288w, /images/vintorex-emblem-480.webp 480w" sizes="80px" class="logo-mark" alt="${alt}" width="144" height="91" decoding="async">`;
+// Winged V emblem with the same gold/grey 3D echo as the wordmark (scripts/build-logo.py).
+export const logoMark = (alt = 'Vintorex brand logo') => `<img src="/images/vintorex-emblem-144.webp" srcset="/images/vintorex-emblem-144.webp 144w, /images/vintorex-emblem-288.webp 288w, /images/vintorex-emblem-480.webp 480w" sizes="(max-width: 640px) 52px, 72px" class="logo-mark" alt="${alt}" width="144" height="91" decoding="async">`;
 
-// The brand name and tagline are cut from the logo artwork (Gladiola and Montaser Arabic with Canva's
-// echo effect) by scripts/build-wordmark.py, which also makes a set for dark backgrounds.
+// Gold script name from vintorex-name-3d-source.jpg (scripts/build-wordmark.py), plus -dark for footer/admin.
 const wordmarkImg = (part, alt, [w, h], sizes, dark) => {
-  const src = width => `/images/vintorex-${part}${dark ? '-dark' : ''}-${width}.webp`;
+  const src = width => `/images/vintorex-${part}${dark ? '-dark' : ''}-${width}.webp?v=3`;
   return `<img class="wm-${part}" src="${src(w)}" srcset="${src(w)} ${w}w, ${src(w * 2)} ${w * 2}w" sizes="${sizes}" width="${w}" height="${h}" alt="${alt}" decoding="async">`;
 };
-// The mark and the wordmark, which names the brand, so the mark is decorative here. A label such as
-// "Client portal" takes the tagline's place.
-export const brandLogo = ({ dark = false, label = '' } = {}) => `${logoMark('')}<span class="wordmark">${wordmarkImg('name', 'Vintorex', [400, 86], '240px', dark)}${label ? `<small>${label}</small>` : wordmarkImg('tagline', 'Digital Solutions', [300, 15], '170px', dark)}</span>`;
+// Emblem + gold script lockup. A label such as "Client portal" replaces the tagline.
+// Name box is the artwork ratio (800×225) so the script is not squeezed.
+export const brandLogo = ({ dark = false, label = '' } = {}) => `<span class="brand-lockup">${logoMark('')}<span class="wordmark">${wordmarkImg('name', 'Vintorex', [400, 113], '(max-width: 640px) 260px, 420px', dark)}${label ? `<small>${label}</small>` : wordmarkImg('tagline', 'Digital Solutions', [300, 15], '(max-width: 640px) 180px, 280px', dark)}</span></span>`;
 
 const NAV = [['/services', 'Services'], ['/pricing', 'Pricing'], ['/compare', 'Compare'], ['/blog', 'Blog'], ['/shop', 'Shop'], ['/about', 'About'], ['/contact', 'Contact']];
 // The services index and the blog are static pages, which live at /services/ and /blog/.
