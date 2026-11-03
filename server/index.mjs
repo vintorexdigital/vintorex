@@ -1,10 +1,11 @@
-// Vintorex web server: serves dist/, the Razorpay payment API and the chat assistant. `npm start`.
+// Vintorex web server: serves dist/, the Razorpay payment API, the chat assistant and WhatsApp. `npm start`.
 // Keys come from the host's environment, or from .env at the repo root.
 //
 //   GET  /api/payments         { enabled, keyId }; the app stays in demo mode without it
 //   POST /api/payments/order   prices the cart (or the next instalment) and creates a Razorpay order
 //   POST /api/payments/verify  checks the payment signature and returns signed tokens
 //   GET  /api/chat             chat assistant status; POST streams an answer (see chat.mjs)
+//   /api/whatsapp/*            WhatsApp Cloud API: webhook, send, templates, partner onboarding (see whatsapp/routes.mjs)
 //
 // Accounts and orders live in each browser, so the server keeps no database. What it
 // must remember later (a paid membership, the instalments still due) goes back to the
@@ -20,6 +21,8 @@ import { SERVICES, ADDONS, PLANS, PRODUCTS, COUPONS, BUSINESS } from '../dist/js
 import { priceCart, amountDue } from '../dist/js/pricing.js';
 import { matchRoute, trimPath, isPrivate, canonicalPath, pageMeta } from '../dist/js/routes.js';
 import { chat, chatStatus, AI_ON } from './chat.mjs';
+import { whatsappRoute } from './whatsapp/routes.mjs';
+import { missing as whatsappMissing } from './whatsapp/config.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const DIST = join(ROOT, 'dist');
@@ -278,6 +281,7 @@ createServer(async (req, res) => {
   const { pathname, search } = new URL(req.url, 'http://localhost');
   try {
     if (pathname === '/api/chat') return await chatRoute(req, res);
+    if (pathname === '/api/whatsapp' || pathname.startsWith('/api/whatsapp/')) return await whatsappRoute(req, res, pathname, new URL(req.url, 'http://localhost').searchParams);
     if (pathname.startsWith('/api/')) return send(res, 200, await api(req, pathname));
     if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Method not allowed.');
     await serveStatic(req, res, pathname, search);
@@ -289,5 +293,7 @@ createServer(async (req, res) => {
 }).listen(PORT, HOST, () => {
   const mode = PAYMENTS ? `on, ${KEY_ID.startsWith('rzp_live_') ? 'LIVE' : 'test'} key` : 'off (set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)';
   const assistant = AI_ON ? 'on (Cloudflare Workers AI)' : 'search-only (set CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN)';
-  console.log(`Vintorex on http://localhost:${PORT} · Razorpay payments ${mode} · chat assistant ${assistant}`);
+  const wa = whatsappMissing();
+  const whatsapp = wa.send.length ? `off (set ${wa.send.join(', ')})` : `on${wa.webhook.length ? `, webhook off (set ${wa.webhook.join(', ')})` : ''}${wa.api.length ? `, API off (set ${wa.api.join(', ')})` : ''}`;
+  console.log(`Vintorex on http://localhost:${PORT} · Razorpay payments ${mode} · chat assistant ${assistant} · WhatsApp ${whatsapp}`);
 });

@@ -110,6 +110,45 @@ After editing services, prices, guides or policies, run `npm run build:blog`, th
 
 Questions and the matching site content are sent to Cloudflare Workers AI to write each answer, so consider mentioning the assistant in the privacy policy.
 
+## WhatsApp
+
+`server/whatsapp/` is the WhatsApp Business **Cloud API** (Graph API v26.0) inside the same server, with no extra dependencies. It stays off until its variables are set (see `.env.example`); the start-up line says what is on. Run its tests with `npm test`.
+
+| File | Job |
+|---|---|
+| `client.mjs` | Every outbound call: text, templates, media, buttons, lists, CTA links, location, reactions, templates, media upload and download, phone health. Also the partner calls (below). `phoneNumberId` and `wabaId` can point at a client's number. |
+| `webhook.mjs` | Checks `X-Hub-Signature-256`, flattens Meta's payload into `message`, `status`, `other` and `error` events on a bus, and drops repeat deliveries. |
+| `handlers.mjs` | Our own logic. The sample menu bot (hi → buttons → list or link) only runs with `WHATSAPP_BOT=on`, and only on our own number. |
+| `routes.mjs` | The HTTP routes under `/api/whatsapp/`. |
+
+**Routes.** `GET /api/whatsapp` reports what is configured. `GET|POST /api/whatsapp/webhook` is Meta's callback. Everything else needs the header `x-api-key: <WHATSAPP_API_KEY>`: `POST /send/{text,template,media,buttons,list,cta,location}`, `GET|POST|DELETE /templates`, `GET /phone`, `POST /partner/onboard`, `POST /partner/credit-line`. Example:
+
+```bash
+curl -X POST https://vintorex.com/api/whatsapp/send/template \
+  -H "x-api-key: $WHATSAPP_API_KEY" -H "Content-Type: application/json" \
+  -d '{"to":"9876543210","name":"booking_confirmation","language":"en","bodyParams":["Ravi","12 Nov 2026","BK-1042"]}'
+```
+
+### Setting it up in Meta
+
+The assets, in order (Step numbers are Meta's onboarding steps for Tech Providers):
+
+1. **Meta app** on developers.facebook.com with the WhatsApp product, linked to the Vintorex business portfolio. Copy the **App ID** and **App secret** into `META_APP_ID` and `META_APP_SECRET`.
+2. **Test WABA (Step 1).** API Setup gives a test number, its Phone number ID and WABA ID. The temporary token lasts about 24 hours; use it only to see a first message arrive.
+3. **Webhooks (Step 2).** Callback URL `https://vintorex.com/api/whatsapp/webhook`, Verify token = `WEBHOOK_VERIFY_TOKEN`. Subscribe to `messages`, and to `message_template_status_update`, `phone_number_quality_update` and `account_update`. The server must be running with those variables set before you click Verify.
+4. **System user (Step 2).** Business Settings → Users → System users → Add (Admin). Assign the app and the WABA with full control, then generate a token that never expires with `whatsapp_business_messaging` and `whatsapp_business_management` → `WHATSAPP_TOKEN`.
+5. **Business verification (Step 3).** Business Settings → Security Centre. It raises messaging limits and is required to onboard clients.
+6. **Real number, templates, payment method.** Add the production number (it must not be active in the WhatsApp apps), then a payment method in WhatsApp Manager, then message templates. Anything we send first needs an approved template. Free-form messages work only within 24 hours of the customer's last message (error 131047 otherwise).
+7. **Privacy Policy URL** in App settings → Basic, then switch the app to Live. Real customers' webhooks arrive only when it is live.
+
+### Onboarding clients (Become a Partner)
+
+Once the app is a Tech Provider or Solution Partner, clients connect their own WhatsApp Business Account through **Embedded Signup**, which opens from a page on our domain. That page must have its domain listed under Allowed domains and Valid OAuth redirect URIs, over HTTPS. It needs a Facebook Login for Business configuration (its `config_id`) and calls `FB.login` with `extras: { version: 'v5' }`. When the client finishes, the browser gets a **code that lasts only 30 seconds**, plus the client's `waba_id` and `phone_number_id` from the `WA_EMBEDDED_SIGNUP` message event. The page posts these to our server, which does the rest:
+
+`POST /api/whatsapp/partner/onboard` with `{ code, wabaId, phoneNumberId, pin, currency? }` exchanges the code for the client's token, subscribes our app to their WABA's webhooks, registers the number for Cloud API (the 6-digit `pin` becomes its two-step PIN) and, if `WHATSAPP_CREDIT_LINE_ID` is set, shares our credit line so Meta bills us rather than the client (INR, USD, EUR, GBP, AUD or IDR only; it can't be changed later). Without a credit line the client adds their own payment method in WhatsApp Manager. The client's token is used for that onboarding only and is not stored: afterwards the System User sends for them by passing `wabaId` or `phoneNumberId` on any call, as long as the client shared the WABA with us. Our webhook receives their events with `wabaId` and `phoneNumberId` set, so handlers can tell accounts apart.
+
+The Embedded Signup page, client migration (moving numbers or templates between partners) and storing client records are not built yet. The signup page can't call `/partner/onboard` directly, because the API key must never be in browser code and the browser admin has no server-side login. It needs a small server step of its own, with the client's session or a one-time invite, that calls onboarding on the page's behalf.
+
 ## URLs
 
 Every page has a real address, so pages can be shared, bookmarked and indexed: `/contact`, `/pricing`, `/shop`, `/cart`, `/login`, `/account/orders`, `/admin/leads/<id>`. Pages written in HTML (`/services/`, `/services/<id>/`, `/blog/…`, `/faq/`, the policies) are static files; the interactive package picker for a service lives at `/services/<id>/packages`.
