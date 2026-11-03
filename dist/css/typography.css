@@ -73,3 +73,27 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]), select, textarea
   .mobile-table .table-value { font-size: .9375rem; line-height: 1.65; }
   .prose, .prose-article { font-size: 1rem; line-height: 1.8; }
 }
+
+/* Neutral highlights and shadows preserve each component's own text color. */
+@media screen and (forced-colors: none) {
+  body, button, input, select, textarea {
+    text-shadow: -.02em -.025em 0 rgb(255 255 255 / .55),
+                  .025em .04em 0 rgb(0 0 0 / .24);
+  }
+  :is(h1, h2, h3, h4, h5, h6, .h3), .price {
+    text-shadow: -.02em -.025em 0 rgb(255 255 255 / .65),
+                  .025em .035em 0 rgb(0 0 0 / .32),
+                  .05em .07em 0 rgb(0 0 0 / .24),
+                  .065em .09em .045em rgb(0 0 0 / .18);
+  }
+  .hero h1 em {
+    text-shadow: none;
+    filter: drop-shadow(.025em .035em 0 rgb(0 0 0 / .32))
+            drop-shadow(.025em .035em 0 rgb(0 0 0 / .2));
+  }
+  .nav-links > a, .eyebrow, .kpi b, .stat-card b, .hc-metrics b,
+  .btn, .badge, .tag, .ribbon, .announce, .footer {
+    text-shadow: -.025em -.035em 0 rgb(255 255 255 / .4),
+                  .035em .05em 0 rgb(0 0 0 / .32);
+  }
+}
