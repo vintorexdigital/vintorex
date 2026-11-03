@@ -8,6 +8,13 @@
     "build:blog": "node scripts/build-blog.mjs",
     "build:chat": "node scripts/build-chat.mjs",
     "check": "node scripts/check-content.mjs",
-    "test": "node --test \"test/*.test.mjs\""
+    "test": "node --test \"test/*.test.mjs\"",
+    "build:firebase": "node scripts/build-firebase.mjs"
+  },
+  "dependencies": {
+    "firebase": "^13.2.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
   }
 }

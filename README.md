@@ -159,6 +159,10 @@ Onboarding (`POST /api/whatsapp/partner/onboard` does the same with the API key)
 
 An invite can be reused until it expires, though each Meta code works once. Not built: moving numbers or templates between partners (client migration), and a client list.
 
+## Firebase
+
+Project `vintorex-digital-solutions-024`, with Google Analytics (`G-TMWF3S1YEZ`) switched on for the live site only (never on localhost). The site has no bundler, so `scripts/firebase-entry.mjs` holds the config and initialisation, and `npm run build:firebase` bundles it with the `firebase` package into `dist/js/firebase.js`, which `js/main.js` loads after the page is up. Commit that file; the server does not need `node_modules`. The web config is public by design, so restrict the API key to vintorex.com in Google Cloud Console → Credentials, and keep Firebase security in its rules. The app page's CSP allows Google Tag Manager, Analytics and Firebase for this. Only the app pages load it; the static guides and service pages do not. Analytics sets cookies, so mention it in the privacy policy (`js/policies.js`, then `npm run build:blog`).
+
 ## URLs
 
 Every page has a real address, so pages can be shared, bookmarked and indexed: `/contact`, `/pricing`, `/shop`, `/cart`, `/login`, `/account/orders`, `/admin/leads/<id>`. Pages written in HTML (`/services/`, `/services/<id>/`, `/blog/…`, `/faq/`, the policies) are static files; the interactive package picker for a service lives at `/services/<id>/packages`.

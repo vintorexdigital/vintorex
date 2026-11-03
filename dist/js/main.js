@@ -188,3 +188,6 @@ function safeRender() { try { render(); } catch (err) { showError(err); } }
 const legacy = legacyUrl();
 if (legacy) location.replace(legacy);
 else Promise.all([D.init(), Pay.load()]).then(safeRender).catch(showError);
+
+// Firebase (Analytics) loads after the page is up and never blocks it; a failure, such as an ad blocker, is ignored.
+import('./firebase.js').catch(() => {});
