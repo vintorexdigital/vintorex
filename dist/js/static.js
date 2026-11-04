@@ -1,3 +1,4 @@
+import('./water.js');
 // Small enhancements for the static blog pages (no app code is loaded there).
 (() => {
   const $ = s => document.querySelector(s);

@@ -1,3 +1,4 @@
+import './water.js';
 // Hash router and page shells (public site, customer dashboard, admin panel).
 import * as D from './db.js';
 import * as Pub from './public.js';

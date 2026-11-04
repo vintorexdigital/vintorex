@@ -2024,3 +2024,18 @@ body:has(.wa-float) .vxc-panel { bottom: calc(154px + env(safe-area-inset-bottom
 @media (prefers-reduced-motion: reduce) { .vxc-panel, .vxc-typing i { animation: none; } }
 body:has(.dash.is-admin) :is(.vxc-launch, .vxc-panel) { display: none; }
 @media print { .vxc-launch, .vxc-panel { display: none !important; } }
+
+/* Water and fish stay in a single decorative layer behind every public page. */
+body:not(:has(.dash)) { background: #edf9fc; isolation: isolate; }
+body:not(:has(.dash))::before,
+body:not(:has(.dash))::after { display: none; }
+.water-background {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+.water-background[hidden], body:has(.dash) .water-background { display: none; }
+@media print { .water-background { display: none; } }
