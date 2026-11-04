@@ -39,7 +39,7 @@ test('live crawl follows public links, records broken destinations and respects 
   const routes = {
     '/robots.txt': 'User-agent: *\nDisallow: /hidden',
     '/sitemap.xml': '<urlset><url><loc>https://example.test/</loc></url></urlset>',
-    '/': '<title>Home</title><a href="/missing">Broken</a><a href="/hidden">Private</a><a href="https://other.test/">External</a>',
+    '/': '<title>Home</title><a href="/cdn-cgi/l/email-protection" data-cfemail="124567">Email</a><a href="/cdn-cgi/l/email-protection#124567">Email</a><a href="/missing">Broken</a><a href="/hidden">Private</a><a href="https://other.test/">External</a>',
   };
   const result = await crawlSite('https://example.test', async url => {
     assert.equal(new URL(url).origin, 'https://example.test');

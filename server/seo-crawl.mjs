@@ -7,7 +7,7 @@ import { canonicalPath, isPrivate } from '../dist/js/routes.js';
 
 const day = 86400000;
 const limit = 400;
-const auditVersion = 2;
+const auditVersion = 3;
 const agent = 'VintorexAudit';
 
 export async function crawlSite(site, request = fetch) {
@@ -90,7 +90,12 @@ export async function crawlSite(site, request = fetch) {
       for (const node of $('script[type="application/ld+json"]')) {
         try { JSON.parse($(node).text()); } catch { issue(path, 'Error', 'Correct invalid JSON-LD.'); break; }
       }
-      for (const el of $('a[href]')) enqueue($(el).attr('href'), path, path);
+      for (const el of $('a[href]')) {
+        const link = $(el);
+        const href = link.attr('href');
+        if (href === '/cdn-cgi/l/email-protection' && /^(?:[a-f0-9]{2}){2,}$/i.test(link.attr('data-cfemail') || '')) continue;
+        enqueue(href, path, path);
+      }
     } catch { issue(path, 'Error', 'Page retrieval or HTML analysis failed. Check this URL.'); }
   }
   for (const page of pages) {
