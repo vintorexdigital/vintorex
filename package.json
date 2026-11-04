@@ -10,6 +10,7 @@
     "build:blog": "node scripts/build-blog.mjs",
     "build:chat": "node scripts/build-chat.mjs",
     "check": "node scripts/check-content.mjs",
+    "seo": "node scripts/seo-audit.mjs",
     "test": "node --test \"test/*.test.mjs\"",
     "build:firebase": "node scripts/build-firebase.mjs"
   },
