@@ -206,6 +206,24 @@ Every page has a real address, so pages can be shared, bookmarked and indexed: `
 
 Copy and structured data live in `js/seo.js`. After re-checking prices or facts, update `REVIEWED` there, then rebuild. `npm run check` fails if a service lacks its page, FAQs, sitemap or `llms.txt` entry.
 
+## Public SEO audit
+
+Open `/seo-audit` to audit any public website and up to two competitor domains without signing in. Choose a 10-, 25- or 40-page sample per domain. The scanner follows same-site links and XML sitemaps, honors robots.txt, and uses a 90-second budget per domain.
+
+The report includes measured page responses, redirects, titles, descriptions, headings, canonical URLs, source content duplication, indexing directives, image attributes, JSON-LD syntax, language/hreflang declarations, social metadata, internal-link evidence and a sample of up to eight same-site resource responses. It also shows robots.txt access rules for search and AI crawlers. Server response timing is measured from the audit server. JavaScript rendering, mobile usability and real-user Core Web Vitals are outside these source-HTML checks.
+
+Reports provide a weighted check score, prioritized actions, finding filters, page inventories, competitor comparisons and PDF downloads. Every report includes observation times and sample coverage. Competitor comparisons use the same checks and page limit. The score is calculated by this application from its observed technical checks.
+
+Public job endpoints are `POST /api/seo/audits`, `GET /api/seo/audits/<id>` and `GET /api/seo/audits/<id>/report.pdf`. The creation endpoint expects the same-origin `X-VX-Request: 1` header. Reports use random, unlisted identifiers and remain available for 24 hours. Anyone with the report link can view it. Browser history lists the last six reports saved on that browser.
+
+`SEO_PUBLIC_DB_PATH` configures private SQLite report storage. The service allows two concurrent jobs and an eight-job queue, deduplicates matching requests for ten minutes, and rate limits submissions. URL validation rejects private destinations, custom ports and embedded credentials. Every redirect is revalidated and outbound requests pin a public DNS result.
+
+Content intelligence and link analysis run entirely inside this project through `server/seo-intelligence.mjs`. The crawler indexes up to 80 text terms from the title, description and main content and 300 external links per page. Reports show observed term occurrences, page counts, title/heading matches, competitor-only terms, and incoming cross-domain links found within the audited domains’ sampled pages. Each topic and link retains source URLs. These sample measurements do not establish web-wide backlink totals, search traffic, search volume, or search-result positions.
+
+No third-party SEO service or API key is required. Crawling, analysis, SQLite storage and PDF generation run on the application server. Older saved reports retain their crawl evidence and are presented through the internal index when opened. New scans include the body-text and external-link evidence needed for fuller content comparisons.
+
+The existing daily Vintorex crawler, crawl history and published-site checks remain available in the page’s expandable diagnostics section. Public visitor audits have separate storage and do not change the scheduled project crawler.
+
 ## Before going live
 
 Configure the administrator credentials, persistent database paths and HTTPS. Import older browser records through Admin → Settings if needed. Keep the local checkout flag disabled on hosted deployments.

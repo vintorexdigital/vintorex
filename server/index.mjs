@@ -34,6 +34,8 @@ import { matchRoute, trimPath, isPrivate, canonicalPath, pageMeta } from '../dis
 import { chat, chatStatus, AI_ON } from './chat.mjs';
 import { whatsappRoute } from './whatsapp/routes.mjs';
 import { trackSeo } from './seo-crawl.mjs';
+import { startPublicAudit, getPublicAudit } from './seo-public-jobs.mjs';
+import { auditPdf } from './seo-report-pdf.mjs';
 import { auditSeo, seoReportHtml } from './seo-audit.mjs';
 import { missing as whatsappMissing } from './whatsapp/config.mjs';
 
@@ -453,6 +455,25 @@ createServer(async (req, res) => {
     if (pathname.startsWith('/api/offers/')) return send(res, 200, await offers(req, pathname, {readJson, razorpay, sign, keyId:KEY_ID, payments:PAYMENTS_READY, limit:rateLimit}));
     if (pathname === '/api/chat') return await chatRoute(req, res);
     if (pathname === '/api/whatsapp' || pathname.startsWith('/api/whatsapp/')) return await whatsappRoute(req, res, pathname, url.searchParams);
+    if (pathname === '/api/seo/audits') {
+      if (req.method !== 'POST') throw new HttpError(405, 'Method not allowed.');
+      Store.checkMutation(req);
+      rateLimit(req, 'public-seo-start', 4);
+      return send(res, 202, await startPublicAudit(await readJson(req)));
+    }
+    if (pathname.startsWith('/api/seo/audits/')) {
+      if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Method not allowed.');
+      const match = pathname.match(/^\/api\/seo\/audits\/([a-f0-9]{40})(\/report\.pdf)?$/);
+      if (!match) throw new HttpError(404, 'Report not found.');
+      const job = getPublicAudit(match[1]);
+      res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+      if (!match[2]) return send(res, 200, job);
+      rateLimit(req, 'public-seo-pdf', 20);
+      if (job.status !== 'complete') throw new HttpError(409, 'The report is still being prepared.');
+      const pdf = await auditPdf(job.report);
+      res.writeHead(200, { 'Content-Type': 'application/pdf', 'Content-Disposition': 'attachment; filename="vintorex-seo-audit-' + job.id.slice(0, 8) + '.pdf"', 'Content-Length': pdf.length, 'Cache-Control': 'no-store' });
+      return res.end(req.method === 'HEAD' ? undefined : pdf);
+    }
     if (pathname === '/api/seo') {
       if (req.method !== 'GET') throw new HttpError(405, 'Method not allowed.');
       return send(res, 200, auditSeo(DIST));

@@ -4,6 +4,7 @@
 // Google Business Profile, crawler access and the plain-text map for assistants.
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { publicAuditShell } from './seo-public-view.mjs';
 import { BUSINESS } from '../dist/js/data.js';
 
 const PAGES = [
@@ -96,25 +97,10 @@ function crawlHtml(state) {
 export function seoReportHtml(report, state) {
   const rows = list => list.map(c => `<tr><td>${c.ok ? '<span class="yes" aria-label="Pass">✓</span>' : '<span class="no" aria-label="Fail">—</span>'}</td><td>${esc(c.name)}</td><td>${esc(c.detail)}</td></tr>`).join('');
   const block = (title, list) => `<section class="card pad"><h2>${esc(title)}</h2><p class="muted">${list.filter(c => c.ok).length} of ${list.length} checks passed.</p><div class="table-wrap scroll"><table class="table"><thead><tr><th></th><th>Check</th><th>Detail</th></tr></thead><tbody>${rows(list)}</tbody></table></div></section>`;
-  return `<!doctype html>
-<html lang="en-IN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex, nofollow">
-  <title>SEO setup · Vintorex</title>
-  <link rel="stylesheet" href="/css/typography.css">
-  <link rel="stylesheet" href="/css/app.css">
-</head>
-<body>
-  <main class="shell section">
-    <p class="eyebrow"><span></span>Vintorex project</p>
-    <h1>SEO audit</h1>
+  return publicAuditShell(`
     ${crawlHtml(state)}
     <h2>Published site setup</h2>
-    <p class="lead">${report.ok ? 'This site’s SEO setup passed.' : 'Some SEO setup checks failed.'} ${report.passed} of ${report.total} checks passed. On-page covers titles, descriptions, headings, canonicals, Open Graph, structured data, image alt text and the sitemap. Off-page covers the name, address and phone, Google Business Profile, social profiles, crawler access and the assistant map.</p>
+    <p class="lead">${report.passed} of ${report.total} published-site checks passed.</p>
     <div class="cards2">${block('On-page', report.onPage)}${block('Off-page', report.offPage)}</div>
-  </main>
-</body>
-</html>`;
+  `);
 }

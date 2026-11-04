@@ -19,6 +19,7 @@
   "dependencies": {
     "cheerio": "1.1.2",
     "firebase": "^13.2.0",
+    "pdfkit": "^0.20.2",
     "robots-parser": "3.0.1"
   },
   "devDependencies": {
