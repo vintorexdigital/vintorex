@@ -33,10 +33,12 @@ import { priceCart, amountDue } from '../dist/js/pricing.js';
 import { matchRoute, trimPath, isPrivate, canonicalPath, pageMeta } from '../dist/js/routes.js';
 import { chat, chatStatus, AI_ON } from './chat.mjs';
 import { whatsappRoute } from './whatsapp/routes.mjs';
+import { trackSeo } from './seo-crawl.mjs';
 import { auditSeo, seoReportHtml } from './seo-audit.mjs';
 import { missing as whatsappMissing } from './whatsapp/config.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
+let crawlHistory;
 const DIST = join(ROOT, 'dist');
 const SITE = (process.env.SITE_URL || 'https://vintorex.com').replace(/\/$/, '');
 
@@ -439,7 +441,7 @@ createServer(async (req, res) => {
     if (pathname === '/seo-audit') {
       if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Method not allowed.');
       const report = auditSeo(DIST);
-      const html = Buffer.from(seoReportHtml(report));
+      const html = Buffer.from(seoReportHtml(report, crawlHistory?.(url.searchParams.get('run'))));
       return sendAsset(req, res, 200, {
         'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow',
       }, html.length, () => Readable.from([html]));
@@ -456,6 +458,7 @@ createServer(async (req, res) => {
   console.error(`Port ${PORT} is already in use, so this server did not start: another process, probably an old copy of this server, is listening there. Find it with: sudo ss -ltnp | grep ${PORT}`);
   process.exit(1);
 }).listen(PORT, HOST, () => {
+  crawlHistory = trackSeo(SITE);
   if (PAYMENTS_READY) checkRazorpay();
   const mode = PAYMENTS_READY ? `on, ${KEY_ID.startsWith('rzp_live_') ? 'LIVE' : 'test'} key`
     : PAYMENTS ? 'off (set PAYMENT_TOKEN_SECRET — openssl rand -hex 32)'

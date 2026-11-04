@@ -1,7 +1,9 @@
 {
   "name": "vintorex",
   "private": true,
-  "engines": { "node": ">=22.13.0" },
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "type": "module",
   "scripts": {
     "start": "node server/index.mjs",
@@ -15,7 +17,9 @@
     "build:firebase": "node scripts/build-firebase.mjs"
   },
   "dependencies": {
-    "firebase": "^13.2.0"
+    "cheerio": "1.1.2",
+    "firebase": "^13.2.0",
+    "robots-parser": "3.0.1"
   },
   "devDependencies": {
     "esbuild": "^0.28.2"

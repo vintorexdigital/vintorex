@@ -33,3 +33,20 @@ test('a page missing its canonical fails the on-page check', () => {
   assert.equal(report.onPage.find(c => c.name === 'Home image alt text').ok, false);
   assert.equal(report.offPage.find(c => c.name === 'Google Business Profile').ok, false);
 });
+
+test('live crawl follows public links, records broken destinations and respects robots', async () => {
+  const { crawlSite } = await import('../server/seo-crawl.mjs');
+  const routes = {
+    '/robots.txt': 'User-agent: *\nDisallow: /hidden',
+    '/sitemap.xml': '<urlset><url><loc>https://example.test/</loc></url></urlset>',
+    '/': '<title>Home</title><a href="/missing">Broken</a><a href="/hidden">Private</a><a href="https://other.test/">External</a>',
+  };
+  const result = await crawlSite('https://example.test', async url => {
+    assert.equal(new URL(url).origin, 'https://example.test');
+    const body = routes[new URL(url).pathname];
+    return new Response(body, { status: body ? 200 : 404, headers: { 'content-type': 'text/html' } });
+  });
+  assert.deepEqual(result.pages.map(p => p.path), ['/', '/missing']);
+  assert.deepEqual(result.pages[1].sources, ['/']);
+  assert.ok(result.issues.some(i => i.path === '/missing' && i.message.includes('404')));
+});

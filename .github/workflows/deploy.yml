@@ -10,6 +10,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
+      - run: npm ci
       - run: npm run check
       - run: npm test
   deploy:
@@ -25,4 +26,4 @@ jobs:
           install -m 700 -d ~/.ssh
           printf '%s\n' "$SSH_KEY" > ~/.ssh/id && chmod 600 ~/.ssh/id
           ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
-          ssh -i ~/.ssh/id ubuntu@"$HOST" 'bash ~/vintorex/scripts/deploy.sh'
+          ssh -i ~/.ssh/id ubuntu@"$HOST" 'cd ~/vintorex && git pull --ff-only origin main && bash scripts/deploy.sh'

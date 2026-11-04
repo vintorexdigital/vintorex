@@ -2,7 +2,7 @@
 # Runs on the server: pull latest main, rebuild static pages, restart the service.
 set -euo pipefail
 cd /home/ubuntu/vintorex
-git pull --ff-only origin main
+npm ci --omit=dev
 npm run build:blog
 npm run check
 sh scripts/setup-youtube.sh
