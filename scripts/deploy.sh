@@ -5,6 +5,9 @@ cd /home/ubuntu/vintorex
 git pull --ff-only origin main
 npm run build:blog
 npm run check
+sh scripts/setup-youtube.sh
+.venv/bin/yt-dlp --version
+.venv/bin/ffmpeg -version >/dev/null
 sudo systemctl restart vintorex
 sleep 3
 # Check the service itself, not only that something answers: an old copy of the server left running on the port
