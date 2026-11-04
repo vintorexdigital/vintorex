@@ -296,13 +296,29 @@ function sendAsset(req, res, status, headers, size, openStream) {
   pipeline(...streams, res, () => {});
 }
 
+function taggedHtml(html) {
+  const hosts = {
+    'script-src': ['https://www.googletagmanager.com'],
+    'img-src': ['https://*.google-analytics.com', 'https://www.googletagmanager.com'],
+    'connect-src': ['https://*.google-analytics.com', 'https://*.analytics.google.com', 'https://www.googletagmanager.com'],
+  };
+  html = html.replace(/(<meta http-equiv="Content-Security-Policy" content=")([^"]+)/i, (_, prefix, policy) =>
+    prefix + policy.split(';').map(directive => {
+      const sources = directive.trim().split(/\s+/);
+      for (const host of hosts[sources[0]] || []) if (!sources.includes(host)) sources.push(host);
+      return sources.join(' ');
+    }).join('; '));
+  return Buffer.from(html.replace('</head>', '<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=G-J1MD2VBT33"></script>\n<script src="/js/google-tag.js"></script>\n</head>'));
+}
+
 async function serveApp(req, res, pathname, search) {
   const path = trimPath(pathname);
   const route = matchRoute(path);
   if (route && path !== pathname) { res.writeHead(301, { Location: path + search }); return res.end(); }
   const known = Boolean(route) && (!route.pattern.startsWith('/services/:id') || Store.sharedCatalog().services.some(s => s.id === route.params.id));
   if (!known && !(req.headers.accept || '').includes('text/html')) throw new HttpError(404, 'Not found.');
-  const html = Buffer.from(shellFor(await readFile(join(DIST, 'index.html'), 'utf8'), known ? path : null));
+  const shell = shellFor(await readFile(join(DIST, 'index.html'), 'utf8'), known ? path : null);
+  const html = known && !isPrivate(path) ? taggedHtml(shell) : Buffer.from(shell);
   sendAsset(req, res, known ? 200 : 404, {
     'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache',
     ...(!known || isPrivate(path) ? { 'X-Robots-Tag': 'noindex, nofollow' } : {}),
@@ -324,7 +340,7 @@ async function serveStatic(req, res, pathname, search) {
   }
   const content = await contentPage(pathname, SITE, join(DIST, 'index.html'));
   if (content) {
-    const html = Buffer.from(content.html);
+    const html = content.status === 200 ? taggedHtml(content.html) : Buffer.from(content.html);
     return sendAsset(req, res, content.status, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' }, html.length, () => Readable.from([html]));
   }
   if (/^\/services\/[^/]+\/?$/.test(pathname)) return serveApp(req, res, pathname, search);
@@ -352,6 +368,10 @@ async function serveStatic(req, res, pathname, search) {
   }
   if (!info?.isFile()) return serveApp(req, res, pathname, search);
   const type = TYPES[extname(file).toLowerCase()] || 'application/octet-stream';
+  if (type.startsWith('text/html')) {
+    const html = taggedHtml(await readFile(file, 'utf8'));
+    return sendAsset(req, res, 200, { 'Content-Type': type, 'Cache-Control': 'no-cache' }, html.length, () => Readable.from([html]));
+  }
   sendAsset(req, res, 200, {
     'Content-Type': type,
     'Cache-Control': type.startsWith('image/') || type.startsWith('font/') ? 'public, max-age=86400' : 'no-cache',
@@ -442,7 +462,7 @@ createServer(async (req, res) => {
     if (pathname === '/seo-audit') {
       if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Method not allowed.');
       const report = auditSeo(DIST);
-      const html = Buffer.from(seoReportHtml(report, crawlHistory?.(url.searchParams.get('run'))));
+      const html = taggedHtml(seoReportHtml(report, crawlHistory?.(url.searchParams.get('run'))));
       return sendAsset(req, res, 200, {
         'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow',
       }, html.length, () => Readable.from([html]));
