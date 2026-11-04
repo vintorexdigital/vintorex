@@ -52,6 +52,11 @@ export function pageMeta(path, services = []) {
     return { title: 'Competitor analysis', description: `We benchmarked Vintorex pricing against ${competitorNames(services).length} competitors across Coimbatore agencies, national agencies and DIY platforms. 100% transparent rate cards with milestone billing.` };
   }
   const id = path.match(/^\/services\/([\w-]+)(?:\/packages)?$/)?.[1];
-  if (id) { const s = services.find(x => x.id === id); return s && { title: s.name, description: s.summary || s.overview }; }
+  if (id) {
+    const s = services.find(x => x.id === id);
+    if (!s) return;
+    if (path.endsWith('/packages')) return { title: s.name + ' packages', description: `Compare ${s.name} packages, prices, included work and optional add-ons. Choose the package that fits your project.` };
+    return { title: s.name, description: s.summary || s.overview };
+  }
   return META[path];
 }

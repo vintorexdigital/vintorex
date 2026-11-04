@@ -265,8 +265,9 @@ function shellFor(html, path) {
     // The app falls back to the shared description (main.js), so keep it beside this page's own.
     html = html.replace(/<meta name="description" content="([^"]*)">/, (m, shared) => `<meta name="description" content="${escAttr(meta.description)}" data-default="${shared}">`);
   }
+  html = html.replace(/<h1 class="boot-tag">[^<]*<\/h1>/, () => meta ? '<h1 class="boot-tag">' + escAttr(meta.title) + '</h1>' : '<p class="boot-tag">Digital Solutions</p>');
   if (meta && !isPrivate(path)) {
-    html = html.replace('<div id="toasts"', () => '<noscript><main><h1>' + escAttr(meta.title) + '</h1><p>' + escAttr(meta.description) + '</p><a href="/services/">Browse services and prices</a></main></noscript><div id="toasts"');
+    html = html.replace('<div id="toasts"', () => '<noscript><main><p>' + escAttr(meta.description) + '</p><a href="/services/">Browse services and prices</a></main></noscript><div id="toasts"');
   }
   return html;
 }

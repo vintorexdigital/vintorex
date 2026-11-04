@@ -271,7 +271,6 @@ const HOME_TITLE = 'Vintorex Digital Solutions: Web Design, SEO & AI Services in
 const noscript = `<!-- seo-noscript -->
   <noscript>
     <main style="max-width:860px;margin:0 auto;padding:24px;font-family:system-ui,sans-serif;line-height:1.55">
-      <h1>${esc(BUSINESS.name)}: digital marketing, web development and AI services in Coimbatore</h1>
       <p>${esc(`${SERVICES.length} services with published prices from ${inr(Math.min(...SERVICES.map(fromPrice)))} (excluding 18% GST): websites, online stores, mobile apps, SEO, social media, ads, branding, cloud hosting, analytics and AI automation.`)}</p>
       <p>The online shop, customer dashboard and checkout need JavaScript. The pages below work without it.</p>
       <ul>${SERVICES.map(s => `<li><a href="${servicePath(s.id)}">${esc(s.name)}</a>: from ${inr(fromPrice(s))}${s.billing === 'month' ? '/month' : ''}</li>`).join('')}</ul>

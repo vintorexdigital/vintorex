@@ -3,10 +3,11 @@ import robotsParser from 'robots-parser';
 import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { isPrivate } from '../dist/js/routes.js';
+import { canonicalPath, isPrivate } from '../dist/js/routes.js';
 
 const day = 86400000;
 const limit = 400;
+const auditVersion = 2;
 const agent = 'VintorexAudit';
 
 export async function crawlSite(site, request = fetch) {
@@ -30,6 +31,8 @@ export async function crawlSite(site, request = fetch) {
     let url;
     try { url = new URL(href, origin + base); } catch { return; }
     const path = url.pathname;
+    // Cloudflare rewrites mailto links into fragment payloads decoded in the browser.
+    if (path === '/cdn-cgi/l/email-protection' && /^#(?:[a-f0-9]{2}){2,}$/i.test(url.hash)) return;
     if (url.origin !== origin || url.search || /^\/\/|^\/api(?:\/|$)/i.test(path) || isPrivate(path) ||
         /\.[a-z0-9]{1,7}$/i.test(path) && !/\.html?$/i.test(path) || robots.isAllowed(origin + path, agent) === false) return;
     if (!queue.has(path)) queue.set(path, new Set());
@@ -73,12 +76,14 @@ export async function crawlSite(site, request = fetch) {
         else index.set(value, path);
       }
       const canonical = $('link[rel~="canonical" i]').attr('href');
-      if (!canonical || new URL(canonical, origin + path).href !== origin + path) issue(path, 'Warning', 'Review the canonical URL: ' + (canonical || 'missing'));
+      const expected = origin + canonicalPath(path);
+      const canonicalMatches = canonical && new URL(canonical, origin + path).href === expected;
+      if (!canonicalMatches) issue(path, 'Warning', 'Review the canonical URL: ' + (canonical || 'missing'));
       if ($('h1').length !== 1) issue(path, 'Warning', 'Use one main heading. Found ' + $('h1').length + '.');
       if ($('img:not([alt])').length) issue(path, 'Warning', 'Add alt attributes to ' + $('img:not([alt])').length + ' images.');
       if (!$('meta[name="viewport" i]').length) issue(path, 'Warning', 'Add a mobile viewport declaration.');
       if (!$('html').attr('lang')) issue(path, 'Warning', 'Declare the document language.');
-      if (!mapped.has(origin + path)) issue(path, 'Notice', 'Review this page for inclusion in the sitemap.');
+      if (!mapped.has(canonicalMatches ? expected : origin + path)) issue(path, 'Notice', 'Review this page for inclusion in the sitemap.');
       if (/noindex|\bnone\b/i.test(($('meta[name="robots" i]').attr('content') || '') + ' ' + (res.headers.get('x-robots-tag') || ''))) issue(path, 'Warning', 'Review the directive preventing indexing.');
       if ($('[src^="http://"]').length) issue(path, 'Warning', 'Serve embedded resources over HTTPS.');
       if (page.responseMs > 1500) issue(path, 'Warning', 'Investigate slow server response (' + page.responseMs + ' ms).');
@@ -106,14 +111,15 @@ export function trackSeo(site) {
   async function tick() {
     if (running) return;
     const previous = latest();
-    const delay = previous && JSON.parse(previous.result).error ? 3600000 : day;
-    if (previous && Date.now() - previous.started < delay) return;
+    const saved = previous && JSON.parse(previous.result);
+    const delay = saved?.error ? 3600000 : day;
+    if (saved?.version === auditVersion && Date.now() - previous.started < delay) return;
     running = true;
     const started = Date.now();
     try {
       let result;
       try { result = await crawlSite(site); } catch (e) { result = { error: e.message }; }
-      db.prepare('INSERT INTO crawl VALUES (?, ?)').run(started, JSON.stringify(result));
+      db.prepare('INSERT INTO crawl VALUES (?, ?)').run(started, JSON.stringify({ ...result, version: auditVersion }));
       db.exec('DELETE FROM crawl WHERE started NOT IN (SELECT started FROM crawl ORDER BY started DESC LIMIT 30)');
     } catch (e) { console.error('SEO history:', e.message); } finally { running = false; }
   }
