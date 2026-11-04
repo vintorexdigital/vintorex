@@ -277,7 +277,7 @@ const noscript = `<!-- seo-noscript -->
       <ul>${SERVICES.map(s => `<li><a href="${servicePath(s.id)}">${esc(s.name)}</a>: from ${inr(fromPrice(s))}${s.billing === 'month' ? '/month' : ''}</li>`).join('')}</ul>
       <p><a href="/vintorent">Vintorent downloads, image upscaling and public profile analysis</a></p>
       <p><a href="/services/">All services and prices</a> · <a href="/faq/">FAQ</a> · <a href="/blog/">Guides</a> · <a href="/privacy-policy/">Privacy</a> · <a href="/terms/">Terms</a></p>
-      <p>${esc(BUSINESS.address)} · <a href="tel:+918667209838">${esc(BUSINESS.phone)}</a> · <a href="mailto:${BUSINESS.email}">${esc(BUSINESS.email)}</a></p>
+      <p>${esc(BUSINESS.address)} · <a href="tel:+918667209838">${esc(BUSINESS.phone)}</a> · <a href="${BUSINESS.whatsapp}">WhatsApp</a> · <a href="mailto:${BUSINESS.email}">${esc(BUSINESS.email)}</a></p>
     </main>
   </noscript>
   <!-- /seo-noscript -->`;
@@ -302,7 +302,7 @@ await writeFile(appIndex, html.replace(block, `<!-- business-jsonld -->\n  <link
 
 // Explicitly welcome search and AI crawlers; keep the payment API and the private pages of the app (sign-in, cart,
 // checkout, orders, dashboards) out of crawls. Those pages also say noindex themselves (server/index.mjs).
-const PRIVATE = ['/api/', '/login', '/register', '/connect-whatsapp', '/cart', '/checkout', '/order/', '/invoice/', '/account', '/admin'];
+const PRIVATE = ['/api/', '/login', '/register', '/connect-whatsapp', '/cart', '/checkout', '/order/', '/invoice/', '/account', '/admin', '/seo-audit'];
 const disallow = PRIVATE.map(p => `Disallow: ${p}`).join('\n');
 const BOTS = ['Googlebot', 'Bingbot', 'GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-User', 'Claude-SearchBot', 'anthropic-ai', 'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot', 'Applebot-Extended', 'CCBot', 'Bytespider', 'Amazonbot', 'meta-externalagent', 'DuckAssistBot', 'cohere-ai'];
 await out('robots.txt', `# Vintorex Digital Solutions: public pages are open to search engines and AI assistants.

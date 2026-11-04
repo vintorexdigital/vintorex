@@ -29,7 +29,7 @@ export function matchRoute(path) {
 }
 
 // Sign-in, cart, checkout, orders and dashboards are for people, not for search results.
-export const isPrivate = path => /^\/(cart|checkout|order|invoice|login|register|connect-whatsapp|account|admin)(\/|$)/.test(path);
+export const isPrivate = path => /^\/(cart|checkout|order|invoice|login|register|connect-whatsapp|account|admin|seo-audit)(\/|$)/.test(path);
 
 // The page search engines should treat as the original: the package picker repeats its service page.
 export const canonicalPath = path => path.replace(/^(\/services\/[\w-]+)(?:\/packages)?$/, '$1/');

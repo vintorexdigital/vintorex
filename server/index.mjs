@@ -33,6 +33,7 @@ import { priceCart, amountDue } from '../dist/js/pricing.js';
 import { matchRoute, trimPath, isPrivate, canonicalPath, pageMeta } from '../dist/js/routes.js';
 import { chat, chatStatus, AI_ON } from './chat.mjs';
 import { whatsappRoute } from './whatsapp/routes.mjs';
+import { auditSeo, seoReportHtml } from './seo-audit.mjs';
 import { missing as whatsappMissing } from './whatsapp/config.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
@@ -429,7 +430,20 @@ createServer(async (req, res) => {
     if (pathname.startsWith('/api/offers/')) return send(res, 200, await offers(req, pathname, {readJson, razorpay, sign, keyId:KEY_ID, payments:PAYMENTS_READY, limit:rateLimit}));
     if (pathname === '/api/chat') return await chatRoute(req, res);
     if (pathname === '/api/whatsapp' || pathname.startsWith('/api/whatsapp/')) return await whatsappRoute(req, res, pathname, url.searchParams);
+    if (pathname === '/api/seo') {
+      if (req.method !== 'GET') throw new HttpError(405, 'Method not allowed.');
+      return send(res, 200, auditSeo(DIST));
+    }
     if (pathname.startsWith('/api/')) return send(res, 200, await api(req, pathname));
+    if (pathname === '/seo-audit/') { res.writeHead(301, { Location: '/seo-audit' + search }); return res.end(); }
+    if (pathname === '/seo-audit') {
+      if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Method not allowed.');
+      const report = auditSeo(DIST);
+      const html = Buffer.from(seoReportHtml(report));
+      return sendAsset(req, res, 200, {
+        'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow',
+      }, html.length, () => Readable.from([html]));
+    }
     if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Method not allowed.');
     await serveStatic(req, res, pathname, search);
   } catch (err) {

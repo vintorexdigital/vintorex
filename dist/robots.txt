@@ -12,6 +12,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: Googlebot
 Allow: /
@@ -25,6 +26,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: Bingbot
 Allow: /
@@ -38,6 +40,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: GPTBot
 Allow: /
@@ -51,6 +54,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: OAI-SearchBot
 Allow: /
@@ -64,6 +68,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: ChatGPT-User
 Allow: /
@@ -77,6 +82,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: ClaudeBot
 Allow: /
@@ -90,6 +96,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: Claude-User
 Allow: /
@@ -103,6 +110,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: Claude-SearchBot
 Allow: /
@@ -116,6 +124,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: anthropic-ai
 Allow: /
@@ -129,6 +138,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: PerplexityBot
 Allow: /
@@ -142,6 +152,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: Perplexity-User
 Allow: /
@@ -155,6 +166,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: Google-Extended
 Allow: /
@@ -168,6 +180,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: Applebot
 Allow: /
@@ -181,6 +194,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: Applebot-Extended
 Allow: /
@@ -194,6 +208,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: CCBot
 Allow: /
@@ -207,6 +222,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: Bytespider
 Allow: /
@@ -220,6 +236,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: Amazonbot
 Allow: /
@@ -233,6 +250,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: meta-externalagent
 Allow: /
@@ -246,6 +264,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: DuckAssistBot
 Allow: /
@@ -259,6 +278,7 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 User-agent: cohere-ai
 Allow: /
@@ -272,5 +292,6 @@ Disallow: /order/
 Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
+Disallow: /seo-audit
 
 Sitemap: https://vintorex.com/sitemap.xml
