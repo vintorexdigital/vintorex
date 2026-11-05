@@ -1,0 +1,16 @@
+{
+  "connectors": [
+    { "name": "vintorex", "transport": "streamable-http", "url": "https://vintorex.com/api/mcp", "auth": "bearer" },
+    { "name": "n8n", "transport": "streamable-http", "url": "${N8N_MCP_URL}", "auth": "oauth" }
+  ],
+  "permissions": {
+    "integration_status": "allow",
+    "list_services": "allow",
+    "list_flows": "allow",
+    "recent_leads": "ask",
+    "record_lead": "ask",
+    "request_campaign": "ask",
+    "request_social_post": "ask"
+  },
+  "note": "Paperclip → Connectors → Connect your own MCP server. Keep campaign and social tools on Ask first."
+}

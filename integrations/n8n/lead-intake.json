@@ -1,0 +1,16 @@
+{
+  "name": "Vintorex lead intake",
+  "meta": { "vintorex": { "flow": "lead-intake", "spends": false } },
+  "nodes": [
+    {
+      "parameters": { "httpMethod": "POST", "path": "lead-intake", "responseMode": "responseNode", "options": {} },
+      "id": "vx-lead-webhook", "name": "Vintorex webhook", "type": "n8n-nodes-base.webhook", "typeVersion": 2, "position": [240, 300], "webhookId": "vintorex-lead-intake"
+    },
+    {
+      "parameters": { "respondWith": "json", "responseBody": "={{ { ok: true, flow: 'lead-intake', spend: false } }}" },
+      "id": "vx-lead-respond", "name": "Acknowledge", "type": "n8n-nodes-base.respondToWebhook", "typeVersion": 1.1, "position": [520, 300]
+    }
+  ],
+  "connections": { "Vintorex webhook": { "main": [[{ "node": "Acknowledge", "type": "main", "index": 0 }]] } },
+  "settings": { "executionOrder": "v1" }
+}

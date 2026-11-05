@@ -1,0 +1,26 @@
+{
+  "name": "Vintorex Meta Business Manager",
+  "meta": { "vintorex": { "flow": "meta-business", "platforms": ["meta-ads", "facebook", "instagram", "whatsapp"], "spends": false } },
+  "nodes": [
+    {
+      "parameters": { "httpMethod": "POST", "path": "meta-business", "responseMode": "responseNode", "options": {} },
+      "id": "vx-meta-webhook", "name": "Vintorex webhook", "type": "n8n-nodes-base.webhook", "typeVersion": 2, "position": [240, 300], "webhookId": "vintorex-meta-business"
+    },
+    {
+      "parameters": { "respondWith": "json", "responseBody": "={{ { ok: true, manager: 'Meta Business Manager', spend: false, note: 'Meta node is disabled.' } }}" },
+      "id": "vx-meta-respond", "name": "Acknowledge", "type": "n8n-nodes-base.respondToWebhook", "typeVersion": 1.1, "position": [520, 180]
+    },
+    {
+      "parameters": { "method": "GET", "url": "https://graph.facebook.com/v21.0/me/adaccounts", "options": {} },
+      "id": "vx-meta-http", "name": "Meta Business Manager (disabled)", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [520, 420], "disabled": true,
+      "notes": "Enable only after a person approves the change. Use a Meta system-user token in an n8n credential, never in this file. Covers Facebook and Instagram ads."
+    }
+  ],
+  "connections": {
+    "Vintorex webhook": { "main": [[
+      { "node": "Acknowledge", "type": "main", "index": 0 },
+      { "node": "Meta Business Manager (disabled)", "type": "main", "index": 0 }
+    ]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "Vintorex Google Ads",
+  "meta": { "vintorex": { "flow": "google-ads", "platform": "google-ads", "spends": false } },
+  "nodes": [
+    {
+      "parameters": { "httpMethod": "POST", "path": "google-ads", "responseMode": "responseNode", "options": {} },
+      "id": "vx-google-webhook", "name": "Vintorex webhook", "type": "n8n-nodes-base.webhook", "typeVersion": 2, "position": [240, 300], "webhookId": "vintorex-google-ads"
+    },
+    {
+      "parameters": { "respondWith": "json", "responseBody": "={{ { ok: true, platform: 'google-ads', spend: false, note: 'Google Ads node is disabled.' } }}" },
+      "id": "vx-google-respond", "name": "Acknowledge", "type": "n8n-nodes-base.respondToWebhook", "typeVersion": 1.1, "position": [520, 180]
+    },
+    {
+      "parameters": { "method": "GET", "url": "https://googleads.googleapis.com/v18/customers:listAccessibleCustomers", "options": {} },
+      "id": "vx-google-http", "name": "Google Ads (disabled)", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [520, 420], "disabled": true,
+      "notes": "Enable only after a person approves the spend. Use a Google Ads OAuth credential. Do not put the developer token in this file."
+    }
+  ],
+  "connections": {
+    "Vintorex webhook": { "main": [[
+      { "node": "Acknowledge", "type": "main", "index": 0 },
+      { "node": "Google Ads (disabled)", "type": "main", "index": 0 }
+    ]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

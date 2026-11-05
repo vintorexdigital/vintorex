@@ -1,0 +1,17 @@
+{
+  "mcp": {
+    "servers": {
+      "vintorex": {
+        "transport": "streamable-http",
+        "url": "https://vintorex.com/api/mcp",
+        "headers": { "Authorization": "Bearer ${INTEGRATIONS_API_KEY}" }
+      },
+      "n8n": {
+        "transport": "streamable-http",
+        "url": "${N8N_MCP_URL}",
+        "headers": { "Authorization": "Bearer ${N8N_MCP_BEARER_TOKEN}" }
+      }
+    }
+  },
+  "note": "Add these under mcp.servers in OpenClaw. Then run: openclaw mcp doctor vintorex --probe"
+}

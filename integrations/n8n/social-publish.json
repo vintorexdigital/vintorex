@@ -1,0 +1,30 @@
+{
+  "name": "Vintorex social publish",
+  "meta": { "vintorex": { "flow": "social-publish", "platforms": ["facebook", "instagram", "youtube", "x", "linkedin", "tiktok", "whatsapp"], "spends": false } },
+  "nodes": [
+    {
+      "parameters": { "httpMethod": "POST", "path": "social-publish", "responseMode": "responseNode", "options": {} },
+      "id": "vx-social-webhook", "name": "Vintorex webhook", "type": "n8n-nodes-base.webhook", "typeVersion": 2, "position": [240, 300], "webhookId": "vintorex-social-publish"
+    },
+    {
+      "parameters": { "respondWith": "json", "responseBody": "={{ { ok: true, flow: 'social-publish', published: false, note: 'Social publish node is disabled.' } }}" },
+      "id": "vx-social-respond", "name": "Acknowledge", "type": "n8n-nodes-base.respondToWebhook", "typeVersion": 1.1, "position": [520, 180]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ ({ facebook: 'https://graph.facebook.com/v21.0/me/feed', instagram: 'https://graph.facebook.com/v21.0/me/media', youtube: 'https://www.googleapis.com/youtube/v3/videos', x: 'https://api.x.com/2/tweets', linkedin: 'https://api.linkedin.com/rest/posts', tiktok: 'https://open.tiktokapis.com/v2/post/publish/video/init/', whatsapp: 'https://graph.facebook.com/v21.0/me/messages' })[$json.body.platform] }}",
+        "options": {}
+      },
+      "id": "vx-social-http", "name": "Social publish (disabled)", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [520, 420], "disabled": true,
+      "notes": "Enable per platform only after approval. Credentials stay in n8n. WhatsApp can instead call the Vintorex /api/whatsapp routes, which stay off until WHATSAPP_TOKEN is set."
+    }
+  ],
+  "connections": {
+    "Vintorex webhook": { "main": [[
+      { "node": "Acknowledge", "type": "main", "index": 0 },
+      { "node": "Social publish (disabled)", "type": "main", "index": 0 }
+    ]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

@@ -37,6 +37,7 @@ import { trackSeo } from './seo-crawl.mjs';
 import { startPublicAudit, getPublicAudit, cancelPublicAudit } from './seo-public-jobs.mjs';
 import { auditPdf } from './seo-report-pdf.mjs';
 import { auditSeo, seoReportHtml } from './seo-audit.mjs';
+import { acceptN8n, handleMcp, integrationStatus, integrationsHtml } from './integrations/flow.mjs';
 import { missing as whatsappMissing } from './whatsapp/config.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
@@ -196,6 +197,15 @@ function rateLimit(req, group = 'payments', maximum = 30) {
   else if (++h.n > maximum) throw new HttpError(429, 'Too many requests. Please wait a few minutes.');
 }
 
+async function readRaw(req, limit) {
+  const chunks = []; let size = 0;
+  for await (const c of req) {
+    size += c.length;
+    if (size > limit) throw new HttpError(413, 'Request too large.');
+    chunks.push(c);
+  }
+  return Buffer.concat(chunks);
+}
 async function readJson(req) {
   if (!String(req.headers['content-type']).startsWith('application/json')) throw new HttpError(415, 'Expected JSON.');
   const chunks = []; let size = 0;
@@ -462,8 +472,33 @@ createServer(async (req, res) => {
       if (req.method !== 'GET') throw new HttpError(405, 'Method not allowed.');
       return send(res, 200, auditSeo(DIST));
     }
+    if (pathname === '/api/mcp') {
+      if (req.method !== 'POST') throw new HttpError(405, 'Method not allowed.');
+      rateLimit(req, 'mcp', 60);
+      const out = await handleMcp(req, await readJson(req));
+      if (!out) { res.writeHead(202); return res.end(); }
+      return send(res, 200, out);
+    }
+    if (pathname === '/api/integrations/n8n') {
+      if (req.method !== 'POST') throw new HttpError(405, 'Method not allowed.');
+      rateLimit(req, 'n8n', 60);
+      const raw = await readRaw(req, 1 << 20);
+      return send(res, 200, acceptN8n(raw, req.headers['x-vintorex-signature']));
+    }
+    if (pathname === '/api/integrations') {
+      if (req.method !== 'GET') throw new HttpError(405, 'Method not allowed.');
+      return send(res, 200, integrationStatus());
+    }
     if (pathname.startsWith('/api/')) return send(res, 200, await api(req, pathname));
     if (pathname === '/seo-audit/') { res.writeHead(301, { Location: '/seo-audit' + search }); return res.end(); }
+    if (pathname === '/integrations/' ) { res.writeHead(301, { Location: '/integrations' + search }); return res.end(); }
+    if (pathname === '/integrations') {
+      if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Method not allowed.');
+      const html = Buffer.from(integrationsHtml());
+      return sendAsset(req, res, 200, {
+        'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow',
+      }, html.length, () => Readable.from([html]));
+    }
     if (pathname === '/seo-audit') {
       if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Method not allowed.');
       const html = taggedHtml(seoReportHtml());
@@ -491,5 +526,7 @@ createServer(async (req, res) => {
   const assistant = AI_ON ? 'on (Cloudflare Workers AI)' : 'search-only (set CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN)';
   const wa = whatsappMissing();
   const whatsapp = wa.send.length ? `off (set ${wa.send.join(', ')})` : `on${wa.webhook.length ? `, webhook off (set ${wa.webhook.join(', ')})` : ''}${wa.api.length ? `, API off (set ${wa.api.join(', ')})` : ''}`;
-  console.log(`Vintorex on http://localhost:${PORT} · Razorpay payments ${mode} · chat assistant ${assistant} · WhatsApp ${whatsapp}`);
+  const links = integrationStatus().configured;
+  const integrations = links.mcpKey ? 'MCP on' : 'MCP off (set INTEGRATIONS_API_KEY)';
+  console.log(`Vintorex on http://localhost:${PORT} · Razorpay payments ${mode} · chat assistant ${assistant} · WhatsApp ${whatsapp} · integrations ${integrations}${links.n8nWebhook ? ', n8n on' : ''}`);
 });

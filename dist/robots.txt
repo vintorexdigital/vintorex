@@ -13,6 +13,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: Googlebot
 Allow: /
@@ -27,6 +28,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: Bingbot
 Allow: /
@@ -41,6 +43,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: GPTBot
 Allow: /
@@ -55,6 +58,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: OAI-SearchBot
 Allow: /
@@ -69,6 +73,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: ChatGPT-User
 Allow: /
@@ -83,6 +88,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: ClaudeBot
 Allow: /
@@ -97,6 +103,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: Claude-User
 Allow: /
@@ -111,6 +118,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: Claude-SearchBot
 Allow: /
@@ -125,6 +133,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: anthropic-ai
 Allow: /
@@ -139,6 +148,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: PerplexityBot
 Allow: /
@@ -153,6 +163,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: Perplexity-User
 Allow: /
@@ -167,6 +178,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: Google-Extended
 Allow: /
@@ -181,6 +193,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: Applebot
 Allow: /
@@ -195,6 +208,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: Applebot-Extended
 Allow: /
@@ -209,6 +223,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: CCBot
 Allow: /
@@ -223,6 +238,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: Bytespider
 Allow: /
@@ -237,6 +253,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: Amazonbot
 Allow: /
@@ -251,6 +268,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: meta-externalagent
 Allow: /
@@ -265,6 +283,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: DuckAssistBot
 Allow: /
@@ -279,6 +298,7 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 User-agent: cohere-ai
 Allow: /
@@ -293,5 +313,6 @@ Disallow: /invoice/
 Disallow: /account
 Disallow: /admin
 Disallow: /seo-audit
+Disallow: /integrations
 
 Sitemap: https://vintorex.com/sitemap.xml

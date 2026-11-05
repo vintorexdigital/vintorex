@@ -301,11 +301,47 @@ function customerChange(user, name, old, record) {
         record.messages.slice(old.messages.length).some(m => m.staff !== false || m.from !== user.name || typeof m.text !== 'string')) fail(403, 'Only your own replies may be appended.');
   }
 }
+export function appendLead(input = {}) {
+  const name = String(input.name || '').trim();
+  const email = String(input.email || '').trim().toLowerCase();
+  if (!name || name.length > 150 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) fail(400, 'Enter a name and valid email.');
+  const db = openStore();
+  db.exec('BEGIN IMMEDIATE');
+  try {
+    const state = readStore().state;
+    const lead = {
+      id: 'l_' + randomBytes(12).toString('hex'), name, email,
+      phone: String(input.phone || '').slice(0, 40), company: String(input.company || '').slice(0, 150), customerId: '',
+      stage: 'New', source: String(input.source || 'Integration').slice(0, 40), service: String(input.service || '').slice(0, 40),
+      message: String(input.message || '').slice(0, 2000), value: 0, budget: Number(input.budget) || 0, score: 0,
+      owner: '', notes: [], followUp: null, createdAt: new Date().toISOString(),
+    };
+    validateRecord('leads', lead);
+    state.leads.unshift(lead);
+    state.activity.unshift({ at: lead.createdAt, text: 'Integration queued ' + lead.source + ' for ' + lead.email });
+    state.activity = state.activity.slice(0, 200);
+    writeStore(state);
+    db.exec('COMMIT');
+    return lead;
+  } catch (error) { db.exec('ROLLBACK'); throw error; }
+}
+export function noteActivity(text) {
+  const db = openStore();
+  db.exec('BEGIN IMMEDIATE');
+  try {
+    const state = readStore().state;
+    state.activity.unshift({ at: new Date().toISOString(), text: String(text).slice(0, 240) });
+    state.activity = state.activity.slice(0, 200);
+    writeStore(state);
+    db.exec('COMMIT');
+  } catch (error) { db.exec('ROLLBACK'); throw error; }
+}
 export function commitChanges(req, body) {
   checkMutation(req);
   const db = openStore(), user = sessionUser(req);
   if (!Array.isArray(body.changes) || body.changes.length > 1000) fail(400, 'Invalid change list.');
   db.exec('BEGIN IMMEDIATE');
+  const freshLeads = [];
   try {
     const { state, revision } = readStore();
     if (!body.changes.length && !body.settings) { db.exec('COMMIT'); return snapshot(user); }
@@ -342,7 +378,10 @@ export function commitChanges(req, body) {
         if (user?.role === 'admin' && Number.isSafeInteger(record.number) && record.number > 0) state.counters.ticket = Math.max(state.counters.ticket, record.number);
         else record.number = ++state.counters.ticket;
       }
-      if (record) { if (index < 0) records.unshift(record); else records[index] = record; }
+      if (record) {
+        if (index < 0) { records.unshift(record); if (name === 'leads') freshLeads.push(record); }
+        else records[index] = record;
+      }
       else {
         records.splice(index, 1);
         if (name === 'users') {
@@ -363,6 +402,7 @@ export function commitChanges(req, body) {
     state.activity = state.activity.slice(0, 200);
     writeStore(state);
     db.exec('COMMIT');
+    if (freshLeads.length) import('./integrations/flow.mjs').then(m => Promise.all(freshLeads.map(lead => m.fanoutLead(lead)))).catch(error => console.error('Integration fan-out', error.message));
     return snapshot(user && state.users.find(u => u.id === user.id));
   } catch (error) { db.exec('ROLLBACK'); throw error; }
 }
