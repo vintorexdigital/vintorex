@@ -34,13 +34,12 @@ import { matchRoute, trimPath, isPrivate, canonicalPath, pageMeta } from '../dis
 import { chat, chatStatus, AI_ON } from './chat.mjs';
 import { whatsappRoute } from './whatsapp/routes.mjs';
 import { trackSeo } from './seo-crawl.mjs';
-import { startPublicAudit, getPublicAudit } from './seo-public-jobs.mjs';
+import { startPublicAudit, getPublicAudit, cancelPublicAudit } from './seo-public-jobs.mjs';
 import { auditPdf } from './seo-report-pdf.mjs';
 import { auditSeo, seoReportHtml } from './seo-audit.mjs';
 import { missing as whatsappMissing } from './whatsapp/config.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
-let crawlHistory;
 const DIST = join(ROOT, 'dist');
 const SITE = (process.env.SITE_URL || 'https://vintorex.com').replace(/\/$/, '');
 
@@ -461,6 +460,12 @@ createServer(async (req, res) => {
       rateLimit(req, 'public-seo-start', 4);
       return send(res, 202, await startPublicAudit(await readJson(req)));
     }
+    if (/^\/api\/seo\/audits\/[a-f0-9]{40}\/cancel$/.test(pathname)) {
+      if (req.method !== 'POST') throw new HttpError(405, 'Method not allowed.');
+      Store.checkMutation(req);
+      rateLimit(req, 'public-seo-cancel', 30);
+      return send(res, 200, cancelPublicAudit(pathname.split('/')[4]));
+    }
     if (pathname.startsWith('/api/seo/audits/')) {
       if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Method not allowed.');
       const match = pathname.match(/^\/api\/seo\/audits\/([a-f0-9]{40})(\/report\.pdf)?$/);
@@ -482,8 +487,7 @@ createServer(async (req, res) => {
     if (pathname === '/seo-audit/') { res.writeHead(301, { Location: '/seo-audit' + search }); return res.end(); }
     if (pathname === '/seo-audit') {
       if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Method not allowed.');
-      const report = auditSeo(DIST);
-      const html = taggedHtml(seoReportHtml(report, crawlHistory?.(url.searchParams.get('run'))));
+      const html = taggedHtml(seoReportHtml());
       return sendAsset(req, res, 200, {
         'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow',
       }, html.length, () => Readable.from([html]));
@@ -500,7 +504,7 @@ createServer(async (req, res) => {
   console.error(`Port ${PORT} is already in use, so this server did not start: another process, probably an old copy of this server, is listening there. Find it with: sudo ss -ltnp | grep ${PORT}`);
   process.exit(1);
 }).listen(PORT, HOST, () => {
-  crawlHistory = trackSeo(SITE);
+  trackSeo(SITE);
   if (PAYMENTS_READY) checkRazorpay();
   const mode = PAYMENTS_READY ? `on, ${KEY_ID.startsWith('rzp_live_') ? 'LIVE' : 'test'} key`
     : PAYMENTS ? 'off (set PAYMENT_TOKEN_SECRET — openssl rand -hex 32)'

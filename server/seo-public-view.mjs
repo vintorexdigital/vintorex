@@ -1,35 +1,50 @@
-export function publicAuditShell(diagnostics) {
+import { icon } from '../dist/js/ui.js';
+
+const views = [
+  ['overview', 'Overview', 'chart'], ['issues', 'Issues & actions', 'shield'],
+  ['pages', 'Crawled pages', 'web'], ['content', 'Content & topic gaps', 'pen'],
+  ['competitors', 'Competitor comparison', 'target'], ['links', 'Link evidence', 'social'],
+  ['access', 'Crawler access', 'bot'], ['reports', 'Saved reports', 'receipt'],
+];
+export function publicAuditShell() {
   return `<!doctype html>
 <html lang="en-IN"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex, nofollow"><meta name="description" content="Run a live public website SEO audit, compare competitor websites, and download a PDF report with measured findings.">
-<title>Public SEO audit & competitor comparison · Vintorex</title>
+<meta name="robots" content="noindex, nofollow"><meta name="description" content="Audit your website, investigate SEO issues, compare competitors, explore content and link evidence, and download your report.">
+<title>SEO audit workspace · Vintorex</title>
 <link rel="stylesheet" href="/css/typography.css"><link rel="stylesheet" href="/css/app.css"><link rel="stylesheet" href="/css/seo-audit.css">
 </head><body class="seo-audit-page">
-<a class="skip" href="#main">Skip to audit</a>
-<header class="seo-header"><a class="seo-brand" href="/"><img src="/images/vintorex-emblem-144.webp" alt="" width="50" height="32"><span>Vintorex<small>WEBSITE INTELLIGENCE</small></span></a><nav aria-label="Audit navigation"><a href="#audit-form">Run an audit</a><a href="#audit-scope">What we check</a><a href="/contact">Get help with fixes</a></nav></header>
-<main id="main" class="seo-shell">
-<section class="seo-hero"><div><p class="seo-kicker">PUBLIC SEO AUDIT</p><h1>See what’s holding<br>your website back.</h1><p class="seo-intro">Audit live pages, compare the websites you compete with, and leave with a clear action plan.</p><ul class="seo-promises"><li>Live website measurements</li><li>Prioritized findings</li><li>Downloadable PDF</li></ul></div><aside class="seo-hero-note"><span>FROM SCAN TO ACTION</span><strong>One report.<br>A clearer next step.</strong><p>Technical checks, page-level evidence and competitor benchmarks in one place.</p><a href="#audit-scope">Explore the audit scope ↓</a></aside></section>
-<section class="seo-panel seo-form-panel"><div class="seo-section-head"><div><p class="seo-kicker">START WITH YOUR WEBSITE</p><h2>Run a public audit</h2></div><span class="seo-pill">No sign-in required</span></div>
+<a class="skip" href="#audit-form">Skip to audit setup</a>
+<header class="seo-header"><a class="seo-brand" href="/"><img src="/images/vintorex-emblem-144.webp" alt="" width="46" height="30"><span>Vintorex<small>SEO WORKSPACE</small></span></a><div class="seo-header-links"><span class="seo-free">No sign-in required</span><a href="/contact">Get help with fixes ${icon('arrow')}</a></div></header>
+<main class="seo-app" id="main">
+<div class="seo-page-heading"><div><p class="seo-kicker">WEBSITE AUDIT & COMPETITOR INTELLIGENCE</p><h1>Find the issues. Plan your next move.</h1><p>Run a live scan, investigate the evidence and take your action plan with you.</p></div><button class="seo-button seo-outline" id="new-audit" type="button">${icon('plus')} New audit</button></div>
+<div class="seo-workspace">
+<aside class="seo-sidebar" aria-label="Audit setup and report navigation">
+<section class="seo-setup" id="audit-setup"><div class="seo-sidebar-title"><span>${icon('search')}</span><h2>Set up your audit</h2></div>
 <form id="audit-form">
-<label class="seo-field seo-main-url">Your website<input name="url" required maxlength="2000" inputmode="url" autocomplete="url" placeholder="example.com or https://example.com"></label>
-<div class="seo-grid2"><label class="seo-field">Competitor website 1 <small>Optional</small><input name="competitor1" maxlength="2000" inputmode="url" placeholder="competitor.com"></label><label class="seo-field">Competitor website 2 <small>Optional</small><input name="competitor2" maxlength="2000" inputmode="url" placeholder="another-competitor.com"></label></div>
-<div class="seo-form-bottom"><label class="seo-field">Pages per website<select name="maxPages"><option value="10">10 pages · quick sample</option value="25" selected>25 pages · standard sample</option><option value="40">40 pages · wider sample</option></select></label><button class="btn primary" type="submit" id="audit-submit">Audit my website <span aria-hidden="true">↗</span></button></div>
-<p class="seo-help">Public pages only. Each website has a 90-second crawl budget. Reports are available for 24 hours to anyone with their report link.</p>
+<label class="seo-field">Your website<input name="url" required maxlength="2000" inputmode="url" autocomplete="url" placeholder="example.com"></label>
+<details class="seo-competitor-inputs" open><summary>Compare competitors <span>optional · up to 2</span></summary>
+<label class="seo-field"><span class="seo-sr-only">Competitor website 1</span><input name="competitor1" maxlength="2000" inputmode="url" placeholder="First competitor domain"></label>
+<label class="seo-field"><span class="seo-sr-only">Competitor website 2</span><input name="competitor2" maxlength="2000" inputmode="url" placeholder="Second competitor domain"></label></details>
+<label class="seo-field">Crawl size per website<select name="maxPages"><option value="10">10 pages · quick scan</option><option value="25" selected>25 pages · standard scan</option><option value="40">40 pages · wider scan</option></select></label>
+<button class="seo-button seo-primary seo-full" type="submit" id="audit-submit">${icon('search')} Run complete audit</button>
+<p class="seo-form-note">Up to 90 seconds per website. Accessible public pages are checked using the same rules for every domain.</p>
 <p class="seo-error" id="audit-error" role="alert" hidden></p>
 </form></section>
-<section id="audit-progress" class="seo-panel" hidden aria-live="polite"><p class="seo-kicker">LIVE AUDIT IN PROGRESS</p><h2 id="progress-title">Starting your crawl…</h2><progress id="progress-meter" max="100"></progress><p id="progress-detail"></p></section>
-<div id="audit-results" hidden></div>
-<section class="seo-panel" id="recent-audits" hidden><h2>Your recent reports</h2><p class="seo-help">Saved in this browser. Expired reports can be run again.</p><ul id="recent-list"></ul></section>
-<section id="audit-scope" class="seo-scope"><p class="seo-kicker">WHAT’S INCLUDED</p><h2>A practical view of your site’s SEO.</h2><div class="seo-scope-grid">
-<article><span>01</span><h3>Technical foundations</h3><p>HTTP responses, redirects, robots.txt, indexing directives, sitemaps, HTTPS and mixed content.</p></article>
-<article><span>02</span><h3>Pages & content</h3><p>Titles, descriptions, headings, duplicate source content, canonicals, image alt text and social previews.</p></article>
-<article><span>03</span><h3>Links & discovery</h3><p>Incoming internal links in the sample, broken crawled destinations, accessible link text and sampled resource responses.</p></article>
-<article><span>04</span><h3>Structure & performance</h3><p>JSON-LD syntax, language and hreflang declarations, HTML size, image dimensions and server response timing.</p></article>
-<article><span>05</span><h3>Competitor comparison</h3><p>The same live checks across up to two competitor domains, with coverage and measurement times shown.</p></article>
-<article><span>06</span><h3>Search & AI access</h3><p>Observed robots.txt rules for search and AI crawlers. The project’s own content and link index identifies observed topics, competitor content gaps and cross-domain link evidence.</p></article>
-</div><p class="seo-method-note">This audit analyzes source HTML. JavaScript-rendered content, real-user Core Web Vitals, complete web-wide backlink coverage and search-result positions require separate direct measurements. All displayed audit metrics come from the project’s own scans.</p></section>
-<details class="seo-panel seo-diagnostics"><summary>Vintorex scheduled crawl and published-site setup</summary>${diagnostics}</details>
-<footer class="seo-footer"><a href="/">Vintorex Digital Solutions</a><span>Measured findings. Practical fixes.</span></footer>
-</main><script type="module" src="/js/seo-audit.js"></script></body></html>`;
+<nav class="seo-view-nav" role="tablist" aria-label="Audit report" aria-orientation="vertical">${views.map(([id, title, symbol], index) => `<button type="button" role="tab" id="tab-${id}" data-view="${id}" aria-controls="audit-view" aria-selected="${index === 0}" tabindex="${index === 0 ? '0' : '-1'}">${icon(symbol)}<span>${title}</span></button>`).join('')}</nav>
+<details class="seo-how"><summary>Audit coverage & scoring</summary><p>Checks cover technical SEO, metadata, content, internal links, structured data, international SEO, HTTPS, source performance and social previews.</p><p>Health is the weighted pass rate across observed checks. Errors carry weight 5, warnings 2 and notices 1. Reviewed items keep their original measurements.</p><p>Source HTML can omit JavaScript-generated content. Search traffic, search volumes, search-result positions, real-user Core Web Vitals and web-wide backlink totals require separate direct measurements.</p><p>Reports are available for 24 hours to anyone with their report link. Matching scans can reuse a report for ten minutes. Run again requests a fresh scan.</p></details>
+</aside>
+<section class="seo-report-area" aria-label="Your audit workspace">
+<div class="seo-report-toolbar"><div><span class="seo-status" id="report-status">Ready to audit</span><h2 id="report-heading">Your website report</h2><p id="report-meta">Enter your website to build a report from live observations.</p></div><div class="seo-report-actions"><button type="button" id="run-again" class="seo-button seo-outline" disabled>${icon('repeat')} Run again</button><button type="button" id="share-report" class="seo-button seo-outline" disabled>${icon('social')} Share</button><a id="download-report" class="seo-button seo-primary" hidden download>${icon('download')} PDF report</a><button type="button" id="pdf-placeholder" class="seo-button seo-primary" disabled>${icon('download')} PDF report</button></div></div>
+<p class="seo-feedback" id="workspace-feedback" role="status" hidden></p>
+<label id="share-fallback" class="seo-field" hidden>Copy this report link<input readonly aria-label="Report link"></label>
+<section id="audit-progress" class="seo-progress" hidden aria-live="polite"><div><div class="seo-scan-indicator" aria-hidden="true"></div><div><p class="seo-kicker">LIVE SCAN</p><h3 id="progress-title">Connecting to your website…</h3></div><button type="button" class="seo-button seo-outline" id="cancel-audit">Stop scan</button></div><progress id="progress-meter" max="100"></progress><p id="progress-detail"></p></section>
+<div class="seo-view-top"><div><p class="seo-kicker" id="view-eyebrow">YOUR AUDIT AT A GLANCE</p><h2 id="view-heading">Overview</h2></div><div class="seo-view-tools"><label class="seo-field" id="report-site-label" hidden><span class="seo-sr-only">Website in this report</span><select id="report-site" aria-label="Website in this report"></select></label><button type="button" id="export-csv" class="seo-button seo-outline" hidden>${icon('download')} Export CSV</button></div></div>
+<section id="audit-view" role="tabpanel" aria-labelledby="tab-overview" tabindex="0"><div id="view-controls"></div><div id="view-content"></div><div id="view-pagination"></div></section>
+</section></div>
+<footer class="seo-footer"><span>Built and measured by Vintorex</span><a href="/">Back to the website ${icon('arrow')}</a></footer>
+</main>
+<dialog class="seo-page-dialog" id="page-detail" aria-labelledby="page-detail-title"><div id="page-detail-content"></div></dialog>
+<noscript><p class="seo-noscript">Enable JavaScript to start a live audit, explore report sections and download results. You can also <a href="/contact">contact us for help with your website</a>.</p></noscript>
+<script type="module" src="/js/seo-audit.js"></script></body></html>`;
 }

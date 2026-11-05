@@ -11,6 +11,7 @@ import { navigate } from './router.js';
 import { pageMeta, competitorNames } from './routes.js';
 import { serviceArt, serviceCardArt, ART, CATALOG_KEYWORDS, serviceImagePath } from './service-art.js';
 import { SHOP_ART } from './shop-art.js';
+import { auditFeature } from './audit-feature.js';
 import { WORK_PROJECTS, renderWorkCard } from './work-art.js';
 
 const inr = D.inr;
@@ -141,7 +142,7 @@ export function home() {
           <div class="row gap wrap">
             <a class="btn primary lg" href="/services/">Explore services ${icon('arrow')}</a>
             <a class="btn ghost lg" href="/pricing">See pricing</a>
-            <a class="btn ghost lg" href="/#audit">Free audit</a>
+            <a class="btn ghost lg" href="/seo-audit">Free SEO audit</a>
           </div>
           <ul class="ticks">
             <li>${icon('check')}Fixed, published prices</li>
@@ -168,6 +169,8 @@ export function home() {
       <div class="stat-card"><span class="stat-ic">${icon('zap')}</span><div><b>2 Hours</b><span>Average Reply Time</span></div></div>
       <div class="stat-card"><span class="stat-ic">${icon('receipt')}</span><div><b>18% GST</b><span>Compliant Tax Invoicing</span></div></div>
     </section>
+
+    ${auditFeature()}
 
     <section class="shell section" aria-labelledby="vintorent-heading">
       <div class="card vintorent-feature">
@@ -245,37 +248,20 @@ export function home() {
       <div class="cards3">${featuredPosts().map(postCard).join('')}</div>
     </section>
 
-    <section class="shell section split audit-split" id="audit">
+    <section class="shell section split audit-split" id="audit-help" aria-labelledby="audit-help-heading">
       <div class="audit-info">
-        <p class="eyebrow"><span></span>Free website & SEO audit</p>
-        <h2>Find out what’s holding your business back online</h2>
-        <p class="lead">Get a free 15-point audit of your website speed, Google ranking, social presence and ad setup — with a fixed-price action plan.</p>
+        <p class="eyebrow"><span></span>From findings to improvements</p>
+        <h2 id="audit-help-heading">Get help putting your audit into action</h2>
+        <p class="lead">Share your website, goals and the findings you want to address. We’ll help scope the work and provide a proposal.</p>
         <ul class="ticks col">
-          <li>${icon('check')}Speed & Core Web Vitals (Mobile + Desktop)</li>
-          <li>${icon('check')}Local SEO & Google Business Profile (Coimbatore pack)</li>
-          <li>${icon('check')}Competitor keyword gaps & high-intent opportunities</li>
-          <li>${icon('check')}Social media & paid ads conversion quick wins</li>
+          <li>${icon('check')}Prioritize technical fixes and content improvements</li>
+          <li>${icon('check')}Review competitor content opportunities for your business</li>
+          <li>${icon('check')}Plan implementation around your budget and timeline</li>
+          <li>${icon('check')}Run another audit to compare the observed results</li>
         </ul>
-
-        <div class="audit-preview card">
-          <div class="audit-preview-head">
-            <span class="dot-live"></span>
-            <b>Live 15-Point Digital Health Score</b>
-            <span class="audit-pill">Free Audit</span>
-          </div>
-          <div class="audit-preview-body">
-            <img class="audit-scorecard-img" src="/images/audit-scorecard.jpg" alt="Printed website and SEO health report with score rings and green checklist ticks beside a laptop" width="1600" height="900" loading="lazy" decoding="async">
-            <ol class="audit-flow" aria-label="How the free audit works">
-              <li><span class="af-n">1</span><div><b>Share your details</b><small>Website, business and goals</small></div></li>
-              <li><span class="af-n">2</span><div><b>Speed & Web Vitals</b><small>Mobile and desktop scan</small></div></li>
-              <li><span class="af-n">3</span><div><b>Local SEO check</b><small>Google Business Profile and Maps</small></div></li>
-              <li><span class="af-n">4</span><div><b>Competitor & ads review</b><small>Keyword gaps, social and paid quick wins</small></div></li>
-              <li><span class="af-n">5</span><div><b>Your report</b><small>Health score and fixed-price action plan</small></div></li>
-            </ol>
-          </div>
-        </div>
+        <p><a class="link" href="/seo-audit">Run your free public audit first ${icon('arrow')}</a></p>
       </div>
-      ${leadForm({ source: 'Free audit', compact: true, title: 'Request my free audit' })}
+      ${leadForm({ source: 'Free audit', service: 'seo', compact: true, title: 'Discuss my audit findings' })}
     </section>`,
     bind: root => { bindLeadForms(root); bindCartButtons(root); bindCycle(root); },
   };

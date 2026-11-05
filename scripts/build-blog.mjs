@@ -13,6 +13,7 @@ import { siteHeader, siteFooter } from '../dist/js/chrome.js';
 import { offerPageBody } from './offer-page.mjs';
 import { ROBOTS_INDEX } from '../dist/js/routes.js';
 import { SERVICES, CATEGORIES, BUSINESS } from '../dist/js/data.js';
+import { auditFeature } from '../dist/js/audit-feature.js';
 import { brandHead } from '../dist/js/brand.js';
 import { ART, CATALOG_KEYWORDS, serviceImagePath } from '../dist/js/service-art.js';
 import { esc, icon } from '../dist/js/ui.js';
@@ -274,6 +275,9 @@ const noscript = `<!-- seo-noscript -->
       <p>${esc(`${SERVICES.length} services with published prices from ${inr(Math.min(...SERVICES.map(fromPrice)))} (excluding 18% GST): websites, online stores, mobile apps, SEO, social media, ads, branding, cloud hosting, analytics and AI automation.`)}</p>
       <p>The online shop, customer dashboard and checkout need JavaScript. The pages below work without it.</p>
       <ul>${SERVICES.map(s => `<li><a href="${servicePath(s.id)}">${esc(s.name)}</a>: from ${inr(fromPrice(s))}${s.billing === 'month' ? '/month' : ''}</li>`).join('')}</ul>
+      <!-- audit-feature -->
+      ${auditFeature({ helpHref: '/contact' })}
+      <!-- /audit-feature -->
       <p><a href="/vintorent">Vintorent downloads, image upscaling and public profile analysis</a></p>
       <p><a href="/services/">All services and prices</a> · <a href="/faq/">FAQ</a> · <a href="/blog/">Guides</a> · <a href="/privacy-policy/">Privacy</a> · <a href="/terms/">Terms</a></p>
       <p>${esc(BUSINESS.address)} · <a href="tel:+918667209838">${esc(BUSINESS.phone)}</a> · <a href="${BUSINESS.whatsapp}">WhatsApp</a> · <a href="mailto:${BUSINESS.email}">${esc(BUSINESS.email)}</a></p>

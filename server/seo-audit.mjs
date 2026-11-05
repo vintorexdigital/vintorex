@@ -17,7 +17,6 @@ const PAGES = [
 const decode = value => String(value || '')
   .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
 const attr = (html, re) => decode(html.match(re)?.[1] || '');
-const esc = value => String(value).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
 
 export function auditSeo(dist, site = 'https://vintorex.com') {
   const checks = [];
@@ -75,32 +74,4 @@ export function auditSeo(dist, site = 'https://vintorex.com') {
   };
 }
 
-function crawlHtml(state) {
-  if (!state) return '';
-  const { running, history, result, started } = state;
-  const date = time => new Date(time).toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
-  const historyRows = history.map(run => `<li><a href="/seo-audit?run=${run.started}">${date(run.started)}</a> · ${run.error ? 'Crawl failed' : run.pages + ' pages · ' + run.issues + ' findings'}</li>`).join('');
-  let detail = running ? '<p>A crawl is in progress. Refresh to see its results.</p>' : '';
-  if (result?.error) detail += `<p>Crawl failed. ${esc(result.error)} The scheduler retries in one hour.</p>`;
-  if (result?.pages) {
-    const rows = ['Error', 'Warning', 'Notice'].flatMap(level => result.issues.filter(i => i.severity === level)).map(i => `<tr><td>${esc(i.severity)}</td><td>${esc(i.path)}</td><td>${esc(i.message)}</td></tr>`).join('');
-    const previous = history.find(run => run.started < started && !run.error);
-    const delta = result.issues.length - (previous?.issues || 0);
-    detail += `<h3>Report from ${date(started)}</h3><p>${result.pages.length} of ${result.discovered} discovered URLs crawled · ${result.issues.length} findings${previous ? ' · ' + (delta > 0 ? '+' : '') + delta + ' since the previous successful crawl' : ''}.</p>
-    <h3>Findings</h3>${rows ? '<div class="table-wrap scroll"><table class="table"><thead><tr><th>Priority</th><th>Page</th><th>Suggested action</th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '<p>No issues found by these checks.</p>'}
-    <details><summary>Crawled URLs and incoming links</summary><ul>${result.pages.map(p => `<li>${esc(p.path)} · HTTP ${esc(p.status ?? 'unavailable')} · ${esc(p.title)}<br>Linked from: ${esc(p.sources.join(', ') || 'No referring page found')}</li>`).join('')}</ul></details>`;
-  }
-  return `<section class="card pad"><h2>Live site crawl</h2><p>Vintorex checks its public pages daily, following its sitemap and internal links. Each crawl covers up to 400 URLs. The most recent 30 runs are kept.</p>${detail}
-  <h3>Crawl history</h3>${historyRows ? '<ul>' + historyRows + '</ul>' : '<p>The first report will appear here when the crawl finishes.</p>'}</section>`;
-}
-
-export function seoReportHtml(report, state) {
-  const rows = list => list.map(c => `<tr><td>${c.ok ? '<span class="yes" aria-label="Pass">✓</span>' : '<span class="no" aria-label="Fail">—</span>'}</td><td>${esc(c.name)}</td><td>${esc(c.detail)}</td></tr>`).join('');
-  const block = (title, list) => `<section class="card pad"><h2>${esc(title)}</h2><p class="muted">${list.filter(c => c.ok).length} of ${list.length} checks passed.</p><div class="table-wrap scroll"><table class="table"><thead><tr><th></th><th>Check</th><th>Detail</th></tr></thead><tbody>${rows(list)}</tbody></table></div></section>`;
-  return publicAuditShell(`
-    ${crawlHtml(state)}
-    <h2>Published site setup</h2>
-    <p class="lead">${report.passed} of ${report.total} published-site checks passed.</p>
-    <div class="cards2">${block('On-page', report.onPage)}${block('Off-page', report.offPage)}</div>
-  `);
-}
+export function seoReportHtml() { return publicAuditShell(); }

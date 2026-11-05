@@ -212,9 +212,9 @@ Open `/seo-audit` to audit any public website and up to two competitor domains w
 
 The report includes measured page responses, redirects, titles, descriptions, headings, canonical URLs, source content duplication, indexing directives, image attributes, JSON-LD syntax, language/hreflang declarations, social metadata, internal-link evidence and a sample of up to eight same-site resource responses. It also shows robots.txt access rules for search and AI crawlers. Server response timing is measured from the audit server. JavaScript rendering, mobile usability and real-user Core Web Vitals are outside these source-HTML checks.
 
-Reports provide a weighted check score, prioritized actions, finding filters, page inventories, competitor comparisons and PDF downloads. Every report includes observation times and sample coverage. Competitor comparisons use the same checks and page limit. The score is calculated by this application from its observed technical checks.
+The audit workspace has eight views: overview, issues and actions, crawled pages, content and topic gaps, competitor comparison, link evidence, crawler access, and saved reports. Findings can be searched and filtered by priority, category and review status. Review marks are stored in the current browser and never change measured scores. Page detail dialogs show source snippets, metadata and page-specific findings. Table views export their complete filtered results as CSV; the PDF contains the saved report evidence. Every report includes observation times and sample coverage. Competitor comparisons use the same checks and page limit.
 
-Public job endpoints are `POST /api/seo/audits`, `GET /api/seo/audits/<id>` and `GET /api/seo/audits/<id>/report.pdf`. The creation endpoint expects the same-origin `X-VX-Request: 1` header. Reports use random, unlisted identifiers and remain available for 24 hours. Anyone with the report link can view it. Browser history lists the last six reports saved on that browser.
+Public job endpoints are `POST /api/seo/audits`, `GET /api/seo/audits/<id>`, `POST /api/seo/audits/<id>/cancel`, and `GET /api/seo/audits/<id>/report.pdf`. Creation and cancellation expect the same-origin `X-VX-Request: 1` header. Stopping a scan cancels its active requests or removes its queued task. Run again submits `force: true` to request a fresh crawl rather than a cached report. Reports use random, unlisted identifiers and remain available for 24 hours. Share copies a report link; anyone with the link can view it. Browser history lists the last six reports saved on that browser.
 
 `SEO_PUBLIC_DB_PATH` configures private SQLite report storage. The service allows two concurrent jobs and an eight-job queue, deduplicates matching requests for ten minutes, and rate limits submissions. URL validation rejects private destinations, custom ports and embedded credentials. Every redirect is revalidated and outbound requests pin a public DNS result.
 
@@ -222,7 +222,7 @@ Content intelligence and link analysis run entirely inside this project through 
 
 No third-party SEO service or API key is required. Crawling, analysis, SQLite storage and PDF generation run on the application server. Older saved reports retain their crawl evidence and are presented through the internal index when opened. New scans include the body-text and external-link evidence needed for fuller content comparisons.
 
-The existing daily Vintorex crawler, crawl history and published-site checks remain available in the page’s expandable diagnostics section. Public visitor audits have separate storage and do not change the scheduled project crawler.
+The public page contains only the visitor audit workspace. The existing scheduled project crawler and published-site checks continue independently. Public visitor audits have separate report storage.
 
 ## Before going live
 
