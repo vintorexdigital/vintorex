@@ -105,7 +105,7 @@ ${siteHeader({ here })}
 <main id="main">
 ${body}
 </main>
-${siteFooter()}
+${siteFooter({ services: SERVICES })}
 <script src="/js/static.js" defer></script>
 <script type="module" src="/js/chat.js"></script>
 </body>

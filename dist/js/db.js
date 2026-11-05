@@ -1,6 +1,6 @@
 // Browser view of the shared database. Cart preferences stay on this device.
 import { request, changesBetween } from './shared-store.js';
-import { ANNUAL_MONTHS_PAID } from './data.js';
+import { ANNUAL_MONTHS_PAID } from './site-data.js';
 import { milestoneSchedule, lineInfo as priceLine, priceCart } from './pricing.js';
 export { milestoneSchedule };
 

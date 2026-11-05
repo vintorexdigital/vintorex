@@ -5,34 +5,10 @@
 // split:  [component, starter %, growth %, premium %] — each tier column sums to 100
 // competitors: published prices checked Oct 2026; `src` keys point at COMPETITOR_SOURCES
 
-import { AI_SERVICES, AI_ADDONS, AI_SOURCES } from './ai-services.js';
+import { AI_SERVICES, AI_ADDONS } from './ai-services.js';
 
-export const COMPETITOR_SOURCES = {
-  visualbirds: ['Visual Birds — Social media marketing packages', 'https://www.visualbirds.com/social-media-marketing-packages/'],
-  pgsoft: ['PG Softwares — Digital marketing packages (Coimbatore)', 'https://pgsoftwares.com/digital-marketing-packages.html'],
-  onecity: ['OneCity Technologies — Social media marketing, Coimbatore', 'https://onecity.co.in/social-media-marketing-company-coimbatore'],
-  idigitalise: ['iDigitalise — SEO packages India', 'https://idigitalise.net/seo-packages-india/'],
-  rankyouhigher: ['Rank You Higher — SEO pricing India', 'https://rankyouhigher.in/seo-pricing-india'],
-  shopify: ['Sociolabs — Shopify pricing in India 2026', 'https://sociolabs.in/shopify-pricing-india-2026-plans-costs-guide/'],
-  hostingerBuilder: ['Zoutons — Hostinger Website Builder price India 2026', 'https://zoutons.com/news/hostinger-website-builder-price-india-2026'],
-  hostingerHosting: ['HostAdvice — Hostinger India pricing 2026', 'https://hostadvice.com/hosting-company/hostinger-reviews/hostinger-india-pricing/'],
-  wix: ['Website Builder Expert — Wix pricing 2026', 'https://www.websitebuilderexpert.com/website-builders/wix-pricing/'],
-  webCost: ['Hostinger — How much does a website cost in India 2026', 'https://www.hostinger.com/in/tutorials/website-cost'],
-  ecomCost: ['Noir and Blanco — E-commerce development packages in India', 'https://noirandblanco.com/ecommerce-website-development-packages-in-india/'],
-  ecomCost2: ['Hostinger — E-commerce website cost 2026', 'https://www.hostinger.com/in/tutorials/ecommerce-website-cost/'],
-  flutter1: ['W2S Solutions — Cost of a Flutter app in India', 'https://www.w2ssolutions.com/faq/cost-of-developing-a-flutter-app-in-india'],
-  flutter2: ['PerfectionGeeks — Flutter app development cost in India', 'https://www.perfectiongeeks.com/mobile-app-development/flutter-app-development/flutter-app-development-cost-in-india'],
-  ppc1: ['upGrowth — Google Ads pricing India 2026', 'https://upgrowth.in/google-ads-pricing-india-2026/'],
-  ppc2: ['Noir and Blanco — PPC packages India', 'https://noirandblanco.com/ppc-packages-india-google-ads-pricing/'],
-  emailTools: ['IT for SMEs — Email marketing tools India', 'https://itforsme.in/best/email-marketing-tools-india'],
-  indiafilings: ['IndiaFilings — Logo design pricing', 'https://www.indiafilings.com/logo-designing/pricing'],
-  logoGuide: ['Indian Website Company — Logo design cost in India', 'https://indian-website-company.odoo.com/blog/our-blog-1/a-complete-guide-on-how-much-does-a-logo-design-cost-in-india-11'],
-  contentCost: ['upGrowth — Content cost per article India 2026', 'https://upgrowth.in/content-marketing-cost-per-article-india-2026/'],
-  contentRates: ['SoloHourly — Freelance content writer rates in India', 'https://solohourly.com/rates/content-writer-rates-in-india'],
-  reels: ['Freelancer.in — Instagram reel editor listings (India)', 'https://www.freelancer.in/projects/video-services/instagram-reel-video-editor-india-40371595'],
-  codingclave: ['Codingclave — Website maintenance plans', 'https://codingclave.com/services/website-maintenance'],
-  maintCost: ['upGrowth — Website maintenance cost in India', 'https://upgrowth.in/website-maintenance-cost-in-india-and-global/'],
-};
+import { COMPETITOR_SOURCES } from './competitor-sources.js';
+export { COMPETITOR_SOURCES };
 
 export const SERVICES = [
   {
@@ -653,4 +629,3 @@ export const ADDONS = [
 // AI & Automation services and add-ons (see ai-services.js)
 SERVICES.push(...AI_SERVICES);
 ADDONS.push(...AI_ADDONS);
-Object.assign(COMPETITOR_SOURCES, AI_SOURCES);

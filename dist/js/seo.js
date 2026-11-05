@@ -6,7 +6,7 @@
 // Everything here is derived from the catalog in data.js and services.js, so
 // prices and facts on these pages cannot drift from the app. Rebuild after
 // changing the catalog:  npm run build:blog
-import { BUSINESS, CATEGORIES, PLANS, MILESTONES, MILESTONE_MIN, COMPETITOR_SOURCES } from './data.js';
+import { BUSINESS, CATEGORIES, PLANS, MILESTONES, MILESTONE_MIN, COMPETITOR_SOURCES } from './site-data.js';
 import { esc, icon } from './ui.js';
 import { ART, serviceImagePath } from './service-art.js';
 import { postsFor } from './blog/index.js';

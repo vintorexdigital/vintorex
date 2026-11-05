@@ -1,8 +1,8 @@
 // Site header and footer, shared by the single-page app and the static pages. Every link is a real
 // address: the app takes over clicks on its own pages (js/router.js), the rest load as ordinary pages.
-import { BUSINESS, SERVICES } from './data.js';
+import { BUSINESS } from './site-data.js';
 import { esc, icon } from './ui.js';
-import { POLICIES } from './policies.js';
+import { POLICY_LINKS as POLICIES } from './policy-links.js';
 
 // Winged V emblem with the same gold/grey 3D echo as the wordmark (scripts/build-logo.py).
 export const logoMark = (alt = 'Vintorex brand logo') => `<img src="/images/vintorex-emblem-144.webp" srcset="/images/vintorex-emblem-144.webp 144w, /images/vintorex-emblem-288.webp 288w, /images/vintorex-emblem-480.webp 480w" sizes="(max-width: 640px) 76px, 94px" class="logo-mark" alt="${alt}" width="144" height="91" decoding="async">`;
@@ -45,7 +45,7 @@ export function siteHeader({ here = '', cart = 0, account = '' } = {}) {
   </div></header>`;
 }
 
-export function siteFooter({ services = SERVICES } = {}) {
+export function siteFooter({ services = [] } = {}) {
   return `<footer class="footer"><div class="shell foot-grid">
     <div><a class="logo" href="${to('/')}">${brandLogo({ dark: true })}</a><p class="muted">${esc(BUSINESS.tagline)} Digital marketing, web and cloud services from Coimbatore.</p>
       <div class="row gap wrap">${Object.entries(BUSINESS.social).map(([n, u]) => `<a class="chip" href="${u}" target="_blank" rel="noopener">${n}</a>`).join('')}</div></div>

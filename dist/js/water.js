@@ -10,6 +10,8 @@ else canvas.remove();
 
 function startAquarium() {
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
+  const compact = matchMedia('(max-width: 900px), (pointer: coarse)');
+  const staticBackground = () => motion.matches || compact.matches || navigator.connection?.saveData;
   const colors = [18, 38, 55, 145, 176, 205, 248, 278, 315, 345];
   const fish = [];
   const ripples = [];
@@ -55,7 +57,7 @@ function startAquarium() {
   }
 
   function interact(event) {
-    if (motion.matches || dashboard || document.hidden) return;
+    if (staticBackground() || dashboard || document.hidden) return;
     pointer = { x: event.clientX, y: event.clientY, at: elapsed };
     const now = performance.now();
     if (event.type === 'pointerdown' || now - lastRipple > 100) {
@@ -224,7 +226,7 @@ function startAquarium() {
     lastFrame = 0;
     dashboard = Boolean(document.querySelector('.dash'));
     canvas.hidden = dashboard;
-    if (motion.matches) {
+    if (staticBackground()) {
       ripples.length = 0;
       fish.length = 0;
       nextAppearance = elapsed + 10 + Math.random() * 8;
@@ -239,6 +241,8 @@ function startAquarium() {
   window.addEventListener('pointerout', event => { if (!event.relatedTarget) pointer = null; });
   document.addEventListener('visibilitychange', syncAnimation);
   motion.addEventListener('change', syncAnimation);
+  compact.addEventListener('change', syncAnimation);
+  navigator.connection?.addEventListener('change', syncAnimation);
   const app = document.getElementById('app');
   if (app) new MutationObserver(syncAnimation).observe(app, { childList: true });
 }

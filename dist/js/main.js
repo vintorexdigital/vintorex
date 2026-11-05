@@ -5,7 +5,7 @@ import * as D from './db.js';
 import * as Pub from './public.js';
 import * as Pay from './pay.js';
 import * as Auth from './auth.js';
-import { BUSINESS } from './data.js';
+import { BUSINESS } from './site-data.js';
 import { siteHeader, siteFooter, brandLogo } from './chrome.js';
 import { toast, esc, icon, initials, responsiveTables, $, $$ } from './ui.js';
 import { matchRoute, trimPath, isPrivate, canonicalPath, ROBOTS_INDEX } from './routes.js';
@@ -178,12 +178,21 @@ window.addEventListener('popstate', onNavigate);
 window.addEventListener(NAVIGATE, onNavigate);
 interceptLinks();
 // Liquid Glass: let the light on cards and buttons follow the pointer.
+const pointerMotion = matchMedia('(prefers-reduced-motion: reduce)');
+let pointerFrame = 0, pointerTarget;
 document.addEventListener('pointermove', e => {
-  const el = e.pointerType === 'mouse' && e.target.closest?.('.card, .btn, .chip, .icon-btn');
+  const el = !pointerMotion.matches && e.pointerType === 'mouse' && e.target.closest?.('.card, .btn, .chip, .icon-btn');
   if (!el) return;
-  const r = el.getBoundingClientRect();
-  el.style.setProperty('--mx', `${e.clientX - r.left}px`);
-  el.style.setProperty('--my', `${e.clientY - r.top}px`);
+  pointerTarget = { el, x: e.clientX, y: e.clientY };
+  if (pointerFrame) return;
+  pointerFrame = requestAnimationFrame(() => {
+    pointerFrame = 0;
+    const { el, x, y } = pointerTarget;
+    if (!el.isConnected) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', `${x - r.left}px`);
+    el.style.setProperty('--my', `${y - r.top}px`);
+  });
 }, { passive: true });
 window.addEventListener('storage', e => { if (e.key === 'vx_db_v1') location.reload(); });
 

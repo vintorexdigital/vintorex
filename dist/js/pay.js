@@ -1,7 +1,7 @@
 // Razorpay Checkout. The payment server (server/index.mjs) prices each order and
 // verifies each payment; on static hosting there is no server and checkout stays
 // in demo mode.
-import { BUSINESS } from './data.js';
+import { BUSINESS } from './site-data.js';
 import { toast } from './ui.js';
 
 let status = { enabled: false };

@@ -3,7 +3,7 @@ import { recordManager } from './records.js';
 // catalog & pricing editor, support tickets and settings.
 import { offerLeads } from './offer-leads.js';
 import * as D from './db.js';
-import { LEAD_STAGES, LEAD_SOURCES, ORDER_STATUSES, RAZORPAY } from './data.js';
+import { LEAD_STAGES, LEAD_SOURCES, ORDER_STATUSES, RAZORPAY } from './site-data.js';
 import { esc, icon, toast, field, per, date, dateTime, ago, badge, empty, modal, confirmBox, barChart, initials, $, $$ } from './ui.js';
 import { thread, bindThread } from './account.js';
 import * as Pay from './pay.js';

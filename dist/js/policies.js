@@ -2,6 +2,7 @@
 // static pages by scripts/build-blog.mjs so payment-gateway reviewers and search
 // engines can read them without JavaScript. Rebuild after editing.
 import { esc } from './ui.js';
+import { POLICY_LINKS } from './policy-links.js';
 
 export const POLICIES_UPDATED = '30 October 2026';
 
@@ -20,7 +21,7 @@ const ADDRESS = '38 Bankers Colony Phase 2, Cheran Ma Nagar Coimbatore TAMIL NAD
 
 export const POLICIES = [
   {
-    slug: 'terms', label: 'Terms & Conditions', title: 'Terms and Conditions',
+    ...POLICY_LINKS.find(p => p.slug === 'terms'),
     description: 'Terms and Conditions and Terms of Use for vintorex.com and services from Vintorex Digital Solutions, Coimbatore.',
     body: [
       ['p', `For the purpose of these Terms and Conditions, The term “we”, “us”, “our” used anywhere on this page shall mean Vintorex Digital Solutions, whose registered/operational office is ${ADDRESS}. “you”, “your”, “user”, “visitor” shall mean any natural or legal person who is visiting our website and/or agreed to purchase from us.`],
@@ -64,7 +65,7 @@ export const POLICIES = [
     ],
   },
   {
-    slug: 'privacy-policy', label: 'Privacy Policy', title: 'Privacy Policy',
+    ...POLICY_LINKS.find(p => p.slug === 'privacy-policy'),
     description: 'How Vintorex Digital Solutions collects, uses, shares and protects your personal data on vintorex.com.',
     body: [
       ['p', `This privacy policy sets out how Vintorex Digital Solutions uses and protects any information that you give Vintorex Digital Solutions when you visit their website and/or agree to purchase from them.`],
@@ -125,21 +126,21 @@ export const POLICIES = [
     ],
   },
   {
-    slug: 'refund-policy', label: 'Cancellation & Refunds', title: 'Cancellation & Refund Policy',
+    ...POLICY_LINKS.find(p => p.slug === 'refund-policy'),
     description: 'Cancellation and refund policy for purchases from Vintorex Digital Solutions.',
     body: [
       ['p', `No cancellations & Refunds are entertained.`],
     ],
   },
   {
-    slug: 'shipping-policy', label: 'Shipping & Delivery', title: 'Shipping and Delivery',
+    ...POLICY_LINKS.find(p => p.slug === 'shipping-policy'),
     description: 'Shipping and delivery policy for Vintorex Digital Solutions.',
     body: [
       ['p', `Shipping is not applicable for business as it is digital products.`],
     ],
   },
 ];
-POLICIES.forEach(p => { p.path = `/${p.slug}/`; });
+
 
 // Escaped text with email addresses and the site address turned into links.
 const text = s => esc(s)

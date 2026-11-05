@@ -21,8 +21,8 @@ import { contentPage, sitemap } from './pages.mjs';
 import * as Store from './store.mjs';
 import { clientIp } from './client-ip.mjs';
 import { createServer } from 'node:http';
-import { Readable, pipeline } from 'node:stream';
-import { createGzip } from 'node:zlib';
+import { Readable } from 'node:stream';
+import { sendAsset } from './http-response.mjs';
 import { createReadStream } from 'node:fs';
 import { readFile, stat } from 'node:fs/promises';
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
@@ -273,30 +273,6 @@ function shellFor(html, path) {
   return html;
 }
 
-// Pages of the app (routes.js) are answered with the app shell, so any of them can be opened, shared or reloaded at its own
-// address. An address that is no page gets the shell too, with a 404 status and noindex, and the app shows its "not found"
-// page. Requests for files such as scripts and images still get a plain 404.
-function sendAsset(req, res, status, headers, size, openStream) {
-  const compressible = size >= 1024 && /^(text\/|application\/(json|xml|manifest\+json)|image\/svg)/.test(headers['Content-Type']);
-  const gzip = compressible && (req.headers['accept-encoding'] || '').split(',').some(entry => {
-    const [name, quality = 'q=1'] = entry.trim().toLowerCase().split(/\s*;\s*/);
-    return name === 'gzip' && Number(quality.slice(2)) > 0;
-  });
-  if (compressible) headers.Vary = 'Accept-Encoding';
-  if (gzip) headers['Content-Encoding'] = 'gzip';
-  else headers['Content-Length'] = size;
-  if (headers.ETag && req.headers['if-none-match']?.split(/\s*,\s*/).includes(headers.ETag)) {
-    delete headers['Content-Length'];
-    res.writeHead(304, headers);
-    return res.end();
-  }
-  res.writeHead(status, headers);
-  if (req.method === 'HEAD') return res.end();
-  const streams = [openStream()];
-  if (gzip) streams.push(createGzip({ level: 4 }));
-  pipeline(...streams, res, () => {});
-}
-
 function taggedHtml(html) {
   const hosts = {
     'script-src': ['https://www.googletagmanager.com'],
@@ -326,6 +302,9 @@ async function serveApp(req, res, pathname, search) {
   }, html.length, () => Readable.from([html]));
 }
 
+// Pages of the app (routes.js) are answered with the app shell, so any of them can be opened, shared or reloaded at its own
+// address. An address that is no page gets the shell too, with a 404 status and noindex, and the app shows its "not found"
+// page. Requests for files such as scripts and images still get a plain 404.
 async function serveStatic(req, res, pathname, search) {
   if (pathname === '/llms.txt' || pathname === '/llms-full.txt') {
     const { state } = Store.readStore();
@@ -381,8 +360,8 @@ async function serveStatic(req, res, pathname, search) {
 }
 
 const send = (res, status, body) => {
-  res.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
-  res.end(JSON.stringify(body));
+  const payload = Buffer.from(JSON.stringify(body));
+  sendAsset(res.req, res, status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }, payload.length, () => Readable.from([payload]));
 };
 
 createServer(async (req, res) => {

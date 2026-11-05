@@ -2,19 +2,7 @@
 // Same shapes as services.js: works rows are [label, tier1, tier2, tier3]
 // (1 = included, 0 = not included) and split columns each sum to 100.
 
-export const AI_SOURCES = {
-  wati: ['Codingclave — WATI pricing India 2026', 'https://codingclave.com/blog/wati-pricing-india-2026'],
-  waChatbot: ['Hyperleap — WhatsApp chatbot pricing India 2026', 'https://hyperleap.ai/blog/whatsapp-chatbot-pricing-india-2026'],
-  chatbotCost: ['Codingclave — AI chatbot cost in India 2026', 'https://codingclave.com/blog/ai-chatbot-development-cost-india-2026'],
-  voiceCost: ['Ecorpit — AI voice agent costs in India 2026', 'https://ecorpit.com/ecorpit-ai-voice-agent-development-service-india-2026/'],
-  voiceRates: ['Caller.Digital — Voice AI pricing in India 2026', 'https://caller.digital/blog/voice-ai-india-pricing-cost-breakdown'],
-  autoTools: ['BeOnAI — n8n vs Make vs Zapier pricing 2026', 'https://betonai.net/best-ai-automation-tools-2026-n8n-vs-make-vs-zapier-full-comparison-with-pricing/'],
-  ragCost: ['Ecorpit — AI app development cost in India 2026', 'https://ecorpit.com/ai-app-development-cost-india-2026/'],
-  ragCost2: ['Decipher Consultancy — AI chatbot cost in India 2026', 'https://decipherconsultancy.in/blog/how-much-does-an-ai-chatbot-cost-in-india-2026/'],
-  aiTraining: ['Build Fast with AI — Corporate AI training cost in India', 'https://www.buildfastwithai.com/blogs/corporate-ai-training-cost-india'],
-  geoBench: ['upGrowth — GEO/AEO pricing benchmark India 2026', 'https://upgrowth.in/geo-aeo-pricing-benchmark-india-2026/'],
-  geoVisibility: ['upGrowth — AI visibility pricing in India', 'https://upgrowth.in/ai-visibility-pricing-india/'],
-};
+export { AI_SOURCES } from './competitor-sources.js';
 
 export const AI_SERVICES = [
   {

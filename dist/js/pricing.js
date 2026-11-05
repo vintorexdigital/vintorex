@@ -1,6 +1,6 @@
 // Cart pricing shared by the browser and the payment server (server/index.mjs),
 // so the amount charged is worked out from the same rules the customer sees.
-import { ANNUAL_MONTHS_PAID, MILESTONES, MILESTONE_MIN } from './data.js';
+import { ANNUAL_MONTHS_PAID, MILESTONES, MILESTONE_MIN } from './site-data.js';
 
 // Milestone amounts for a gross (GST-inclusive) project value.
 export function milestoneSchedule(gross, upfront = 0) {

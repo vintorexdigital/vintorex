@@ -2268,3 +2268,22 @@ body:not(:has(.dash))::after { display: none; }
   .public-audit-steps { padding: 18px; }
   .public-audit-bottom .row { width: 100%; }
 }
+
+/* Keep long record values inside their grid/flex tracks at narrow widths. */
+.cards2 > *, .cards3 > *, .cards4 > *, .grid2 > *, .split > *,
+.foot-grid > *, .dash-grid > *, .public-audit-intro > *, .public-audit-faq > * { min-width: 0; }
+.card, .foot-contact, .who, .modal-body { overflow-wrap: anywhere; }
+.table-wrap { max-width: 100%; overscroll-behavior-x: contain; }
+.who > div { min-width: 0; }
+.modal { max-height: calc(100dvh - 32px); }
+.modal-card header, .modal-card footer { flex-wrap: wrap; gap: 10px; }
+.side { max-width: calc(100vw - 32px); }
+@media (max-width: 640px) {
+  .dash-content > .dash-grid:first-of-type:has(> section.card:nth-child(4):last-child) { grid-template-columns: minmax(0, 1fr); }
+  input, select, textarea { font-size: 16px; }
+  .modal-body { max-height: 60dvh; }
+}
+/* Avoid repeatedly compositing blurred cards over a full-screen canvas on phones. */
+@media (max-width: 900px), (pointer: coarse) {
+  body:not(:has(.dash)) { --glass-blur: none; --glass: rgb(255 255 255 / .92); }
+}

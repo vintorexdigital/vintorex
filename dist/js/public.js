@@ -1,5 +1,5 @@
 // Public storefront: home, services, pricing, shop, cart, checkout, contact, auth.
-import { BUSINESS, CATEGORIES, ANNUAL_MONTHS_PAID, SOURCES, LEAD_SOURCES, COMPETITOR_SOURCES, MILESTONE_MIN, pricingFaqs } from './data.js';
+import { BUSINESS, CATEGORIES, ANNUAL_MONTHS_PAID, SOURCES, LEAD_SOURCES, COMPETITOR_SOURCES, MILESTONE_MIN, pricingFaqs } from './site-data.js';
 import * as D from './db.js';
 import * as Auth from './auth.js';
 import { esc, icon, toast, field, per, date, empty, modal, $, $$ } from './ui.js';

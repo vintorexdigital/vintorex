@@ -30,13 +30,13 @@ Blog and service listings read shared records at request time. Blog drafts and d
 - **Storefront** (`js/public.js`): home, 21 services with 3 packages each, pricing with memberships and a market comparison, shop (digital downloads and add-ons), cart with coupons, member discounts and GST, checkout, GST invoice, and lead forms (contact, free audit, service quote).
 - **Customer dashboard** (`js/account.js`): plan upgrade, pause and cancel, monthly add-ons, project progress, downloads, invoices, support tickets, profile.
 - **Admin / CRM** (`js/admin.js`): KPIs (revenue, MRR, win rate), lead list with scoring, filters and CSV export, drag-and-drop pipeline, lead notes and follow-ups, lead → customer conversion, customers, orders (status and progress), subscriptions, price editor for services, plans, add-ons, downloads and coupons, support inbox, business and GST settings.
-- **Service catalog** (`js/services.js` and `js/ai-services.js` for the AI & Automation category): for each of the 21 services, the overview, ideal customers, 3 packages, every work item per package, exclusions, delivery process, a percentage cost split per package, and named competitor prices with source links. There are also 46 add-ons, each tagged with the services it applies to. After editing, run the check below, and bump `CATALOG_VERSION` in `js/data.js` when changing the shipped initial catalog. Existing shared records are edited through the admin screen.
+- **Service catalog** (`js/services.js` and `js/ai-services.js` for the AI & Automation category): for each of the 21 services, the overview, ideal customers, 3 packages, every work item per package, exclusions, delivery process, a percentage cost split per package, and named competitor prices with source links. There are also 46 add-ons, each tagged with the services it applies to. After editing, run the check below, and bump `CATALOG_VERSION` in `js/site-data.js` when changing the shipped initial catalog. Existing shared records are edited through the admin screen.
 - **Competitor analysis** (`/compare`): all services against named competitors and market ranges. Each service page also has its own competitor table.
 - **Milestone payments**: one-time projects of ₹10,000 or more can be paid 40% / 40% / 20%. Customers pay later instalments from their dashboard, and admins can record offline payments from Orders.
 - **Blog** (`/blog/`): 42 evergreen guides, two per service, published as static HTML pages so search engines can index them. See below.
 - **Policies** (`/terms/`, `/privacy-policy/`, `/refund-policy/`, `/shipping-policy/`): static pages built from `js/policies.js` by `npm run build:blog`, linked from the footer and checkout. Payment gateways such as Razorpay check for these pages.
 - **Chat assistant** (`js/chat.js`, `server/chat.mjs`): an AI assistant on every page that answers from the site's own content and cites it, free on Cloudflare Workers AI. See below.
-- **Plans and other settings**: `js/data.js`.
+- **Plans and other settings**: `js/site-data.js`.
 
 ## Blog
 
@@ -48,7 +48,7 @@ After adding or editing a guide, regenerate the static pages:
 npm run build:blog
 ```
 
-The command writes `dist/blog/index.html`, one `dist/blog/<slug>/index.html` per guide, `dist/sitemap.xml` and `dist/robots.txt`. It also refreshes the canonical link and LocalBusiness structured data (address, map pin, Google profile) in `dist/index.html`. Those details come from `BUSINESS` in `js/data.js`, so rebuild after changing them. Each page has a canonical URL, Open Graph tags and BlogPosting, FAQPage and BreadcrumbList structured data. The build stops with an error if a service has fewer than two guides or a link points at an unknown service. Commit the generated files, since hosting serves `dist/` as-is.
+The command writes `dist/blog/index.html`, one `dist/blog/<slug>/index.html` per guide, `dist/sitemap.xml` and `dist/robots.txt`. It also refreshes the canonical link and LocalBusiness structured data (address, map pin, Google profile) in `dist/index.html`. Those details come from `BUSINESS` in `js/site-data.js`, so rebuild after changing them. Each page has a canonical URL, Open Graph tags and BlogPosting, FAQPage and BreadcrumbList structured data. The build stops with an error if a service has fewer than two guides or a link points at an unknown service. Commit the generated files, since hosting serves `dist/` as-is.
 
 Canonical and sitemap URLs default to `https://vintorex.com`. If the app is served from another domain, rebuild with:
 
@@ -72,7 +72,7 @@ The server reads these from the host's environment or from `.env` at the repo ro
 
 | Variable | What it is |
 |---|---|
-| `RAZORPAY_KEY_ID` | Public key id (`rzp_live_…` or `rzp_test_…`). Also shown in `RAZORPAY` in `js/data.js`. |
+| `RAZORPAY_KEY_ID` | Public key id (`rzp_live_…` or `rzp_test_…`). Also shown in `RAZORPAY` in `js/site-data.js`. |
 | `RAZORPAY_KEY_SECRET` | Key secret. Server only: never put it in `dist/` or commit it. |
 | `PAYMENT_TOKEN_SECRET` | Signs the membership and instalment tokens. Keep the same value when you rotate the Razorpay secret. |
 | `PORT` | Port to listen on (default 5173). |
