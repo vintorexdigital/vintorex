@@ -97,7 +97,7 @@ function page({ path, title, description, keywords = '', type = 'website', image
   <link rel="preload" href="/fonts/inter-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/app.css?v=6">
   <link rel="stylesheet" href="/css/typography.css">
-${path === '/offer' ? '<link rel="stylesheet" href="/css/offer.css">' : ''}
+${path === '/offer' ? '<link rel="stylesheet" href="/css/offer.css?v=diwali3">' : ''}
   ${schema.map(jsonLd).join('\n  ')}
 </head>
 <body>
