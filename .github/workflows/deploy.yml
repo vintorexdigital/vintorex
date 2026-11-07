@@ -26,4 +26,6 @@ jobs:
           install -m 700 -d ~/.ssh
           printf '%s\n' "$SSH_KEY" > ~/.ssh/id && chmod 600 ~/.ssh/id
           ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
-          ssh -i ~/.ssh/id ubuntu@"$HOST" 'cd ~/vintorex && git pull --ff-only origin main && bash scripts/deploy.sh'
+          # Server rebuilds tracked dist/ HTML, which dirties the tree and blocks the next
+          # pull. Fetch + hard-reset keeps deploys idempotent; .env and var/ stay untracked.
+          ssh -i ~/.ssh/id ubuntu@"$HOST" 'cd ~/vintorex && git fetch --prune origin main && git reset --hard origin/main && bash scripts/deploy.sh'
