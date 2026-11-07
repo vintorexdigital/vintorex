@@ -1,7 +1,9 @@
 // Validates the service catalog and blog content. Run: npm run check
-import { SERVICES, ADDONS, COMPETITOR_SOURCES, PLANS, CATEGORIES } from '../dist/js/data.js';
+import { SERVICES, ADDONS, COMPETITOR_SOURCES, PLANS, CATEGORIES, PRODUCTS } from '../dist/js/data.js';
 import { POSTS, md, toc } from '../dist/js/blog/index.js';
-import { ART } from '../dist/js/service-art.js';
+import { ART, serviceImagePath } from '../dist/js/service-art.js';
+import { WORK_PROJECTS } from '../dist/js/work-art.js';
+import { variantPath, widthsFor } from '../dist/js/images.js';
 import { serviceFaqs, serviceAnswer, siteFaqs } from '../dist/js/seo.js';
 import { matchRoute, trimPath } from '../dist/js/routes.js';
 import { buildChunks } from '../server/knowledge.mjs';
@@ -78,6 +80,19 @@ for (const s of SERVICES) {
   if (!readFileSync(dist('llms.txt'), 'utf8').includes(`/services/${s.id}/`)) errs.push(`${s.id}: not in llms.txt`);
 }
 if (siteFaqs(SERVICES).length < 8) errs.push('site FAQ list too short');
+
+// Every photograph the pages reference has its responsive WebP copies (js/images.js lists the widths).
+for (const [source, width] of [
+  ...SERVICES.map(s => [serviceImagePath(s.id), 1600]),
+  ...POSTS.map(p => [p.image || `/images/blog/${p.slug}.jpg`, 1600]),
+  ...PRODUCTS.map(p => [`/images/shop/${p.id}.jpg`, 1200]),
+  ...WORK_PROJECTS.map(w => [`/images/work/${w.id}.jpg`, 1600]),
+  ['/images/about-studio.jpg', 1600],
+]) {
+  const missing = widthsFor(width).map(w => variantPath(source, w)).filter(p => !existsSync(dist(p.slice(1))));
+  if (missing.length) errs.push(`${source}: WebP copies missing (${missing.map(m => m.split('-').pop()).join(', ')}), run npm run build:images:webp`);
+}
+if (!existsSync(dist('images/header-waves.webp'))) errs.push('images/header-waves.webp missing, run npm run build:images:webp');
 for (const f of ['faq/index.html', 'services/index.html', 'llms-full.txt', 'robots.txt']) if (!existsSync(dist(f))) errs.push(`${f} missing, run npm run build:blog`);
 
 // Chat assistant knowledge: every chunk links to a real page: an app page (js/routes.js) or a built static page.

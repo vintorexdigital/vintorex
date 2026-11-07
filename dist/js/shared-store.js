@@ -1,8 +1,9 @@
 export const collectionNames = ['services', 'plans', 'addons', 'products', 'coupons', 'posts', 'users', 'orders', 'subscriptions', 'leads', 'tickets'];
 export const records = (state, name) => state.catalog[name] || state[name];
 export const recordId = (name, row) => row[name === 'posts' ? 'slug' : name === 'coupons' ? 'code' : 'id'];
-export async function request(path, body) {
-  const response = await fetch(path, {
+// `started` is an optional fetch already in flight for the same GET (js/boot.js starts the session request early).
+export async function request(path, body, started) {
+  const response = (body === undefined && await started) || await fetch(path, {
     credentials: 'same-origin', cache: 'no-store',
     method: body === undefined ? 'GET' : 'POST',
     headers: { 'Content-Type': 'application/json', 'X-VX-Request': '1' },

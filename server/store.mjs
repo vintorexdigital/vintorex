@@ -102,7 +102,9 @@ export function snapshot(user) {
     for (const key of ['orders', 'subscriptions', 'tickets']) state[key] = user ? state[key].filter(r => r.customerId === user.id) : [];
     state.leads = [];
     state.activity = [];
-    state.posts = state.posts.filter(p => p.published !== false);
+    // The storefront only lists guides (cards on the home and service pages); the articles themselves are static
+    // pages under /blog/. Leaving the bodies out cuts the first response from ~250 KB to ~80 KB.
+    state.posts = state.posts.filter(p => p.published !== false).map(({ body, takeaways, faqs, ...summary }) => summary);
   }
   return { revision, state, user: user || null };
 }

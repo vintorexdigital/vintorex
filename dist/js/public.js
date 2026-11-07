@@ -13,6 +13,7 @@ import { serviceArt, serviceCardArt, ART, CATALOG_KEYWORDS, serviceImagePath } f
 import { SHOP_ART } from './shop-art.js';
 import { auditFeature } from './audit-feature.js';
 import { WORK_PROJECTS, renderWorkCard } from './work-art.js';
+import { photo, SIZES } from './images.js';
 
 const inr = D.inr;
 const go = path => navigate(path);
@@ -36,7 +37,7 @@ function art(p, cls = '') {
   const copy = SHOP_ART[p.id];
   const altText = copy?.alt || PRODUCT_ALT[p.id] || `${p.name}, a ${p.kind} printable download from the Vintorex shop`;
   return `<div class="art ${cls}" style="--h:${h}">
-    <img class="product-img" src="/images/shop/${p.id}.jpg" alt="${esc(altText)}" width="1200" height="900" loading="lazy" decoding="async">
+    ${photo(`/images/shop/${p.id}.jpg`, { className: 'product-img', alt: altText, sizes: SIZES.card, width: 1200, height: 900 })}
     <span class="art-kind-tag">${esc(p.kind)}</span>
   </div>`;
 }
@@ -890,7 +891,7 @@ export function about() {
           </div>
         </div>
         <div class="about-studio-art card">
-          <img class="about-studio-img" src="/images/about-studio.jpg" alt="Vintorex studio desk at dusk with two monitors, a laptop, coffee, and a plant by the window in Coimbatore" width="1600" height="900" loading="lazy" decoding="async">
+          ${photo('/images/about-studio.jpg', { className: 'about-studio-img', alt: 'Vintorex studio desk at dusk with two monitors, a laptop, coffee, and a plant by the window in Coimbatore', sizes: SIZES.half })}
         </div>
       </div>
     </section>

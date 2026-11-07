@@ -59,7 +59,10 @@ export async function authenticate(action, body) {
 }
 
 export async function init() {
-  install(await request('/api/auth/session'));
+  // index.html starts this request before the modules finish loading (js/boot.js); use it once.
+  const started = globalThis.__vxSession;
+  delete globalThis.__vxSession;
+  install(await request('/api/auth/session', undefined, started));
 }
 export const catalog = () => db().catalog;
 export const service = id => catalog().services.find(s => s.id === id);

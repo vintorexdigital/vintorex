@@ -1,6 +1,7 @@
 // A unique illustration for every service, drawn as inline SVG so it needs no
 // image files. Each has its own alt text (aria-label) describing the scene.
 import { esc } from './ui.js';
+import { photo, SIZES } from './images.js';
 
 const W = (o = .9) => `fill="#fff" fill-opacity="${o}"`;
 const L = (o = .55) => `fill="none" stroke="#fff" stroke-opacity="${o}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"`;
@@ -217,7 +218,7 @@ export function serviceArt(s, index = 0) {
   if (!a) return '';
   const h = ((HUE[s.cat] ?? 255) + (index * 11) % 36) % 360;
   return `<figure class="service-art" style="--h:${h}">
-    <img class="service-art-img" src="${serviceImagePath(s.id)}" alt="${esc(a.alt)}" width="1600" height="900" loading="eager" decoding="async">
+    ${photo(serviceImagePath(s.id), { className: 'service-art-img', alt: a.alt, sizes: SIZES.serviceArt, priority: true })}
     <figcaption>${a.chips.map(c => `<span>${esc(c)}</span>`).join('')}</figcaption>
   </figure>`;
 }
@@ -228,7 +229,7 @@ export function serviceCardArt(s, index = 0) {
   if (!a) return '';
   const h = ((HUE[s.cat] ?? 255) + (index * 13) % 40) % 360;
   return `<div class="svc-thumb" style="--h:${h}">
-    <img class="svc-img" src="${serviceImagePath(s.id)}" alt="${esc(a.alt)}" width="1600" height="900" loading="lazy" decoding="async">
+    ${photo(serviceImagePath(s.id), { className: 'svc-img', alt: a.alt, sizes: SIZES.card })}
     <div class="svc-thumb-overlay"></div>
     <span class="svc-cat-tag">${esc(a.chips[0])}</span>
   </div>`;

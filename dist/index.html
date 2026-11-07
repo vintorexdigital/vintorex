@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://checkout.razorpay.com https://cdn.razorpay.com https://static.cloudflareinsights.com https://connect.facebook.net https://www.googletagmanager.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://cdn.razorpay.com https://www.facebook.com https://*.google-analytics.com https://www.googletagmanager.com; frame-src https://vintorex-digital-solutions-024.firebaseapp.com https://accounts.google.com https://www.facebook.com https://web.facebook.com https://www.google.com https://api.razorpay.com https://checkout.razorpay.com; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://firebaseinstallations.googleapis.com https://firebase.googleapis.com https://graph.facebook.com https://www.facebook.com https://api.razorpay.com https://lumberjack.razorpay.com https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <!-- brand-meta -->
   <meta name="application-name" content="Vintorex">
   <meta name="apple-mobile-web-app-title" content="Vintorex">
@@ -39,8 +39,34 @@
   <meta name="twitter:image:alt" content="Vintorex brand logo">
   <title>Vintorex Digital Solutions: Web Design, SEO &amp; AI Services in Coimbatore</title>
   <link rel="preload" href="/fonts/inter-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/app.css?v=6">
+  <link rel="stylesheet" href="/css/app.css?v=7">
   <link rel="stylesheet" href="/css/typography.css">
+  <!-- app-preload: the session request starts now, and every module main.js and chat.js import downloads at once instead of one level at a time (test/performance.test.mjs keeps this list complete) -->
+  <script async src="/js/boot.js"></script>
+  <link rel="modulepreload" href="/js/main.js">
+  <link rel="modulepreload" href="/js/water.js">
+  <link rel="modulepreload" href="/js/db.js">
+  <link rel="modulepreload" href="/js/shared-store.js">
+  <link rel="modulepreload" href="/js/site-data.js">
+  <link rel="modulepreload" href="/js/competitor-sources.js">
+  <link rel="modulepreload" href="/js/pricing.js">
+  <link rel="modulepreload" href="/js/public.js">
+  <link rel="modulepreload" href="/js/auth.js">
+  <link rel="modulepreload" href="/js/ui.js">
+  <link rel="modulepreload" href="/js/pay.js">
+  <link rel="modulepreload" href="/js/blogpages.js">
+  <link rel="modulepreload" href="/js/blog/cards.js">
+  <link rel="modulepreload" href="/js/service-art.js">
+  <link rel="modulepreload" href="/js/images.js">
+  <link rel="modulepreload" href="/js/chrome.js">
+  <link rel="modulepreload" href="/js/policy-links.js">
+  <link rel="modulepreload" href="/js/router.js">
+  <link rel="modulepreload" href="/js/routes.js">
+  <link rel="modulepreload" href="/js/shop-art.js">
+  <link rel="modulepreload" href="/js/audit-feature.js">
+  <link rel="modulepreload" href="/js/work-art.js">
+  <link rel="modulepreload" href="/js/chat.js">
+  <!-- /app-preload -->
   <!-- business-jsonld -->
   <link rel="canonical" href="https://vintorex.com/">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
@@ -74,8 +100,8 @@
       <p>21 services with published prices from ₹999 (excluding 18% GST): websites, online stores, mobile apps, SEO, social media, ads, branding, cloud hosting, analytics and AI automation.</p>
       <p>The online shop, customer dashboard and checkout need JavaScript. The pages below work without it.</p>
       <ul><li><a href="/services/web-design/">Website Design &amp; Development</a>: from ₹14,999</li><li><a href="/services/ecommerce/">E-commerce Store</a>: from ₹34,999</li><li><a href="/services/mobile-app/">Mobile App Development</a>: from ₹1,49,999</li><li><a href="/services/seo/">Search Engine Optimisation</a>: from ₹7,999/month</li><li><a href="/services/social-media/">Social Media Marketing</a>: from ₹8,999/month</li><li><a href="/services/advertising/">Paid Advertising (PPC)</a>: from ₹9,999/month</li><li><a href="/services/email-marketing/">Email &amp; WhatsApp Marketing</a>: from ₹4,999/month</li><li><a href="/services/branding/">Digital Branding</a>: from ₹4,999</li><li><a href="/services/content-writing/">SEO Content Writing</a>: from ₹6,999/month</li><li><a href="/services/video/">Reels &amp; Video Production</a>: from ₹5,999</li><li><a href="/services/industrial-design/">Industrial &amp; Product Design</a>: from ₹2,499</li><li><a href="/services/cloud/">Cloud Services</a>: from ₹999/month</li><li><a href="/services/analytics/">Data Insights &amp; Analytics</a>: from ₹4,999/month</li><li><a href="/services/maintenance/">Website Maintenance (AMC)</a>: from ₹1,499/month</li><li><a href="/services/ai-chatbot/">AI Chatbot &amp; WhatsApp Assistant</a>: from ₹24,999</li><li><a href="/services/ai-voice/">AI Voice Agent (Calls)</a>: from ₹39,999</li><li><a href="/services/ai-automation/">Business Process Automation</a>: from ₹19,999</li><li><a href="/services/ai-content/">AI Content &amp; Creative Studio</a>: from ₹9,999/month</li><li><a href="/services/ai-knowledge/">Custom AI Assistant &amp; Knowledge Base</a>: from ₹79,999</li><li><a href="/services/ai-training/">AI Consulting &amp; Team Training</a>: from ₹34,999</li><li><a href="/services/ai-geo/">AI Search Optimisation (GEO)</a>: from ₹19,999/month</li></ul>
-<!-- audit-feature -->
-<section class="shell section public-audit-feature" id="audit" aria-labelledby="public-audit-heading">
+      <!-- audit-feature -->
+      <section class="shell section public-audit-feature" id="audit" aria-labelledby="public-audit-heading">
     <div class="public-audit-intro">
       <div class="public-audit-copy">
         <p class="eyebrow"><span></span>Free public SEO audit · Built by Vintorex</p>
@@ -108,7 +134,7 @@
     <div class="public-audit-faq"><h3>Before you start</h3><div><details><summary>Do I need an account or an SEO subscription?</summary><p>No sign-in or external SEO subscription is required. Vintorex runs its own crawler, content and link analysis, report storage and PDF generation.</p></details><details><summary>How much of my website will be checked?</summary><p>Choose a sample of 10, 25 or 40 pages for each website. Each domain has a 90-second crawl budget, and robots.txt rules are respected. The report shows how many URLs were discovered and evaluated, including partial coverage.</p></details><details><summary>What does the audit health score measure?</summary><p>The score summarizes observed checks using severity weights of 5 for errors, 2 for warnings and 1 for notices. Each finding includes its evidence and a recommended action. Editorial thresholds identify items worth reviewing.</p></details><details><summary>Which measurements need further testing?</summary><p>The audit reads public HTTP responses and source HTML. JavaScript-only content may be absent. Search traffic, keyword search volumes, Google positions, real-user Core Web Vitals and web-wide backlink totals require separate direct measurements.</p></details><details><summary>What does the PDF include?</summary><p>The PDF includes an executive summary, competitor benchmarks, prioritized actions, thematic checks, crawler access rules, observed content terms, cross-domain link evidence and crawled URL inventories.</p></details><details><summary>How fresh are the results?</summary><p>Every report includes observation times. Matching audit requests can reuse the same report for ten minutes. Use Run again to request a fresh scan after making changes.</p></details><details><summary>Who can view my report?</summary><p>Anyone with the report link can view it during its 24-hour availability period. Your recent-report list is saved in your browser.</p></details></div></div>
     <div class="public-audit-bottom"><div><b>Ready to see where your website can improve?</b><p>Start a public audit or get help implementing the findings.</p></div><div class="row gap wrap"><a class="btn primary" href="/seo-audit">Audit my website <svg class="ic " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="link" href="/contact">Get help with fixes</a></div></div>
   </section>
-<!-- /audit-feature -->
+      <!-- /audit-feature -->
       <p><a href="/vintorent">Vintorent downloads, image upscaling and public profile analysis</a></p>
       <p><a href="/services/">All services and prices</a> · <a href="/faq/">FAQ</a> · <a href="/blog/">Guides</a> · <a href="/privacy-policy/">Privacy</a> · <a href="/terms/">Terms</a></p>
       <p>38 Bankers Colony Phase 2, Cheran Ma Nagar, Coimbatore 641035 · <a href="tel:+918667209838">+91 866 720 9838</a> · <a href="https://wa.me/918667209838">WhatsApp</a> · <a href="mailto:vintorexdigital@gmail.com">vintorexdigital@gmail.com</a></p>

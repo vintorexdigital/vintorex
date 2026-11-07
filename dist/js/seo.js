@@ -9,6 +9,7 @@
 import { BUSINESS, CATEGORIES, PLANS, MILESTONES, MILESTONE_MIN, COMPETITOR_SOURCES } from './site-data.js';
 import { esc, icon } from './ui.js';
 import { ART, serviceImagePath } from './service-art.js';
+import { photo, SIZES } from './images.js';
 import { postsFor } from './blog/index.js';
 import { postCard } from './blog/render.js';
 
@@ -128,7 +129,7 @@ export function serviceBody(s, publishedPosts) {
         <p class="lead">${esc(s.summary)}</p>
       </header>
       <section class="answer" aria-label="Quick answer"><h2>Quick answer</h2><p>${esc(serviceAnswer(s))}</p><small class="muted">Prices reviewed ${REVIEWED.label}. Excludes 18% GST.</small></section>
-      <figure class="svc-hero"><img src="${serviceImagePath(s.id)}" alt="${esc(art?.alt || s.name)}" width="1600" height="900" decoding="async"></figure>
+      <figure class="svc-hero">${photo(serviceImagePath(s.id), { alt: art?.alt || s.name, sizes: SIZES.wide, priority: true })}</figure>
       <div class="post-grid">
         <div class="post-main">
           <section id="overview"><h2>Overview</h2><p>${esc(s.overview)}</p>
@@ -173,7 +174,7 @@ export function servicesIndexBody(services) {
     <section class="shell section service-directory">
       ${CATEGORIES.map(c => `<h2 class="cat-head" id="${c.id}">${esc(c.name)} <small class="muted">${esc(c.blurb)}</small></h2>
         <div class="cards3">${services.filter(s => s.cat === c.id).map(s => `<a class="card post-card" href="${servicePath(s.id)}">
-          <div class="cover" style="--h:${{ build: 255, grow: 155, brand: 18, tech: 205, ai: 285 }[s.cat]}"><img class="cover-art-img" src="${serviceImagePath(s.id)}" alt="${esc(ART[s.id]?.alt || s.name)}" width="1600" height="900" loading="lazy"><div class="cover-overlay" aria-hidden="true"></div><span class="cover-ic">${icon(s.icon)}</span></div>
+          <div class="cover" style="--h:${{ build: 255, grow: 155, brand: 18, tech: 205, ai: 285 }[s.cat]}">${photo(serviceImagePath(s.id), { className: 'cover-art-img', alt: ART[s.id]?.alt || s.name, sizes: SIZES.card })}<div class="cover-overlay" aria-hidden="true"></div><span class="cover-ic">${icon(s.icon)}</span></div>
           <div class="post-body"><span class="tag">${s.billing === 'month' ? 'Monthly' : 'One-time'}</span><h3>${esc(s.name)}</h3><p>${esc(s.summary)}</p><small class="muted">From ${inr(fromPrice(s))}${s.billing === 'month' ? '/mo' : ''} + GST · ${esc(s.delivery)}</small></div></a>`).join('')}</div>`).join('')}
     </section>
     <section class="shell section"><h2>Price list at a glance</h2>

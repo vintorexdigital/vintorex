@@ -362,9 +362,13 @@ async function serveStatic(req, res, pathname, search) {
     const html = taggedHtml(await readFile(file, 'utf8'));
     return sendAsset(req, res, 200, { 'Content-Type': type, 'Cache-Control': 'no-cache' }, html.length, () => Readable.from([html]));
   }
+  // Photographs and the font change rarely and are named by size (or versioned with ?v=), so browsers and the CDN
+  // may keep them for a week and refresh in the background. Scripts and styles revalidate on every visit (ETag → 304)
+  // so a deploy never leaves one module newer than another.
+  const longLived = type.startsWith('image/') || type.startsWith('font/');
   sendAsset(req, res, 200, {
     'Content-Type': type,
-    'Cache-Control': type.startsWith('image/') || type.startsWith('font/') ? 'public, max-age=86400' : 'no-cache',
+    'Cache-Control': longLived ? 'public, max-age=604800, stale-while-revalidate=86400' : 'no-cache',
     ETag: `W/"${info.size}-${info.mtimeMs}"`,
   }, info.size, () => createReadStream(file));
 }

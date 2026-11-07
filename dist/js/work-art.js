@@ -1,5 +1,6 @@
 // Rich vector mockups and case study data for the Recent Work section.
 import { esc, icon } from './ui.js';
+import { photo, SIZES } from './images.js';
 
 export const WORK_PROJECTS = [
   {
@@ -341,7 +342,7 @@ export function renderWorkCard(w) {
   return `
     <article class="card work-card">
       <div class="work-visual" style="--h:${w.hue}">
-        <img class="work-img" src="/images/work/${w.id}.jpg" alt="${esc(altText)}" width="1600" height="900" loading="lazy" decoding="async">
+        ${photo(`/images/work/${w.id}.jpg`, { className: 'work-img', alt: altText, sizes: SIZES.half })}
         <span class="work-overlay-badge">${icon('arrow')} View Case Study</span>
       </div>
       <div class="work-content">

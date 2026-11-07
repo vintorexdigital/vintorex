@@ -1,15 +1,30 @@
 import { pipeline } from 'node:stream';
-import { createGzip } from 'node:zlib';
+import { createBrotliCompress, createGzip, constants } from 'node:zlib';
+
+// Content encodings the browser accepts, with their q-values (0 means refused).
+function accepted(req) {
+  const out = {};
+  for (const entry of (req.headers['accept-encoding'] || '').split(',')) {
+    const [name, quality = 'q=1'] = entry.trim().toLowerCase().split(/\s*;\s*/);
+    if (name) out[name] = Number(quality.slice(2));
+  }
+  return out;
+}
+
+// Brotli compresses text 15–20% smaller than gzip at a similar speed on these settings. Quality 5 keeps
+// responses streaming (no buffering); scripts and styles revalidate often, so the saving repeats on every visit.
+const encoders = {
+  br: () => createBrotliCompress({ params: { [constants.BROTLI_PARAM_QUALITY]: 5, [constants.BROTLI_PARAM_LGWIN]: 20 } }),
+  gzip: () => createGzip({ level: 4 }),
+};
 
 // Stream compression without blocking the event loop or caching private responses.
 export function sendAsset(req, res, status, headers, size, openStream) {
-  const compressible = size >= 1024 && /^(text\/|application\/(json|xml|manifest\+json)|image\/svg)/.test(headers['Content-Type']);
-  const gzip = compressible && (req.headers['accept-encoding'] || '').split(',').some(entry => {
-    const [name, quality = 'q=1'] = entry.trim().toLowerCase().split(/\s*;\s*/);
-    return name === 'gzip' && Number(quality.slice(2)) > 0;
-  });
+  const compressible = size >= 1024 && /^(text\/|application\/(json|xml|manifest\+json|javascript)|image\/svg)/.test(headers['Content-Type']);
+  const q = compressible ? accepted(req) : {};
+  const encoding = q.br > 0 ? 'br' : q.gzip > 0 ? 'gzip' : null;
   if (compressible) headers.Vary = 'Accept-Encoding';
-  if (gzip) headers['Content-Encoding'] = 'gzip';
+  if (encoding) headers['Content-Encoding'] = encoding;
   else headers['Content-Length'] = size;
   if (headers.ETag && req.headers['if-none-match']?.split(/\s*,\s*/).includes(headers.ETag)) {
     delete headers['Content-Length'];
@@ -19,7 +34,6 @@ export function sendAsset(req, res, status, headers, size, openStream) {
   res.writeHead(status, headers);
   if (req.method === 'HEAD') return res.end();
   const streams = [openStream()];
-  if (gzip) streams.push(createGzip({ level: 4 }));
+  if (encoding) streams.push(encoders[encoding]());
   pipeline(...streams, res, () => {});
 }
-

@@ -1,6 +1,7 @@
 import { BUSINESS, SERVICES } from '../dist/js/data.js';
 import { WORK_PROJECTS } from '../dist/js/work-art.js';
 import { esc } from '../dist/js/ui.js';
+import { photo, SIZES } from '../dist/js/images.js';
 
 export function offerPageBody() {
   const selected = ['web-design', 'ecommerce', 'seo', 'branding', 'ai-chatbot', 'analytics'].map(id => SERVICES.find(s => s.id === id));
@@ -19,7 +20,7 @@ export function offerPageBody() {
       <div class="offer-grid">${selected.map(s => `<a class="card offer-service" href="/services/${s.id}/"><h3>${esc(s.name)}</h3><p>${esc(s.summary || s.overview)}</p><strong data-from="${s.id}">From ₹${Math.min(...s.tiers.map(t => t.price)).toLocaleString('en-IN')}${s.billing === 'monthly' ? ' / month' : ''} →</strong></a>`).join('')}</div>
       <p class="fine">Prices exclude GST. <a href="/services/">View all ${SERVICES.length} services</a></p></div></section>
     <section class="shell section"><p class="eyebrow">02 / Studio work</p><h2>Inside recent projects</h2><div class="offer-grid">
-      ${WORK_PROJECTS.slice(0,3).map(w => `<article class="card offer-project"><img src="/images/work/${w.id}.jpg" width="1600" height="900" loading="lazy" alt="${esc(w.title)} project"><div><small>${esc(w.category)}</small><h3>${esc(w.title)}</h3><p>${esc(w.summary)}</p></div></article>`).join('')}</div></section>
+      ${WORK_PROJECTS.slice(0,3).map(w => `<article class="card offer-project">${photo(`/images/work/${w.id}.jpg`, { alt: `${w.title} project`, sizes: SIZES.card })}<div><small>${esc(w.category)}</small><h3>${esc(w.title)}</h3><p>${esc(w.summary)}</p></div></article>`).join('')}</div></section>
     <section class="band"><div class="shell section"><p class="eyebrow">03 / How it works</p><h2>From your first question to a project plan</h2>
       <ol class="offer-steps"><li><b>Choose your service.</b> Pick the area you want to improve.</li><li><b>Tell us your goal.</b> Share your website or describe what you’re building.</li><li><b>Review the scope.</b> Discuss deliverables, pricing, and next steps with the studio.</li></ol></div></section>
     <section id="enquire" class="shell section offer-enquire"><div><p class="eyebrow"><span></span>04 / The burst</p><h2>Your surprise is ready to light.</h2><p>Scratch the cracker or press the button. ₹7,999–₹9,999 off one package flies out. Register to keep it, and pay when the celebrations settle.</p>

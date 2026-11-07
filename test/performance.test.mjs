@@ -40,18 +40,33 @@ test('disabled gzip, HEAD and conditional responses preserve HTTP semantics', as
     assert.equal(result.res.status, options.etag ? 304 : 200);
   }
 });
-test('storefront initial imports exclude server seed catalogs and full legal documents', async () => {
+// Every module the storefront loads at start-up, following static imports from an entry point.
+async function staticImports(entry) {
   const visited = new Set();
   async function visit(url) {
     if (visited.has(url.href)) return;
     visited.add(url.href);
     const code = await readFile(url, 'utf8');
-    for (const match of code.matchAll(/(?:import|export)\s+(?:[^;'"\n]*?\s+from\s*)?['"](\.[^'"]+)['"]/g)) {
+    for (const match of code.matchAll(/(?:^|\n)\s*(?:import|export)\s+(?:[^;'"\n]*?\s+from\s*)?['"](\.[^'"]+)['"]/g)) {
       await visit(new URL(match[1], url));
     }
   }
-  await visit(new URL('../dist/js/main.js', import.meta.url));
+  await visit(new URL('../dist/js/' + entry, import.meta.url));
+  return visited;
+}
+
+test('storefront initial imports exclude server seed catalogs and full legal documents', async () => {
+  const visited = await staticImports('main.js');
   for (const file of ['data.js', 'services.js', 'ai-services.js', 'policies.js']) {
     assert.equal(visited.has(new URL('../dist/js/' + file, import.meta.url).href), false, file);
   }
+});
+
+test('index.html preloads every module the app imports at start-up, and nothing else', async () => {
+  const html = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
+  const preloaded = [...html.matchAll(/<link rel="modulepreload" href="([^"]+)">/g)].map(m => m[1]).sort();
+  const base = new URL('../dist/', import.meta.url).href;
+  const imported = [...new Set([...await staticImports('main.js'), ...await staticImports('chat.js')])].map(href => '/' + href.slice(base.length)).sort();
+  assert.deepEqual(preloaded, imported);
+  assert.match(html, /<script async src="\/js\/boot\.js"><\/script>/);
 });

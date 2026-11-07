@@ -72,7 +72,7 @@ function page({ path, title, description, keywords = '', type = 'website', image
   <meta charset="utf-8">
   ${path === '/offer' ? offerCsp : `<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; frame-src https://www.google.com; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">`}
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(description)}">
   <meta name="keywords" content="${esc(kw)}">
@@ -95,8 +95,11 @@ function page({ path, title, description, keywords = '', type = 'website', image
   <meta name="twitter:image" content="${esc(ogImg)}">
   <meta name="twitter:image:alt" content="${esc(ogImgAlt)}">
   <link rel="preload" href="/fonts/inter-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/app.css?v=6">
+  <link rel="stylesheet" href="/css/app.css?v=7">
   <link rel="stylesheet" href="/css/typography.css">
+  <link rel="modulepreload" href="/js/chat.js">
+  <link rel="modulepreload" href="/js/ui.js">
+  <link rel="modulepreload" href="/js/routes.js">
 ${path === '/offer' ? '<link rel="stylesheet" href="/css/offer.css?v=diwali3">' : ''}
   ${schema.map(jsonLd).join('\n  ')}
 </head>

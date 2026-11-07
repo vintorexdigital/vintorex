@@ -68,6 +68,8 @@ export async function contentPage(pathname, site, indexFile) {
       .replace('og:image:height" content="630', 'og:image:height" content="900');
   }
   if (detail) html = html.replace('<script src="/js/static.js" defer></script>', '<script type="module" src="/js/main.js"></script>');
+  // Pages that run static.js instead of the app only need the chat module and its two imports preloaded.
+  else html = html.replace(/<!-- app-preload\b[\s\S]*?<!-- \/app-preload -->/, () => ['chat', 'ui', 'routes'].map(m => `<link rel="modulepreload" href="/js/${m}.js">`).join('\n  '));
   if (status === 404) html = html.replace(/<meta name="robots" content="[^"]*">/, '<meta name="robots" content="noindex, follow">');
   return { html, status };
 }
