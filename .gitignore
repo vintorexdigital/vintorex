@@ -49,3 +49,6 @@ tmp/
 
 # Private offer records
 /var/
+
+# Google Cloud / other private keys — never commit
+/secrets/

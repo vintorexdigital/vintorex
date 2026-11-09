@@ -76,6 +76,8 @@ export function claimOffer(db, user, body) {
     .run(user.uid,code,user.email,name,clean(body.business,100),goal,service.id,tier.name,amount,tier.price,total,new Date().toISOString(),new Date(Date.now()+86400000).toISOString().slice(0,10),Number(total===0));
   const row = own(db,user.uid);
   if (!row) fail(409,'This coupon has already been claimed by another account.');
+  // Mirror the new claim into Google Sheets when the Apps Script web app is configured.
+  import('./integrations/flow.mjs').then(m => m.fanoutOffer(row)).catch(error => console.error('Offer sheet fan-out', error.message));
   return row;
 }
 export async function markOfferPaid(uid, orderId) {

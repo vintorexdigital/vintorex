@@ -6,6 +6,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SERVICES } from '../../dist/js/data.js';
 import { appendLead, noteActivity, readStore } from '../store.mjs';
+import { appendEvent as appendSheetRow, sheetsConfigured } from './sheets.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../../integrations/n8n');
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
@@ -33,17 +34,22 @@ export const FLOWS = [
 ];
 
 const set = name => Boolean(process.env[name]);
+function sheetsSecret() {
+  return process.env.GOOGLE_SHEETS_SECRET || process.env.N8N_WEBHOOK_SECRET || '';
+}
+
 export function integrationStatus() {
   return {
     mcp: '/api/mcp',
     page: '/integrations',
-    clients: ['OpenClaw', 'Paperclip', 'n8n'],
+    clients: ['OpenClaw', 'Paperclip', 'n8n', 'Google Sheets'],
     configured: {
       mcpKey: set('INTEGRATIONS_API_KEY'),
       n8nWebhook: set('N8N_WEBHOOK_BASE') && set('N8N_WEBHOOK_SECRET'),
       n8nMcp: set('N8N_MCP_URL'),
       openclaw: set('OPENCLAW_GATEWAY_URL'),
       paperclip: set('PAPERCLIP_URL'),
+      googleSheets: (set('GOOGLE_SHEETS_WEBAPP_URL') && Boolean(sheetsSecret())) || sheetsConfigured(),
     },
     platforms: PLATFORMS,
     flows: FLOWS,
@@ -69,8 +75,49 @@ export async function dispatch(flow, payload, fetchImpl = globalThis.fetch) {
   return { delivered: response.ok, status: response.status };
 }
 
+/**
+ * Write a CRM event to Google Sheets.
+ * Prefer a service account (works with Advanced Protection). Fall back to the Apps Script web app.
+ */
+export async function pushSheet(event, payload, fetchImpl = globalThis.fetch) {
+  if (sheetsConfigured()) {
+    try { return await appendSheetRow(event, payload, fetchImpl); }
+    catch (error) { return { delivered: false, reason: error.message }; }
+  }
+  const url = process.env.GOOGLE_SHEETS_WEBAPP_URL;
+  const secret = sheetsSecret();
+  if (!url || !secret) {
+    return { delivered: false, reason: 'Google Sheets is not configured (service account or Apps Script web app)' };
+  }
+  const body = JSON.stringify({ event, payload, at: new Date().toISOString() });
+  const response = await fetchImpl(url, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-vintorex-signature': signBody(body, secret) },
+    body,
+    redirect: 'follow',
+  });
+  return { delivered: response.ok, status: response.status, via: 'apps-script' };
+}
+
 export async function fanoutLead(lead) {
-  return dispatch('lead-intake', { id: lead.id, name: lead.name, email: lead.email, phone: lead.phone || '', service: lead.service || '', source: lead.source || '' });
+  const payload = {
+    type: 'lead', id: lead.id, name: lead.name, email: lead.email, phone: lead.phone || '',
+    service: lead.service || '', source: lead.source || '', message: lead.message || '', stage: lead.stage || '',
+  };
+  const [n8n, sheets] = await Promise.all([
+    dispatch('lead-intake', payload),
+    pushSheet('lead.created', payload),
+  ]);
+  return { delivered: Boolean(n8n.delivered || sheets.delivered), n8n, sheets };
+}
+
+export async function fanoutOffer(claim) {
+  const payload = {
+    type: 'offer', uid: claim.uid, code: claim.code, email: claim.email, name: claim.name,
+    business: claim.business || '', goal: claim.goal || '', service: claim.service, tier: claim.tier,
+    amount: claim.amount, price: claim.price, total: claim.total, followup: claim.followup || '', paid: Boolean(claim.paid),
+  };
+  return pushSheet('offer.claimed', payload);
 }
 
 function authorised(req) {
@@ -183,9 +230,9 @@ export function integrationsHtml() {
 </head>
 <body>
   <main class="shell section">
-    <p class="eyebrow"><span></span>n8n · MCP · OpenClaw · Paperclip</p>
+    <p class="eyebrow"><span></span>n8n · MCP · OpenClaw · Paperclip · Sheets</p>
     <h1>Marketing integration flow</h1>
-    <p class="lead">Vintorex keeps the catalogue, enquiries and orders. n8n runs the durable workflows. OpenClaw and Paperclip connect over MCP and call the same tools. Google Ads, Meta Business Manager and social publishing stay queued: the HTTP nodes in the shipped workflows are disabled, so nothing spends or posts until you enable them.</p>
+    <p class="lead">Vintorex keeps the catalogue, enquiries and orders. n8n runs the durable workflows. OpenClaw and Paperclip connect over MCP and call the same tools. Google Sheets receives lead and offer rows through an Apps Script web app. Google Ads, Meta Business Manager and social publishing stay queued: the HTTP nodes in the shipped workflows are disabled, so nothing spends or posts until you enable them.</p>
     <div class="cards2">
       <section class="card pad"><h2>Connections</h2><ul class="ticks col">
         ${flag(status.configured.mcpKey, 'Vintorex MCP key')}
@@ -193,6 +240,7 @@ export function integrationsHtml() {
         ${flag(status.configured.n8nMcp, 'n8n MCP server')}
         ${flag(status.configured.openclaw, 'OpenClaw gateway')}
         ${flag(status.configured.paperclip, 'Paperclip')}
+        ${flag(status.configured.googleSheets, 'Google Sheets (Apps Script)')}
       </ul></section>
       <section class="card pad"><h2>How a request moves</h2>
         <ol class="steps-list">

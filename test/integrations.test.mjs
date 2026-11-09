@@ -78,3 +78,27 @@ test('a configured n8n webhook receives the signed lead and a bad response is re
   assert.equal(failed.delivered, false);
   delete process.env.N8N_WEBHOOK_BASE;
 });
+
+test('Google Sheets fan-out skips when unset and signs Apps Script bodies', async () => {
+  delete process.env.GOOGLE_SHEETS_WEBAPP_URL;
+  delete process.env.GOOGLE_SHEETS_SECRET;
+  delete process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
+  delete process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+  delete process.env.GOOGLE_SERVICE_ACCOUNT_FILE;
+  const skipped = await flow.pushSheet('lead.created', { id: 'l1' });
+  assert.equal(skipped.delivered, false);
+  process.env.GOOGLE_SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/example/exec';
+  process.env.GOOGLE_SHEETS_SECRET = 'sheet-secret';
+  let seen;
+  const delivery = await flow.pushSheet('offer.claimed', { uid: 'u1', code: 'VX-TEST' }, async (url, options) => {
+    seen = { url, signature: options.headers['x-vintorex-signature'], body: options.body };
+    return { ok: true, status: 200 };
+  });
+  assert.equal(delivery.delivered, true);
+  assert.equal(delivery.via, 'apps-script');
+  assert.equal(seen.url, 'https://script.google.com/macros/s/example/exec');
+  assert.equal(seen.signature, flow.signBody(seen.body, 'sheet-secret'));
+  assert.equal(JSON.parse(seen.body).payload.uid, 'u1');
+  delete process.env.GOOGLE_SHEETS_WEBAPP_URL;
+  delete process.env.GOOGLE_SHEETS_SECRET;
+});
